@@ -610,3 +610,10 @@ Confirmed: organized database of all cards ever created, browsable by other play
 Catalog visibility is distinct from live private hands and does not imply revealing decklists or unfinished drafts. Existing ownership rule remains: owners manage personal cards; shared changes parent-only. Need resolve how all-created history coexists with deletion (e.g. archival/version history versus actual purge), when drafts become visible, reuse/copying and searchable metadata. No exact schema, all-draft visibility, automatic shared-edit permission or archival policy selected.
 
 Next: clarify whether cards enter shared catalog only when saved/finalized versus while still being designed. Then copying/ownership/history semantics as necessary, first-playable milestone and unresolved discovery. Architecture team must assess native private installation on all requested platforms against simple-install/no-ongoing-cost preferences.
+
+## Catalog visibility and retained assets
+Confirmed: unfinished drafts private; finalized/saved cards visible in shared catalog. No need to retain every historical version. Save artwork and recent card values to avoid unnecessary regeneration.
+
+Working interpretation: persist latest saved card data and associated reusable artwork. Exact count/meaning of "recent" not chosen; do not infer a full version history requirement, mandatory variant retention, deletion/archival policy or reuse license mechanics. Editing stats/text should not automatically trigger artwork regeneration; keep assets separate from live stats/rules. Match-safe snapshots/version references remain technical design needs, distinct from user-visible version history.
+
+Next: catalog reuse — may others add finalized cards to their decks and make personal copies/variants while original stays controlled by creator (and parent-only shared changes)? This reconciles full gameplay access with ownership; do not assume everyone may edit the original. Then first-playable milestone and remaining unanswered core rules.
