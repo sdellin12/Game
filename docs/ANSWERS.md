@@ -698,3 +698,8 @@ Confirmed: one free opening redraw in context; keep wanted cards, replace unwant
 Exact order of reshuffling versus drawing replacements is not yet confirmed. Candidate for rules draft: set rejected cards aside, draw equal replacements, then shuffle rejected cards back to avoid instant redraw of same card. Do not mark that exact sequence user-approved; can propose with full rules draft rather than continue drilling now. No discard/graveyard setup triggers.
 
 Next: propose initial player health value as adjustable playtest baseline, noting it depends on creature stat scale and duration; no health value selected yet. Then remaining core timing/leader/revival choices and coherent rules draft, preserving details explicitly deferred by Steve.
+
+## Starting player health
+Confirmed playtest starting point: 30 player health. Steve originally imagined 50 and is comfortable starting lower and increasing if needed. Record 50 as an alternative to evaluate, not a second selected mode. Do not assert match-length balance without testing creature stats, damage, healing, alliances, milling and revival.
+
+Next: hand limit — propose maximum seven at end of own turn, with owner choosing surplus to discard, allowing temporary excess during turn. Distinguish from five-card opening hand and unresolved full-hand revival cost; no cap selected yet. Then remaining core defaults/leader proposals and discovery synthesis.
