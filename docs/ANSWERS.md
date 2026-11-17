@@ -107,3 +107,10 @@ Optional complexity proposal, especially for adults: revival health could equal 
 Steve explicitly wants to work through these specifics later during card planning. Do not continue drilling into revival formulas now. Preserve deferred questions: access and activation, required hand size/draw behavior, destinations, return health/state, repeat limits, participation while defeated, final victory timing and abuse cases. Review against the 40–60 minute target.
 
 Next: Q09 — concrete forms of helping during active battle. Then themes and card/deck creation; return to detailed revival rules during card planning.
+
+## Q09 — Helping in active battle
+Steve wants broad opportunities to help, inspired by what he loved about Munchkin. Explicitly includes helping during combat and blocking attacks for another player. In response to examples of contributing attackers, blockers, helpful cards or resources, he said "Pretty much anything."
+
+Design direction: support broad cooperative intervention within competitive battles. This is not approval of unrestricted actions at any time, every transfer type, or any exact combat/timing system. Attack contribution, defensive intervention, helpful card play and resource support should be explored with clear ownership, costs, timing and acceptance rules.
+
+Next: Q09a — are negotiated promises enforced by the app, nonbinding and breakable, or a choice between formal trades and informal promises? Then clarify theme-to-mechanics mapping. Exact combat assistance rules remain for rules design.
