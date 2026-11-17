@@ -515,3 +515,16 @@ Next: Q31a — may full TV card/deck editing be deferred, with initial creation 
 Confirmed: full TV card/deck editor deferred. Initial TV apps focus on shared match display; creation tools focus on personal phones/tablets. Both Google TV and Roku remain required from the start. This supersedes the original requirement to build/edit decks on the TV initially.
 
 Next: Q24a — card artwork creation workflow: user-uploaded pictures/drawings, built-in art/assets, generated artwork, or a combination. Do not assume AI art, paid services, local image-generation compute or rights/distribution decisions. Then family content preferences, reading assistance, household controls, budget and first playable milestone.
+
+## Q24a — Artwork and card creator
+Requested creation paths: camera import for a child's drawing; built-in general images to select; AI-generated customized card artwork. No provider, generation architecture, cost, local compute assumption or release prioritization selected.
+
+Simple card creator controls requested:
+- Choose card type.
+- Choose what card does from supported rules/effects, respecting established color/trait/balance constraints.
+- Choose visual style (examples: anime, 3D-model appearance, line sketch; not exhaustive).
+- Name entry or generated name.
+
+"3D model" here is an art-style example, not a requirement for interactive 3D assets. Camera permissions/import processing, cropping/background cleanup, visual prompt controls, text/name generation and preview/save UX remain to design. Generated art must not define executable rules; exact rules text should reflect selected supported effects.
+
+Next: Q38a — whether AI art may use a paid online service with a budget or must have no recurring/per-image cost. Explain generation compute/services can be distinct from local match hosting; do not assume user's ChatGPT subscription covers an embedded API. Then content/accessibility/controls and milestone.
