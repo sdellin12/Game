@@ -229,3 +229,12 @@ Confirmed: players may chain responses to other responses. It must be easy to se
 Presentation requirements implied by clarity goal, to design concretely: identify pending effects, relevant players/targets and upcoming resolution. Exact UI is unselected; do not assume a full MTG stack, last-in-first-out resolution, priority order, response limits or timer.
 
 Next: Q16b — clarify whether responses resolve newest-first (last response first, then work backward), or explore another chain-resolution model using a concrete example. Then multiplayer response order/pacing and Q17 resources.
+
+## Q16b — Resolution order
+Confirmed: Steve accepts newest-response-first resolution. He notes MTG's version has confused him too, reinforcing the need for clear explanation and practice.
+
+Working behavior: newest pending response resolves first, then remaining pending effects work backward. Resolve one effect at a time; whether fresh response windows open between resolutions remains to clarify. No wholesale adoption of MTG priority rules.
+
+Proposed UI/training, not a selected layout: visible pending-effect list, target indication, next-to-resolve highlight and conditional outcome preview. A preview must not expose hidden cards or promise an unchangeable outcome.
+
+Next: Q16c — after one effect resolves, can players add new responses before the next pending effect resolves, or does the existing chain finish without additions? Then multiplayer priority/pacing and Q17 resources.
