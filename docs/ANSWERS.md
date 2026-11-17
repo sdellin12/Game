@@ -372,3 +372,10 @@ Confirmed: creatures have health, attack and defense. Preferred card layout: hea
 Defense meaning/formula remains undecided. Existing ordered damage examples used defense as defeat threshold; with separate health that interpretation must be revised explicitly, not silently carried forward. Need coherent calculation for damage reduction, persistent wounds, exhausted multipliers, overflow and multi-block allocation.
 
 Next: Q18l — propose defense as flat incoming-damage reduction, with an example (6 attack, 2 defense, 8 health -> lose 4 health, retain 4), and ask if that matches intent or if defense should work another way. Minimum damage, per-hit reduction, exhaustion and ordering interactions remain open. No formula approved yet.
+
+## Q18l — Flat defense and overflow
+Confirmed: defense reduces incoming damage by its value. Accepted example: 8 health, 2 defense, 6 incoming attack -> 4 damage, 4 health remaining. This is the standard calculation unless a card changes it. Minimum-damage rules and timing relative to modifiers remain open.
+
+Steve also wants a trample mechanic and says "This should be the standard unless we add cards ... change the specific condition." Ambiguity: standard refers to defense model alone or also to universal overflow. Clarify before adopting global trample.
+
+Next: Q18m — should every attack pass damage exceeding blockers' defense and remaining health to the defending player by default, or only attacks with an explicit trample ability? Use 8 attack vs one ready blocker with 2 defense/3 remaining health: proposed universal overflow would prevent 2, defeat blocker with 3, deal remaining 3 to player. This math is a proposal pending confirmation, not an approved general allocation formula. Mixed/multiple blockers and exhausted multiplier remain to reconcile.
