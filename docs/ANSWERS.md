@@ -477,3 +477,10 @@ Confirmed preference: run the game from Steve's home Linux server if possible, i
 Server hardware/OS/runtime capacity, deployment, backups, profile/deck persistence and content delivery details remain to verify during build planning. Do not assume ample storage implies adequate AI-generation compute or commit to generation on server. No deployment or server modification authorized/performed in this discovery step.
 
 Next: Q34 — what should happen on a temporary player-device disconnect: pause and restore their hand/turn on reconnect, versus continue/automatic actions? Recommend pause/reconnect for household matches; then saved-session resumption and profiles.
+
+## Q34 — Temporary disconnection
+Confirmed: pause match when a player's device disconnects; on reconnect restore their exact hand and place in the game, as proposed in the question. No auto-pass, substitute AI or disconnection forfeit selected.
+
+Unresolved: reconnect identity/device replacement, disconnect detection, handling abandoned sessions and server restart. Keep private state protected during reconnect; exact implementation later.
+
+Next: Q34a — should household be able to deliberately save/pause a match and resume another day? Distinguish persistent saved matches from temporary disconnect recovery. Then profiles/deck storage and remaining content/UX questions.
