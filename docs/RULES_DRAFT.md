@@ -23,7 +23,7 @@ Example attacker attack8/defense2/currentHP10 vs A attack3/defense1/currentHP3 a
 |---|---:|---:|---:|---|
 | A first | 4 | 1 | 3 | Destroyed |
 | B second | 4 | 2 | 2 | 3HP survives |
-P06 Retaliation unresolved: recommend pool blockers' attack once then apply attacker's defense once (3+2-2=3), attacker remains7HP. Applying defense separately per blocker instead would deal1+0=1. This materially affects swarms/armor and needs explicit selection. Pooling must preserve source/type trigger semantics deliberately; do not fake one source for every effect.
+P06 Retaliation CONFIRMED after draft review: pool blockers' attack once then apply attacker's defense once (3+2-2=3), attacker remains7HP. Applying defense separately per blocker instead would deal1+0=1. User selected pooled damage; separate-source alternative rejected for ordinary multi-block retaliation. Pooling must preserve source/type trigger semantics deliberately; do not fake one source for every effect.
 P07 Exhausted blocking accepted as extra creature damage, not automatic overflow. Proposed test formula ceil(max(0,raw-defense)*1.5); allocate minimum raw amount producing lethal HP damage. Exact multiplier/order/rounding UNAPPROVED.
 P08 Trample explicitly on cards only: proposed leftover raw budget after lethal allocations to all blockers reaches target player, not multiplied again. With no trample, unused budget does not hit player. Test exhausted-blocker raw-to-HP conversion carefully; cannot multiply whole incoming budget and then overflow again.
 Clarify before full battle: P05–P08, damage source grouping, minimum damage, multiple-source defense and card override precedence.
@@ -55,3 +55,6 @@ Later user-requested large comparative team may research MTG/Pokemon/Elestrals/Y
 
 ## Post-draft decision: blocking readiness
 Confirmed: blocking itself does not exhaust. Preserve accumulated wounds/existing exhaustion; attacking exhausts as before. Next review P06 pooled blocker retaliation versus applying defense separately to each blocker, using a worked example. P06 remains proposed, not selected.
+
+## Post-draft decision: pooled retaliation
+Confirmed: combine blockers' combat attack damage against the one attacker and subtract its defense once. Example two attack3 blockers against defense2 ->4 damage, not2. Still simultaneous; destroyed blockers retaliate. Source-specific abilities, damage tags and exhausted modifiers require explicit rules design; no pooling across unrelated attackers/spells implied. Next review P05 ready-blocker allocation with defense+remainingHP as raw damage needed to defeat each ordered blocker.
