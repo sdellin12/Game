@@ -3,7 +3,7 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Next: Q07a, clarify initial victory structure: shared goal, shared goal plus leader alternatives, or leader-specific main goals. Q07 alternatives are exploratory; no victory rule selected. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Next: Q07b / Q08, clarify whether leader defeat immediately eliminates its player or the leader may return. Q07a confirmed one shared initial victory goal; leader defeat is tentative. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
@@ -26,7 +26,7 @@ Ask one question per turn. Clarify consequential ambiguity without inventing req
 
 - Initial match scope: player-versus-player battles only. Future modes/features must be supported by intentionally designed API/plugin-style extension interfaces. Exact extension boundaries and plugin types remain open for build planning; do not promise arbitrary runtime plugins across platforms or add future modes to the initial scope.
 
-- Victory exploration: Steve likes player-health elimination, leader defeat and points; suggests selectable modes/conditions and possibly individual leader win conditions. Initial structure remains undecided; these suggestions do not expand first-release scope automatically.
+- Initial victory structure: one shared goal only. Leader defeat is the tentative candidate; exact win/elimination rules remain unresolved. Other victory modes and leader-specific goals are deferred.
 
 ## Open decisions
 Remaining reading-support details, supported player-count range and larger-group/tutorial duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
