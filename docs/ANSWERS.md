@@ -726,3 +726,13 @@ Confirmed: defeated leader returns outside battle and may be summoned again with
 No fixed tax, escalation schedule, mandatory sacrifice for all leaders, target ownership, exile definition, replacement rules or option selection system chosen. "OP" means stronger-impact designs must pay appropriate costs, not permission to bypass overall balance limits. Exact cost combinations belong to leader/card planning.
 
 Next: clarify outside-battle effects after leader defeat — remain active immediately, or disabled until recovery/resummon? Recommend temporary disabling/recovery as candidate so leader defeat has impact beyond recast cost, but don't adopt without user decision. Then unresolved victory/revival closure and discovery synthesis; numerical card costs deferred.
+
+## Leader recovery after defeat
+Confirmed in context: outside-battle abilities must wait until the next turn after leader defeat. Working interpretation stated to user: owner's next turn, not next player's turn. Exact phase and resummon eligibility during recovery remain to specify; escalating resummon costs unchanged.
+
+## Transformation and combining — New mechanics
+Required valid card design options: flip/transform creatures into alternate forms, and group/combine creatures into a larger unit. Steve references Liam (6) enjoying Transformers and Power Rangers/Megazord-style concepts. Themes are illustrative; do not restrict mechanics to those franchises.
+
+No detailed state/cost rules selected: alternate-form representation, transforms retained wounds/stats/readiness, combined-unit prerequisites, leader compatibility, components' zones, uncombine behavior, loss/disassembly, inherited effects and balance remain open. Maintain fixed supported effects/traits and creative freedom; not unrestricted invention of executable rules.
+
+Next: clarify whether transform/combine are available across colors when a creature's concept fits, or color-restricted specialties. Then state/defeat handling proposals and revive/victory closure as needed; no detailed implementation yet.
