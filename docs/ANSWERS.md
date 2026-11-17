@@ -74,5 +74,10 @@ Steve confirmed "Yes I think so. At least for now" to player health, defeat at z
 
 Unresolved: starting health, simultaneous defeats/draws, damage/healing details and post-defeat participation. No respawn or spectator influence approved.
 
-Next: Q08 — what should a defeated player do while others finish? Then return to leader entry and remaining gameplay questions.
+## Q08 — Defeated-player participation and return
+Confirmed: defeated players should retain a way to participate and be able to re-enter when a condition is met. No particular participation action, return trigger, health/reset state, limit or cost has been selected.
+
+This adds a qualification to the working zero-health/last-player-standing rule: zero health removes a player from active battle but need not permanently eliminate them. Need to define when victory is final relative to eligible returns, and prevent repeated returns from undermining the 40–60 minute target. These are design issues, not approved solutions.
+
+Next: Q08a — should re-entry be earned by the defeated player's own actions, granted through another player's help/deal, or allow both? Later clarify participation, limits/state and victory timing.
 
