@@ -28,7 +28,7 @@ P07 Exhausted blocking accepted as extra creature damage, not automatic overflow
 P08 Trample explicitly on cards only: proposed leftover raw budget after lethal allocations to all blockers reaches target player, not multiplied again. With no trample, unused budget does not hit player. Test exhausted-blocker raw-to-HP conversion carefully; cannot multiply whole incoming budget and then overflow again.
 Clarify before full battle: P05–P08, damage source grouping, minimum damage, multiple-source defense and card override precedence.
 
-New creatures block immediately, attack next owner turn unless effect. Attacking exhausts until next owner turn; blocking exhaustion behavior (does a block exhaust creature?) still unselected and important with 4p allied help. Do not silently assume infinite repeat blocks or automatic exhaust. One creature's ability to block multiple attackers also unselected.
+New creatures block immediately, attack next owner turn unless effect. Attacking exhausts until next owner turn; blocking does NOT exhaust by default (user confirmed after planning review); persistent wounds remain and already-exhausted blockers remain exhausted with their damage penalty. Ready survivors may defend in later combats. Exact one-blocker/multiple-attacker assignment per combat remains unresolved. One creature's ability to block multiple attackers also unselected.
 
 ## Leaders/forms
 Accepted leader outside effects, persistent summoned combat role; no commander damage. Defeated leader returns outside; effects recover owner's next turn. Resummon escalating/differentiated costs may include resources/sacrifice/exile.
@@ -52,3 +52,6 @@ Need simultaneous-all-defeated/draw rule. Health-loss versus failed-draw return 
 ## Review priorities
 Before coding a full match, get product decisions on R01/R02 and selected combat semantics; present worked scenarios rather than every corner-case interview. Other Pxx can be reviewed together as provisional ruleset. No balancing by numerical points alone: test effects, tempo, resource growth, alliances, denial, revival+mill loops, near-duplicate singleton variants.
 Later user-requested large comparative team may research MTG/Pokemon/Elestrals/Yu-Gi-Oh! with official sources; separate from completed narrow planning review. Approximate ten-color roster still open and should be designed around distinct play styles before building ten decks.
+
+## Post-draft decision: blocking readiness
+Confirmed: blocking itself does not exhaust. Preserve accumulated wounds/existing exhaustion; attacking exhausts as before. Next review P06 pooled blocker retaliation versus applying defense separately to each blocker, using a worked example. P06 remains proposed, not selected.
