@@ -181,3 +181,10 @@ An advanced path allows starting directly with a leader or colors and skipping t
 Working rule: leader and deck share a compatible color identity; leader does not bypass other colors' exclusive mechanics. Number of colors, mixing restrictions, exact compatibility rules and what happens when changing identity remain unresolved. Generation/recommendation technology is not selected.
 
 Next: Q12/Q13 — clarify whether creating personal cards means adapting approved mechanical templates, inventing new abilities, or both; then approval and balance. Q11 personal identity can be revisited if missing beyond persona/art/story and play style.
+
+## Q12 — Deck-building freedom
+Confirmed: users can choose existing deck archetypes and customize them, or build a full deck themselves. Both paths should be available to children as well as adults. Steve expects his wife may prefer the archetype path and himself the full-building path; these are expected preferences, not profile restrictions.
+
+Steve began "I'd like ... both" in response to ability-creation choices, but elaborated in terms of deck-building depth. Do not silently equate assembling a full deck with inventing arbitrary new mechanics. Existing building-block versus genuinely new effect creation needs explicit clarification before designing a custom rules authoring/execution system.
+
+Next: Q12a — can a user invent an ability not in the supported ability library, or does full deck building mean selecting/combining supported abilities and cards? Then Q13 balance/approval.
