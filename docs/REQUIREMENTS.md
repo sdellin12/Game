@@ -86,7 +86,7 @@ Updated 2026-11-17. Canonical concise requirements after discovery. Historical a
 ## Devices and operation
 - Each player uses own phone/tablet. Initial personal clients Android and older iPads; iPad models/OS intentionally deferred until available.
 - BOTH Google TV Streamer (bedroom) and Roku TV (living room) required for first completed version. Initial TV clients shared match display; full TV editor deferred.
-- Preferred installed native/packaged apps, not web app. Private installation okay if simple; app-store listings unnecessary. Platform feasibility/signing/cost unresolved, not grounds to silently substitute/drop a platform.
+- Preferred installed native/packaged apps. Latest explicit exception: iPad home-screen web app acceptable if secure and compatible with existing no-browser restrictions. Weekly native reinstalls also acceptable fallback; annual signing fee not approved. Private simple setup, app stores unnecessary. Other platform installed-app preferences unchanged.
 - Home Linux server preferred authoritative match host plus central card/art/deck/profile storage. Actual OS/hardware to verify before deployment.
 - Tap name for profile, no PIN. Household trust; private-hand client/seat association still required.
 - Disconnect pauses match; reconnect restores exact hand/state. Deliberate cross-day saves optional.
@@ -107,3 +107,6 @@ Updated 2026-11-17. Canonical concise requirements after discovery. Historical a
 - Later large comparative team requested for Pokemon, Yu-Gi-Oh!, Elestrals, MTG balance lessons, explicitly deferred. Research informs, playtests establish outcomes; no perfect-balance claim.
 - GPT-6.1 Sol recommended for interviews/docs/ordinary implementation; Astra for focused challenging rules/architecture review. Agents currently inherit session model.
 - Preserve decisions, proposals, feasibility blockers and next task in GitHub. Use concise canonical docs; historical transcript is not the default briefing.
+
+## iPad delivery clarification — 2026-11-17
+User accepts secure web app on iPads, whose general browser access is blocked, and also accepts weekly native reinstalls if needed. Do not relax browser restrictions silently. Need identify Screen Time versus managed restriction and test actual OS/device. Full-screen Web Clip is a candidate, not proof that ordinary Add to Home Screen works under all restrictions. Prefer same-origin local-server UI/assets, no arbitrary external navigation, server-authorized private-state projection and trusted encrypted local connection; exact controls/certificate setup require design. No security guarantee from standalone display alone. User can leave hardware details deferred.
