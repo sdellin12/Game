@@ -16,5 +16,9 @@ Steve proposed optional simpler text and/or easier mechanics during card/deck cr
 
 Open clarification Q02a: should mixed-age matches use shared simplified rules, allow simpler child decks alongside deeper adult decks under common rules, or offer both as selectable options? Exact adaptation, fairness and card compatibility remain unresolved.
 
-Next: Q02a clarification before Q03.
+Q02a answer: Steve prefers not to simplify the full match. Complex mechanics should remain available with easy-to-understand wording. He cited milling as a concept that may be difficult to understand. His wife is also new to card games. Initial game setup/learning should avoid overwhelming newcomers, and sustained enjoyment and replay appeal across the family are priorities.
+
+This supersedes any interpretation that youngest-player-based match simplification is preferred. Specific onboarding, explanations, deck guidance and complexity controls remain undecided. Do not assume tutorials, AI, simplified decks or separate rules modes have been approved.
+
+Next: Q02b — preferred first-game learning experience (guided live match, practice/tutorial, or another approach), then Q03.
 
