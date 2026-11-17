@@ -559,3 +559,14 @@ Requirement: use the lightest suitable generation option and minimize usage; avo
 Important distinction: image-generation model is not the coding/chat model. Do not claim selecting a lightweight chat model guarantees cheaper image generation or free/unlimited images. Verify available model controls and current limits at implementation. Official references: https://help.openai.com/en/articles/11084440-chatgpt-images and https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus ; usage varies by product/workflow, no exact savings established.
 
 Next: Q32 — optional tap-to-read-aloud for card text alongside reading-level wording? Then content preferences, controls and first-playable milestone. Keep no-cost prompt/import approach, no image generation requested/performed now.
+
+## Q32 / Artwork batch automation — Revised requirement
+Confirmed: optional read-card-aloud accepted.
+
+New requested art experience: app handles a batch of cards during deck creation without manual per-card external generation/import. Sequential generation behind the scenes is acceptable; long processing times acceptable. Export/make each artwork available for review as it finishes rather than wait for whole batch. Regeneration must exist but be tucked away/not easily found. Exact review location, export meaning, regenerate controls/permissions and queue recovery remain open.
+
+This supersedes manual ChatGPT prompt/download/import as the primary desired workflow. No ongoing/per-image fees remains required. These constraints create an unresolved backend issue: ChatGPT Plus consumer image access is not verified as an automatic app-controlled batch endpoint; ordinary API usage is separate. Do not promise unattended Plus automation or use browser scripting/account sharing as an assumed solution.
+
+Candidate recommended architecture: Linux server queues jobs; local image generator on existing Ryzen 5/GTX 1650 PC processes one at a time; completed art saved on server and appears incrementally in app review. Local ComfyUI has prompt/queue/history/WebSocket APIs (official source https://github.com/Comfy-Org/docs/blob/main/development/comfyui-server/comms_routes.mdx and example https://github.com/comfyorg/comfyui/blob/master/script_examples/websockets_api_example.py). Backend capability does not establish model quality/performance on this hardware. Exact GPU VRAM/RAM, suitable model/license and generation latency must be verified with an actual sample before commitment.
+
+Next: ask whether to adopt local generation as the preferred route for automated no-paid-API batches, subject to a hardware/quality feasibility test. Keep manual Plus import as optional fallback only if user agrees; no paid backend approved. Then remaining discovery.
