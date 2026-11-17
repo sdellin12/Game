@@ -600,3 +600,13 @@ Confirmed: each person freely edits/deletes their own cards and decks; changes t
 This is not approval of a mandatory parental review for every personal card. Supported-effect and balance validation remain automatic design requirements independently of ownership.
 
 Next: Q37 — installation/update preference: private household installation is recommended, with simplest compatible approach per platform; ask whether public app-store listings are unnecessary initially. Both TV platforms and older iPad support remain required; do not assume identical sideloading/distribution on each.
+
+## Q37 — Installation preference
+Confirmed: private household installation is acceptable if simple. App-store distribution not a priority. Steve prefers an installable app rather than a web app. Treat native/packaged installed clients as preferred and do not silently substitute a PWA/browser bookmark. Cross-platform packaging, signing, update friction and especially older-iPad private installation must be verified before commitment. No paid developer subscription/hardware purchase authorized.
+
+## Shared card catalog — New requirement
+Confirmed: organized database of all cards ever created, browsable by other players to see existing cards. Preferred central home is the Linux server, consistent with earlier library hosting direction.
+
+Catalog visibility is distinct from live private hands and does not imply revealing decklists or unfinished drafts. Existing ownership rule remains: owners manage personal cards; shared changes parent-only. Need resolve how all-created history coexists with deletion (e.g. archival/version history versus actual purge), when drafts become visible, reuse/copying and searchable metadata. No exact schema, all-draft visibility, automatic shared-edit permission or archival policy selected.
+
+Next: clarify whether cards enter shared catalog only when saved/finalized versus while still being designed. Then copying/ownership/history semantics as necessary, first-playable milestone and unresolved discovery. Architecture team must assess native private installation on all requested platforms against simple-install/no-ongoing-cost preferences.
