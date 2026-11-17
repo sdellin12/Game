@@ -640,3 +640,10 @@ Steve wants closer to ten types/color identities rather than the proposed five, 
 Weakness model unresolved: strategic strengths/vulnerabilities, automatic type/color damage advantages, or creature-trait vulnerabilities. Recommend strategic weaknesses as foundation to preserve theme independence and avoid automatic unfavorable matchups; no user choice yet. Fixed damage charts could still be considered explicitly, not assumed. Ten starter archetypes may be staged internally while completed roster grows; no first-release roster reduction approved.
 
 Next: clarify whether weaknesses mean mechanical matchups/strategic vulnerabilities, automatic color/type bonuses, or both. Then propose near-ten trait-based roster after preference known; keep mechanics and creature persona distinct.
+
+## Weakness approach — Intuition and beginner accessibility
+Steve likes strategic advantage but wants it minimal initially because children are new to these games. They know Pokemon type advantages. He is open to combining strategic and type-style weaknesses only if the reasons are obvious (fire/water example); willing to omit weaknesses if no intuitive system fits. Do not treat automatic color matchup chart or both systems as finalized.
+
+Proposal pending acceptance: keep color identities as play-style/character traits, and put occasional explicit vulnerabilities on creature cards using intuitive traits/damage tags. Example: fire creature weak to water-tagged effects. Not every creature must have a weakness; no automatic species weakness or universal elemental taxonomy selected. Show icon plus plain text and preview modified damage before commitment. Numerical bonus unselected; avoid arbitrary Gold-versus-Silver multipliers and excessive resistance chart. Mild strategic counterplay remains a balance goal, not automatic matchup bonuses.
+
+Next: ask whether Steve prefers card-specific visible trait vulnerabilities over a universal color matchup chart. Then develop roughly ten color identities with clear roles; do not fix damage tags, bonuses or starter roster without review.
