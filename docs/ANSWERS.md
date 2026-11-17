@@ -581,3 +581,8 @@ Updated official research: https://help.openai.com/en/articles/20001542-using-yo
 Proposed worker duties: fetch queued job with card ID/prompt; generate artwork; retrieve image; send to Linux server under card-specific storage path; mark available for review; retry/recover with duplicate protection and stop on limits rather than paid fallback. No paid API/credit usage authorized. These are architecture candidates for later team, not implementation completed.
 
 Next: resume remaining discovery (family content boundaries, creator/profile controls, model/installation constraints and first-playable milestone). Retain supported ChatGPT-backed worker as explicit feasibility investigation alongside local-model benchmark; no need to resolve this during interview.
+
+## Artwork worker direction accepted
+Steve accepts the proposed PC artwork worker with swappable generation backend. Queue on Linux server, generate via PC worker, save each result to server linked to its card, incremental review. Supported subscription-backed generation remains a feasibility task, not a guaranteed available integration; local generation remains a candidate to benchmark. No paid fallback without explicit user choice.
+
+Next: Q24b — desired content boundaries for card art/text (e.g. spooky monsters, cartoon combat, realistic violence/gore). Ask family preference without imposing a default or inferring broader publication scope. Then accessibility options already covered, household editing/deletion controls, installation preferences, remaining budget and first-playable milestone. Core numerical card/rules details remain for later coherent design proposals and comparative review.
