@@ -169,3 +169,15 @@ Clarified: colors own specific mechanical specialties. Gold is the only color th
 Do not treat black/red as finalized colors, adopt the referenced card, assume its exact rules, or interpret all combat/attacking as exclusive to one color. The intended boundaries of direct-damage versus other offensive effects remain to design. No exclusivity of broad categories (creatures/equipment/instant-like cards) was requested in this clarification.
 
 Next: Q10c — should a leader determine a deck's allowed colors, should players choose colors independently, or another system? Later develop complete color specialties and mixed-color limits.
+
+## Q10c — Leader, color and deck creation flow
+Steve accepted the proposed guided default:
+1. Choose persona/theme.
+2. Answer play-style questions.
+3. Receive suggested compatible color identity, leader and starting deck together.
+4. Customize with explanations when changes affect card eligibility.
+An advanced path allows starting directly with a leader or colors and skipping the questionnaire.
+
+Working rule: leader and deck share a compatible color identity; leader does not bypass other colors' exclusive mechanics. Number of colors, mixing restrictions, exact compatibility rules and what happens when changing identity remain unresolved. Generation/recommendation technology is not selected.
+
+Next: Q12/Q13 — clarify whether creating personal cards means adapting approved mechanical templates, inventing new abilities, or both; then approval and balance. Q11 personal identity can be revisited if missing beyond persona/art/story and play style.
