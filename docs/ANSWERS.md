@@ -550,3 +550,12 @@ Recommendation pending acceptance: generate artwork only, with fixed aspect/comp
 Illustrative prompt schema (not final art specification): subject/persona; traits/appearance; visual style; mood; scene/ability cues; fixed output aspect ratio and safe framing; clear subject at small size; no text, numbers, card border or UI. Mechanical card data used as visual cues must not override supported rules.
 
 Next: confirm artwork-only generation with app-rendered consistent frame/text/stats versus generating entire card image. Then remaining content/accessibility/controls and initial milestone. Local image generator remains optional later, no additional hardware requested.
+
+## Artwork template confirmation and usage priority
+Confirmed: generate illustration only; app applies uniform card frame, name, accurate reading-level rules, live health bar and attack/defense. Steve explicitly approves.
+
+Requirement: use the lightest suitable generation option and minimize usage; avoid spending premium coding/reasoning allowance unnecessarily on routine artwork. In external Plus workflow app cannot dictate model routing or guarantee usage accounting. Prompt assembly can be deterministic template filling with no language-model call. Prefer fastest suitable image option actually offered by user's account, single image per request, reuse/import existing art; these are recommendations, not yet approved UI settings.
+
+Important distinction: image-generation model is not the coding/chat model. Do not claim selecting a lightweight chat model guarantees cheaper image generation or free/unlimited images. Verify available model controls and current limits at implementation. Official references: https://help.openai.com/en/articles/11084440-chatgpt-images and https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus ; usage varies by product/workflow, no exact savings established.
+
+Next: Q32 — optional tap-to-read-aloud for card text alongside reading-level wording? Then content preferences, controls and first-playable milestone. Keep no-cost prompt/import approach, no image generation requested/performed now.
