@@ -74,3 +74,7 @@ This supersedes P08 lethal-first overflow and earlier uncertainty about damaging
 ## Post-draft decision: multiple blockers vs bypass
 Confirmed: sum all accepted blockers' defense against that one bypass attacker. Player HP damage=max(0,attack-sum defense); no blocker HP damage from the bypass attack; blockers retaliate in existing pooled model. Example8 attack vs2+3 defense ->3 player damage. Do not pool defenses across separate attackers automatically. Bypass working label only; final keyword names later.
 Next: combined-unit readiness: propose combined unit exhausted if any component exhausted, and attack-ready only if every component could legally attack. Prevent combine from resetting attack eligibility. Transform already preserves readiness; component aggregation not yet approved.
+
+## Post-draft decision: combination readiness
+Confirmed any exhausted component -> combined exhausted; immediate attack eligibility requires all components eligible beforehand. Specific card overrides possible; combination cannot reset readiness/attack restrictions for free.
+New proposal: transformation ends player's turn. Needs scope choice (all transforms/combines vs explicit powerful cards), own-turn use versus reactions, resolution/cleanup and effect countered handling. Not approved as universal rule. Recommendation: optional explicit end-turn cost on powerful forms rather than universal, since existing readiness preservation already prevents extra attacks. Ask one scope question next.
