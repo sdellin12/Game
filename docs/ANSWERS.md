@@ -347,3 +347,10 @@ Confirmed: attacking exhausts/taps a creature until its owner's next turn. Steve
 Candidate number: a 1.5x multiplier for damage and blocking reduction. Exact interpretation unresolved: outgoing combat damage, damage interception, effective defense, or another blocking value; whether reduction divides by 1.5; rounding, damage assignment and spillover. Do not select formulas silently or double-count increased damage and reduced defense. No final multiplier approved.
 
 Next: Q18h — clarify whether reduced blocking means lower damage dealt back to attacker or intercepting only part of incoming damage so the rest reaches the player (or another model). Then propose concrete numeric example and resolve rounding later. Persistent wounds and ordered multi-block damage remain existing requirements; check interactions during rules review.
+
+## Q18h — Exhausted blocker example
+Steve says the creature should take extra damage. Example: opponent attacks for 6, reduced block only blocks 3; if blocker has 3 health remaining, it is killed.
+
+Record example without inferring a full formula. Still ambiguous: whether remaining 3 reaches player or is prevented, whether intercepted 3 also receives an extra-damage multiplier, and how exhaustion causes the increase. Example does not validate a 1.5x or universal half-block rule. Retaliation remains unconfirmed.
+
+Next: Q18i — in this exact example, does the remaining 3 damage hit the defending player? Clarify damage destination first, then revisit extra-damage calculation with a worked example if needed. Do not silently equate half interception with increased creature damage.
