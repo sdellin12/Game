@@ -20,5 +20,14 @@ Q02a answer: Steve prefers not to simplify the full match. Complex mechanics sho
 
 This supersedes any interpretation that youngest-player-based match simplification is preferred. Specific onboarding, explanations, deck guidance and complexity controls remain undecided. Do not assume tutorials, AI, simplified decks or separate rules modes have been approved.
 
-Next: Q02b — preferred first-game learning experience (guided live match, practice/tutorial, or another approach), then Q03.
+## Q02b — Learning and deck-building tutorials
+Confirmed: Steve wants a simple tutorial game mode, a deck-creation tutorial with different ways to build decks, and in-game tutorial guidance.
+
+Proposed tutorial approaches:
+- A questionnaire about preferred play style, with examples such as attacking quickly or saving resources to play large creatures.
+- Small playable situations against an "AI" demonstrating different mechanics.
+
+Interpretation limits: examples do not approve MTG's resource system, specific archetypes, or any particular deck-construction rules. "AI" opponent implementation is undecided; do not assume generative AI, a paid service, or a full general-purpose computer opponent. Questionnaire behavior, alternative creation paths, scenario structure and guidance controls require design later.
+
+Next: Q03 — typical and supported player count.
 
