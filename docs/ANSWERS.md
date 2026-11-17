@@ -222,3 +222,10 @@ Confirmed: sequential turn-based play, with MTG Arena as a reference. Players se
 This does not adopt all MTG Arena timing/priority rules, reveal card identities through prompts, or require simultaneous execution of planned actions. Existing TV public-battlefield requirement remains.
 
 Next: Q16a — choose reaction depth: can players respond to responses, or should each event have a single reaction opportunity? Afterward clarify multi-player reaction order and prompt/pacing behavior, then Q17 resources. No stack, priority order, timers or auto-pass rules selected yet.
+
+## Q16a — Response chains
+Confirmed: players may chain responses to other responses. It must be easy to see and understand what is happening.
+
+Presentation requirements implied by clarity goal, to design concretely: identify pending effects, relevant players/targets and upcoming resolution. Exact UI is unselected; do not assume a full MTG stack, last-in-first-out resolution, priority order, response limits or timer.
+
+Next: Q16b — clarify whether responses resolve newest-first (last response first, then work backward), or explore another chain-resolution model using a concrete example. Then multiplayer response order/pacing and Q17 resources.
