@@ -34,5 +34,8 @@ Steve: "Ideally anyone that wants to play. But regularly there should be four pl
 
 Confirmed: four players is the regular match size. Aspiration: accommodate people who want to join, including larger groups. No numerical maximum or unlimited-player guarantee has been agreed. Minimum count, supported range and scaling rules remain open; revisit after turn structure and pacing are clearer.
 
-Next: Q04 — desired duration of a regular four-player match.
+## Q04 — Match duration
+Confirmed: target a regular four-player game lasting approximately 40–60 minutes once players know how to play (the context of the question answered). This is a design/playtest target, not an enforced timer. Tutorial duration, larger-group duration and pacing mechanisms remain undecided.
+
+Next: Q05 — which Commander qualities should carry over, starting with what Steve most wants to preserve. Ask follow-ups individually rather than assuming Commander rules.
 
