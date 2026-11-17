@@ -24,7 +24,7 @@ Example attacker attack8/defense2/currentHP10 vs A attack3/defense1/currentHP3 a
 | A first | 4 | 1 | 3 | Destroyed |
 | B second | 4 | 2 | 2 | 3HP survives |
 P06 Retaliation CONFIRMED after draft review: pool blockers' attack once then apply attacker's defense once (3+2-2=3), attacker remains7HP. Applying defense separately per blocker instead would deal1+0=1. User selected pooled damage; separate-source alternative rejected for ordinary multi-block retaliation. Pooling must preserve source/type trigger semantics deliberately; do not fake one source for every effect.
-P07 Exhausted blocking accepted as extra creature damage, not automatic overflow. Proposed test formula ceil(max(0,raw-defense)*1.5); allocate minimum raw amount producing lethal HP damage. Exact multiplier/order/rounding UNAPPROVED.
+P07 Exhausted blocking accepted as extra creature damage, not automatic overflow. Initial playtest formula CONFIRMED: ceil(max(0,raw-defense)*1.5); allocate minimum raw amount producing lethal HP damage. Exact multiplier/order/rounding UNAPPROVED.
 P08 Trample explicitly on cards only: proposed leftover raw budget after lethal allocations to all blockers reaches target player, not multiplied again. With no trample, unused budget does not hit player. Test exhausted-blocker raw-to-HP conversion carefully; cannot multiply whole incoming budget and then overflow again.
 Clarify before full battle: P05–P08, damage source grouping, minimum damage, multiple-source defense and card override precedence.
 
@@ -61,3 +61,8 @@ Confirmed: combine blockers' combat attack damage against the one attacker and s
 
 ## Post-draft decision: ready-blocker allocation
 Accepted example attack8 vs ordered A defense1/remainingHP3 and B defense2/remainingHP5: raw4 defeats A; remaining raw4 deals2 HP damage to B. Attacker chooses order, engine handles amounts. P07 exhausted multiplier and conversion/rounding still unapproved. Next confirm proposed 1.5x after-defense round-up with simple non-overflow example, before trample arithmetic.
+
+## Post-draft decisions: exhaustion formula and revised player-damage ability
+Confirmed initial exhausted-blocker HP damage = ceil(max(0,raw-defense)*1.5), with multiplier applied after flat defense. This is a playtest rule, not validated balance.
+User revises MTG-trample reference: special card ability bypasses blocker HEALTH after resolving DEFENSE and attacks player HP directly. This supersedes P08 lethal-first overflow proposal. Do not implement the old proposal. Naming/keywords should differ from MTG; final names deferred.
+Open: whether blocker is also damaged or only player takes remainder; multiple blockers subtract sum defense or another allocation; exhausted multiplier must not automatically multiply player damage. Ask blocker injury question first with example attack8 vs defense2/health5 ->6 to player; does blocker remain unharmed? No double damage or final title assumed.
