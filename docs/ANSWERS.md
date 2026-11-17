@@ -421,3 +421,10 @@ Working direction accepted: public offers available to everyone; private request
 Exact private-request access, costs, duration, terms, notifications, target consent and interaction with Gold enforcement remain unresolved. No requirement for persistent private chat or concealment after deal acceptance.
 
 Next: Q19 — tolerance for disruptive play: should card effects temporarily interfere while preserving opportunities to act, or also allow sustained denial (e.g. repeated turn skipping/resource destruction)? Present a family-accessible recommendation and clarify preference. Then Q20 randomness, progression/content and platform scope.
+
+## Q19 — Disruption and optional change-ups
+Steve accepts the recommended direction: allow interference and big reversals while avoiding combinations that prevent meaningful play for several turns. This is a design/balance goal, not a completed prohibition list or automatic enforcement formula.
+
+He proposes optional fun "change-ups," inspired by UNO reverse/skip effects, that kids may enjoy. Explicitly outside the main game/core initial rules; add as an optional extension as the game develops. No specific skip duration, reversed turn/response order, deck insertion, trigger, exact branded card or implementation approved. Future optional rules still need reconcile pacing, turn-based resource growth and anti-lockout goals.
+
+Next: Q20 — randomness beyond shuffled draws: mainly deterministic card effects versus some dice/coin/random-target effects, possibly confined to optional change-ups. Then Q21 support (largely covered), Q22 collection/progression and remaining audience/platform questions.
