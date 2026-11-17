@@ -593,3 +593,10 @@ Confirmed initial tone: "Cartoon Network rules" as an informal reference: no rea
 Future higher maturity levels as boys age may be added, but Steve explicitly says not to worry about them now. No maturity-tier UI or broader future content rules required initially. Apply current boundaries consistently to requested generated art/text; provider policies also depend on chosen service.
 
 Next: Q36 — can each player freely edit/delete their own creations, with parent confirmation only for changes affecting everyone (shared library/household rules)? Ask desired ownership/management policy, not add passwords or approval flows by default. Then installation preferences, first-playable milestone and unresolved discovery before rules/build teams.
+
+## Q36 — Editing and household management
+Confirmed: each person freely edits/deletes their own cards and decks; changes to shared cards or household rules are parent-only. No additional PIN/authentication requirement selected; tap-name profile preference remains. Exact shared-versus-personal card ownership, publishing/copying, deletion recovery, and match-safe versioning require design later.
+
+This is not approval of a mandatory parental review for every personal card. Supported-effect and balance validation remain automatic design requirements independently of ownership.
+
+Next: Q37 — installation/update preference: private household installation is recommended, with simplest compatible approach per platform; ask whether public app-store listings are unnecessary initially. Both TV platforms and older iPad support remain required; do not assume identical sideloading/distribution on each.
