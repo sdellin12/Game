@@ -3,13 +3,13 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q04 and initial Q05 answered. Next: Q05a/Q14, clarify the deck leader's role. Singleton scope/exceptions and deck size need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Next: Q06, player-versus-player focus versus shared threats; then Q07 victory conditions. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
 ## Confirmed brief
 - Original card game: MTG depth/card-library variety, Pokemon character appeal/accessibility, Elestrals ease, Munchkin helping and playful betrayal.
-- Commander-like group play. Singleton format and a deck leader requested. Leader need not follow Commander rules or require casting. No separate commander-damage count. Singleton scope/exceptions, deck size and leader mechanics remain open.
+- Commander-like group play. Singleton format and a deck leader requested. Leader need not follow Commander rules or require casting. No separate commander-damage count. Initial leader direction: both influence deck/play style and participate in combat. Steve welcomes proposals and possibly selectable/additional leader mechanics eventually; no particular variant system approved. Singleton scope/exceptions, deck size and detailed leader mechanics remain open.
 - Desired funny moments: children teaming up against adults; a parent recruiting a child to help defeat the other parent. Assistance mechanics and alliance structure remain open.
 - Independent interest-themed deck creation on personal devices or TV. Themes include superhero/transforming robots, nature/cryptids, crafts, fantasy/scifi; not an exhaustive list or fixed factions.
 - Locally installable Android and Google TV/Roku experiences requested; initial platform scope unresolved.
