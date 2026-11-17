@@ -280,3 +280,8 @@ Confirmed: growth/refill happens at the start of the player's own turn. Resource
 Steve wants rare, expensive cards that add resources, possibly also a leader skill. "Rare" denotes intended limited availability here; do not infer paid rarity, packs, ownership scarcity or monetization. Exact costs/access and leader implementation undecided.
 
 Next: Q17c — distinguish temporary spendable-resource gains from permanent capacity increases; ask whether both are desired as separate effects. Temporary duration, cap/overflow, costs and balance remain unresolved. Later revisit resource colors and initial capacity.
+
+## Q17c — Temporary versus permanent resource effects
+Confirmed: both temporary resource gains and permanent capacity increases should exist. Permanent increases should cost a lot, while more casually played temporary effects cost less. Exact costs, availability, temporary expiration, whether permanent effects also refill immediately, and caps remain unresolved for card/rules balancing. Do not impose equal costs across all effects or interpret casual availability as monetization.
+
+Next: Q17d — should resources be a universal pool with color controlling card eligibility/mechanics, or should paying card costs require particular resource colors? Recommend universal pool for accessibility while preserving color identities; no selection yet.
