@@ -292,3 +292,11 @@ Confirmed: begin with one universal resource type for card payment; preserve an 
 Initial color identity and exclusive effects continue to matter through card/deck eligibility, not colored payment. Colored payment is deferred, not an initial selectable mode. Build planning should isolate cost/payment rules and use extensible cost data; exact future implementation and migration/version compatibility require design and cannot be guaranteed without validation.
 
 Resource numbers/caps and card costs remain for balancing. Next: Q18 — combat targeting: can a player split attackers among multiple opponents in one combat, or attack only one opponent? Then blocker assignment, damage persistence and readiness/summoning timing.
+
+## Q18a — Split attacks
+Confirmed: attackers can be split across multiple opponents during combat. Exact declaration timing, helping/blocking allocation and multiple-combat behavior remain open.
+
+## Platform update — Children's iPads
+Confirmed: kids use older iPads; app support on those devices is required alongside the previously requested Android phones and TV experiences. Exact iPad models and iOS/iPadOS versions unknown. No native-app versus installed-web-app choice approved. Verify compatibility and installation constraints against official sources during architecture research once device information is available; do not promise support for arbitrary old hardware.
+
+Next: ask for iPad models/software versions if known (Settings > General > About), with an option to record them later. Then resume Q18 blocker assignment and combat details. Existing platform queue must include iPadOS.
