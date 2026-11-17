@@ -3,7 +3,7 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Next: Q06, player-versus-player focus versus shared threats; then Q07 victory conditions. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Next: Q07, victory conditions for initial player-versus-player battle mode. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
@@ -23,6 +23,8 @@ Ask one question per turn. Clarify consequential ambiguity without inventing req
 - Regular matches should have four players. Steve would ideally accommodate anyone who wants to play; larger groups are an aspiration. Maximum, minimum and scaling rules remain unresolved, with no unlimited-player commitment.
 
 - Target regular four-player match duration: approximately 40–60 minutes once players know the game. Design/playtest target; no enforced timer decided.
+
+- Initial match scope: player-versus-player battles only. Future modes/features must be supported by intentionally designed API/plugin-style extension interfaces. Exact extension boundaries and plugin types remain open for build planning; do not promise arbitrary runtime plugins across platforms or add future modes to the initial scope.
 
 ## Open decisions
 Remaining reading-support details, supported player-count range and larger-group/tutorial duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
