@@ -3,7 +3,7 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01 and Q02 (including Q02a/Q02b clarifications) answered. Next: Q03, typical and supported player count. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q03 (including Q02 clarifications) answered. Next: Q04, desired duration for a regular four-player match. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
@@ -20,8 +20,10 @@ Ask one question per turn. Clarify consequential ambiguity without inventing req
 
 - Onboarding requested: simple tutorial game mode; deck-creation tutorial covering different ways to build; in-game tutorial guidance. Proposed approaches include a play-style questionnaire and small practice scenarios against an "AI". Opponent implementation, creation paths and tutorial controls remain undecided. Resource/archetype examples are illustrative, not selected rules.
 
+- Regular matches should have four players. Steve would ideally accommodate anyone who wants to play; larger groups are an aspiration. Maximum, minimum and scaling rules remain unresolved, with no unlimited-player commitment.
+
 ## Open decisions
-Audience/reading support, player count/duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
+Remaining reading-support details, supported player-count range and match duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
 
 ## Completed work and workflow
 Three expert discovery reviews completed: rules; family/content creation; platform planning. Consolidated queue in docs/DISCOVERY.md; answers in docs/ANSWERS.md. Queue is adaptive, not a commitment to ask redundant questions.
