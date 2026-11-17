@@ -414,3 +414,10 @@ Confirmed: once a deal is made, it becomes public on the main screen so everyone
 Candidate: secret deals could be exclusive to one color, e.g. black representing sneakiness. No final black identity or exclusive private-negotiation rule approved. Earlier private requests were a general feature; reconcile the proposed restriction explicitly rather than applying it silently.
 
 Next: Q18r — should all players make public offers while only the sneaky color may negotiate privately, with accepted deals always public? Alternatively keep private requests universal and define a distinct stealth mechanic later. Ask this scope choice; preserve accepted-deal visibility either way. Then Q19/Q20.
+
+## Q18r — Private negotiation access
+Working direction accepted: public offers available to everyone; private requests enabled through a sneaky color's cards or abilities. Accepted deals still become public on the main screen. This qualifies earlier general private-request availability. Black remains a candidate name/identity rather than finalized color roster.
+
+Exact private-request access, costs, duration, terms, notifications, target consent and interaction with Gold enforcement remain unresolved. No requirement for persistent private chat or concealment after deal acceptance.
+
+Next: Q19 — tolerance for disruptive play: should card effects temporarily interfere while preserving opportunities to act, or also allow sustained denial (e.g. repeated turn skipping/resource destruction)? Present a family-accessible recommendation and clarify preference. Then Q20 randomness, progression/content and platform scope.
