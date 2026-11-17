@@ -305,3 +305,10 @@ Next: ask for iPad models/software versions if known (Settings > General > About
 Steve does not have the iPads available and intended the requirement as a note for later. Keep older-iPad support in scope; collect model/software versions during platform/build planning, not now. Do not block gameplay discovery on this information.
 
 Next: Q18b — blocker assignment: defending player chooses which creatures block attackers versus attacker chooses creature targets. Helping other players defend remains confirmed; detailed allied-blocking consent/allocation follows later.
+
+## Q18b — Blocker assignment
+Confirmed: defending player chooses which creatures block incoming attackers by default. Specific card abilities can provide exceptions, such as challenging a particular creature; no individual exception card approved yet.
+
+Allied help with blocking remains required. Still unresolved: how allied blockers are offered/accepted, multiple blockers per attacker, damage assignment, damage persistence, creature readiness and attack/block exhaustion.
+
+Next: Q18c — may multiple creatures team up to block one attacker, or should blocking be one-to-one? Recommend team blocking for big-creature counterplay; exact damage assignment to follow.
