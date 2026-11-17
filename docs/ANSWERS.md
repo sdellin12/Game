@@ -741,3 +741,10 @@ Next: clarify whether transform/combine are available across colors when a creat
 Steve accepts availability across colors when fitting the concept, and likes colors shaping what transformations do. Treat transform/combine as broadly usable supported mechanics, with effects/costs still respecting color identity, traits and balance. No element/type transformation chart or specific final-form ability selected.
 
 Next: combined creature defeat — default components go to discard together versus separate into original creatures, potentially with card-specific exceptions. Explain stakes and recommend a default only as a proposal. Then finish high-level mechanics and carry exact transformation/wound/state formulas to coherent rules draft.
+
+## Combined creature destruction
+Confirmed: when a combined creature is destroyed, all component creatures are destroyed by default. Specific card effects may allow survival. In context destroyed components go to discard, unless an explicit effect changes destination; no automatic split into survivors.
+
+Exact survival effect, which components survive, health/readiness on separation, death-trigger counting, exile/bounce/control changes and leader components remain unresolved for rules/card design.
+
+Next: transformation wounds — propose preserve accumulated damage/readiness when switching forms, rather than automatically healing/resetting, unless a card explicitly changes them. Ask whether this default matches preference. Then consolidate remaining revival/victory closure and other core open questions; avoid exhaustive card edge cases in interview.
