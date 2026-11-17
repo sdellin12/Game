@@ -324,3 +324,12 @@ Steve prefers the attacking player chooses an order between defenders/blockers r
 Candidate rule to confirm: attacker orders blockers; game allocates enough damage to defeat the first, then remainder to the next. All combatants still deal damage simultaneously, so a blocker assigned lethal damage deals its damage back. Remaining damage stays on blockers unless a specific overflow ability exists; no damage-to-player overflow approved.
 
 Next: Q18e — confirm automatic defeat-first allocation with a concrete example (5 attack versus two blockers with 3 defense each: first takes 3, second 2, both retaliate simultaneously). Then creature damage persistence. Ordering timing and special interactions remain open.
+
+## Q18e — Ordered damage confirmed
+Confirmed: attacker chooses blocker order; game automatically assigns enough damage to defeat each blocker before assigning remainder to the next. No manual numeric splitting.
+
+Accepted example: 5 attack versus two blockers with 3 defense each deals 3 to the first (defeated) and 2 to the second. Both blockers deal their damage back simultaneously, including the defeated one. Ordering is damage assignment, not sequential fights that prevent retaliation.
+
+Unresolved: exact defense/damage model, special-effect interactions, when order locks, and overflow abilities. No default overflow damage to defending player approved.
+
+Next: Q18f — damage persistence: clear surviving creatures' damage at end of each player's turn versus keep wounds until healed/removed. Explain strategic differences without assuming MTG cleanup rules.
