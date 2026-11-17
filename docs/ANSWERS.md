@@ -395,3 +395,8 @@ Confirmed: exhausted blockers take extra creature damage; overflow still require
 Recommendation presented for testing, not finalized by the narrowly scoped confirmation question: multiply damage after flat defense by 1.5 and round up (6 incoming minus 2 defense = 4, then 1.5 = 6). Exact multiplier, rounding, allocation and trample interaction remain playtest/rules-design proposals. Do not treat this as a proven balance point.
 
 Next: Q18o — newly played creatures' readiness: can block immediately but cannot attack until owner's next turn, unless a specific ability overrides? Then allied-blocking consent and remaining core rules. Avoid further damage-formula drilling before a coherent rules draft.
+
+## Q18o — Newly played creature readiness
+Confirmed working default: newly played creatures may block immediately but cannot attack until their owner's next turn. Specific abilities can permit immediate attacks. Exact control-change timing and naming of the exception remain unselected; no wholesale adoption of MTG summoning rules.
+
+Next: Q18p — allied-blocking consent: should the defending player accept another player's offered blockers, or can helpers intervene without permission? This concerns ordinary helping, distinct from card effects that may force obligations. Then remaining core rules (randomness, collection/progression, scope/platforms).
