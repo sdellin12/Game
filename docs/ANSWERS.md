@@ -82,5 +82,10 @@ This adds a qualification to the working zero-health/last-player-standing rule: 
 ## Q08a — Re-entry mechanism exploration
 Steve is unsure whether return should be earned independently, enabled by another player, or both, and wants to work through it. Candidate idea: a revive card of some sort. This does not select a card type, make revive cards the only return path, or resolve who can play them.
 
-Next: Q08b — explore whether a defeated player can use a revive card themselves, whether an active player must use it on them, or both. If undecided, retain candidates for concrete prototype comparison rather than forcing a final choice. Participation while defeated, availability/access to revive effects, return limits/state and victory timing remain open.
+## Q08b — Leader-linked revival candidate
+Steve proposed leaders having revive abilities dependent on game conditions/costs. Examples: distribute cards remaining in hand to another player, or send all currently held hand cards to the graveyard. He wants to explore options and possibly let the player choose a revive condition when generating/creating a leader.
+
+These are proposals, not finalized mechanics. Do not assume whose leader revives whom, whose hand pays, whether the examples are costs versus prerequisites, exact distribution rules, automatic versus optional activation, leader-generation technology, or unrestricted custom conditions. This does not conclusively reject revive cards.
+
+Next: Q08c — clarify whether a defeated player's own leader brings its owner back at a cost paid from that player's hand, versus an active player's leader reviving someone else. After ownership is clear, develop options and clarify participation, eligibility with an empty hand, retained state, limits and final victory timing.
 
