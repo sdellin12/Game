@@ -691,3 +691,10 @@ Confirmed initial playtest values: five-card opening hand and one card drawn at 
 Do not infer a five-card maximum hand size, no card-draw abilities, or an exception skipping the starting player's draw. Maximum hand size, first-turn fairness and precise start-phase ordering remain unresolved. Resource-boost cards remain allowed despite absence of mandatory resource-source cards.
 
 Next: opening redraw — propose one optional full-hand redraw before game starts: shuffle initial five back, draw five once, no cost. Ask if acceptable before adopting. Then initial health/stat scale and remaining leader/revival rules proposals.
+
+## Opening redraw — Selective replacement
+Steve accepts a free initial redraw, with preference for discarding unwanted opening cards and drawing that many, retaining the wanted cards. In context one free opportunity before match; no repeated unlimited redraw or subsequent penalty schedule selected.
+
+Destination ambiguous: "discard" may mean graveyard or simply rejecting cards for reshuffle. Need clarify. Proposed beginner-friendly rule: set unwanted cards aside, draw equal replacements from remaining deck, then shuffle rejected cards back, preventing immediate repeats and graveyard seeding. This precise sequence is not yet approved.
+
+Next: ask acceptance of set-aside/draw/shuffle-back versus actual graveyard discard for free opening redraw. Then health/stat scale and remaining rules synthesis. Do not trigger discard/enter-graveyard abilities during setup without explicit rule choice.
