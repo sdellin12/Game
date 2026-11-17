@@ -1,25 +1,25 @@
 # Card Battler — Project State
 
-Updated: 2026-11-17. Phase: discovery interview; no gameplay rules or technology stack approved.
+Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
-## Start here when resuming
-Read this file, then docs/DISCOVERY.md when available. Continue the pending question, one question per turn. Clarify ambiguous answers rather than inventing requirements. Save each substantive answer and its implications to this repository. Distinguish user decisions, proposals, and unresolved questions. Do not begin implementation planning until gameplay discovery is complete; then convene a second expert team for the build plan.
+## Resume here
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01 answered. Next pending question: Q02, ages and reading abilities for independent play. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+
+Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
 ## Confirmed brief
-- Original card game with MTG-like strategic depth and a rich card library, Pokemon-like appealing characters and accessibility, Elestrals-like ease of play, and Munchkin-like multiplayer helping and playful betrayal.
-- Commander is a reference for group play; exact mechanics remain undecided.
-- Players independently create interest-themed decks from their own device or the main TV app. Examples, not fixed factions: transforming robots/superhero teams, nature/cryptids, crochet/crafts, fantasy/science fiction.
-- Locally installable Android phone and Google TV/Roku TV experiences requested. Whether both TV platforms are mandatory for the first release is unresolved.
-- Personal devices show playable cards privately; TV shows shared battlefield without exposing opponents' hidden cards.
-- This chat is for planning, including actual gameplay design.
-- User requests an expert discovery team, one-at-a-time questions with clarification as needed, followed by another expert team for implementation planning.
-- All durable project details belong in this GitHub repository. Conserve tokens with compact canonical documents and targeted specialist tasks.
+- Original card game: MTG depth/card-library variety, Pokemon character appeal/accessibility, Elestrals ease, Munchkin helping and playful betrayal.
+- Commander-like group play; exact mechanics undecided.
+- Desired funny moments: children teaming up against adults; a parent recruiting a child to help defeat the other parent. Assistance mechanics and alliance structure remain open.
+- Independent interest-themed deck creation on personal devices or TV. Themes include superhero/transforming robots, nature/cryptids, crafts, fantasy/scifi; not an exhaustive list or fixed factions.
+- Locally installable Android and Google TV/Roku experiences requested; initial platform scope unresolved.
+- Personal devices show playable cards privately. TV shows shared battlefield without exposing opponents' hidden cards.
+- Plan actual gameplay here, then build plan with a second expert team. All durable details saved to this repository.
 
-## Not yet decided
-Audience/reading support, player count, duration, winning/elimination, commander role, turns/resources/combat/reactions, deck construction, theme-to-mechanics mapping, custom content balance, creation tools/art, progression, alliance rules, offline/hosting, TV platform priority, device/input arrangements, scope/budget, distribution.
+## Open decisions
+Audience/reading support, player count/duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
 
-## Workflow and model guidance (recommendations, not user decisions)
-Use GPT-6.1 Sol for interview synthesis, documentation and normal implementation. Reserve GPT-6 Astra for a focused rules/architecture adversarial review where useful. Current discovery agents inherit this session's model; no automatic model switch is claimed. Verify platform facts against official documentation before choosing a stack. Use compact handoffs rather than repeating full chat history.
+## Completed work and workflow
+Three expert discovery reviews completed: rules; family/content creation; platform planning. Consolidated queue in docs/DISCOVERY.md; answers in docs/ANSWERS.md. Queue is adaptive, not a commitment to ask redundant questions.
 
-## Current work
-Three specialist discovery reviews launched: rules; family/content creation; platform/technical planning. Consolidated question queue pending. No user interview answer yet.
+Model recommendations: GPT-6.1 Sol for interviews, documentation and ordinary implementation; GPT-6 Astra for focused difficult rules/architecture reviews. Agents inherit this session's model; no automatic switch claimed. Verify current platform constraints using official sources before selecting technology. Conserve tokens with short canonical records, scoped specialist briefs and reviews at meaningful phase boundaries.
