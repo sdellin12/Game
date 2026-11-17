@@ -89,3 +89,12 @@ These are proposals, not finalized mechanics. Do not assume whose leader revives
 
 Next: Q08c — clarify whether a defeated player's own leader brings its owner back at a cost paid from that player's hand, versus an active player's leader reviving someone else. After ownership is clear, develop options and clarify participation, eligibility with an empty hand, retained state, limits and final victory timing.
 
+
+## Q08c — Revival cost payer and hand safeguard
+Steve prefers revival costs mainly from the dying/defeated player's own hand. He is also interested in play styles that reward different things; no reward mechanic or other-player revival system selected.
+
+Proposed safeguard: a full hand must be given out; if the player lacks enough cards, they draw a full hand to revive. Ambiguities: draw up to a threshold versus draw an additional full hand; drawn cards paid away/discarded versus retained after return; definition of full hand, timing and destination. No hand size selected.
+
+This updates the ownership uncertainty above: cost primarily from the defeated player's hand; exact leader ownership/activation remains implicit rather than finalized. Prior 'next question' notes are historical; the latest checkpoint governs.
+
+Next: Q08d — clarify whether short-handed players draw up to a required total and then give/discard that entire hand as the revival payment, or instead receive a fresh hand to keep after revival. Later examine how the cost feels with an empty hand, revival access/limits, retained state and final victory timing.
