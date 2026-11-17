@@ -586,3 +586,10 @@ Next: resume remaining discovery (family content boundaries, creator/profile con
 Steve accepts the proposed PC artwork worker with swappable generation backend. Queue on Linux server, generate via PC worker, save each result to server linked to its card, incremental review. Supported subscription-backed generation remains a feasibility task, not a guaranteed available integration; local generation remains a candidate to benchmark. No paid fallback without explicit user choice.
 
 Next: Q24b — desired content boundaries for card art/text (e.g. spooky monsters, cartoon combat, realistic violence/gore). Ask family preference without imposing a default or inferring broader publication scope. Then accessibility options already covered, household editing/deletion controls, installation preferences, remaining budget and first-playable milestone. Core numerical card/rules details remain for later coherent design proposals and comparative review.
+
+## Q24b — Family content boundaries
+Confirmed initial tone: "Cartoon Network rules" as an informal reference: no realistic gore and no swear words. Do not invent or import an official network content policy. Cartoon-style adventures/combat fit the stated intent; exact visual examples can be reviewed later if needed.
+
+Future higher maturity levels as boys age may be added, but Steve explicitly says not to worry about them now. No maturity-tier UI or broader future content rules required initially. Apply current boundaries consistently to requested generated art/text; provider policies also depend on chosen service.
+
+Next: Q36 — can each player freely edit/delete their own creations, with parent confirmation only for changes affecting everyone (shared library/household rules)? Ask desired ownership/management policy, not add passwords or approval flows by default. Then installation preferences, first-playable milestone and unresolved discovery before rules/build teams.
