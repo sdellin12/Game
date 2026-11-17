@@ -348,9 +348,11 @@ Candidate number: a 1.5x multiplier for damage and blocking reduction. Exact int
 
 Next: Q18h — clarify whether reduced blocking means lower damage dealt back to attacker or intercepting only part of incoming damage so the rest reaches the player (or another model). Then propose concrete numeric example and resolve rounding later. Persistent wounds and ordered multi-block damage remain existing requirements; check interactions during rules review.
 
-## Q18h — Exhausted blocker example
-Steve says the creature should take extra damage. Example: opponent attacks for 6, reduced block only blocks 3; if blocker has 3 health remaining, it is killed.
+## Q18h / Q18i — Exhausted blocking and overflow exploration
+Steve's example: 6 incoming damage, reduced block stops 3, and blocker with 3 health dies. He then proposed the attacker gains a trample-like effect.
 
-Record example without inferring a full formula. Still ambiguous: whether remaining 3 reaches player or is prevented, whether intercepted 3 also receives an extra-damage multiplier, and how exhaustion causes the increase. Example does not validate a 1.5x or universal half-block rule. Retaliation remains unconfirmed.
+Candidate interpretation to confirm: exhausted blockers allow remaining damage through to defending player (example: 3 to creature, 3 to player). Not yet confirmed as exact formula, universal half-block rule, or lethal-overflow rule. No assumption that fresh blockers also allow overflow.
 
-Next: Q18i — in this exact example, does the remaining 3 damage hit the defending player? Clarify damage destination first, then revisit extra-damage calculation with a worked example if needed. Do not silently equate half interception with increased creature damage.
+Still open: does overflow vulnerability replace the earlier extra creature damage multiplier, or apply in addition? Exact multiplier, reduced interception rule, rounding, multiple blockers (including mixed ready/exhausted), retaliation and existing overflow abilities need later specification.
+
+Next: Q18j — use the 6 attack/3 health example to propose overflow as the exhaustion penalty without an additional multiplier; ask whether Steve wants that or both penalties. Avoid treating reference to trample as wholesale adoption of MTG rules.
