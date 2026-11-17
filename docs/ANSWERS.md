@@ -668,3 +668,12 @@ Confirmed: start with single-color decks; two-color decks later. This applies to
 Maintain extensible deck identity/validation for future two-color support without implementing it initially or automatically allowing it in an advanced mode.
 
 Next: deck size — recommend 40 singleton draw-deck cards plus one separate leader as a provisional playtest starting point; ask if acceptable versus preference for larger decks. No deck/hand/health values chosen yet. Resource cards are not required due to automatic resource growth. Then other numerical defaults/remaining discovery and coherent rules draft.
+
+## Deck size and deck exhaustion
+Confirmed starting playtest size: 40 singleton draw-deck cards plus separate leader. Steve open to increasing to 60 after details refined. Do not make 60 an initial alternative deck size automatically.
+
+Confirmed: running out of cards should remain a loss condition; Steve wants sufficient cards to avoid an unwanted shortage. Test baseline draws, draw effects, mill effects, revive hand payments and target duration together before concluding 40 is sufficient. No automatic discard reshuffle approved.
+
+Ambiguity: immediate defeat when deck becomes empty versus defeat only when attempting a required draw from an empty deck. Revival interaction with deck-exhaustion defeat also unresolved; defer until revival rules coherent, do not silently make all loss types revivable or permanent.
+
+Next: clarify failed-required-draw versus immediate-empty loss trigger, recommend failed required draw. Then opening hand/draw cadence and remaining numerical defaults before synthesis.
