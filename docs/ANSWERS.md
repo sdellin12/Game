@@ -617,3 +617,10 @@ Confirmed: unfinished drafts private; finalized/saved cards visible in shared ca
 Working interpretation: persist latest saved card data and associated reusable artwork. Exact count/meaning of "recent" not chosen; do not infer a full version history requirement, mandatory variant retention, deletion/archival policy or reuse license mechanics. Editing stats/text should not automatically trigger artwork regeneration; keep assets separate from live stats/rules. Match-safe snapshots/version references remain technical design needs, distinct from user-visible version history.
 
 Next: catalog reuse — may others add finalized cards to their decks and make personal copies/variants while original stays controlled by creator (and parent-only shared changes)? This reconciles full gameplay access with ownership; do not assume everyone may edit the original. Then first-playable milestone and remaining unanswered core rules.
+
+## Shared catalog reuse
+Confirmed: players may use published cards in their own decks and make customized personal copies/variants without changing the creator's original. Earlier personal ownership and parent-only shared-change rules remain.
+
+Need later reconcile singleton identity across reskins/variants so copying does not bypass deck limits; no exact mechanical identity/fingerprint rule selected. Reuse existing artwork where applicable; don't regenerate merely because card is reused.
+
+Next: Q39 — first family-playable milestone: starter decks/small library for rules playtesting first versus minimum custom-card creator required before family trial. Both TV platforms and Android/iPad final first-version requirements remain; distinguish internal prototypes from completed first version. Then resolve remaining core preferences and prepare coherent rules proposals before build-team phase.
