@@ -69,5 +69,10 @@ Proposed leader behavior: stays outside battle initially, may have a passive abi
 
 Still confirmed: one shared initial victory goal, singleton decks, no separate commander-damage count. Exact player loss/win condition is unresolved; do not assume zero player health was explicitly selected yet.
 
-Next: Q07c — confirm whether reducing player health to zero eliminates that player, with the last remaining player winning. Then clarify post-elimination participation and leader entry design.
+## Q07c — Working victory rule
+Steve confirmed "Yes I think so. At least for now" to player health, defeat at zero health, and last remaining player winning. Adopt this as the working initial rule, open to revision through further design/playtesting.
+
+Unresolved: starting health, simultaneous defeats/draws, damage/healing details and post-defeat participation. No respawn or spectator influence approved.
+
+Next: Q08 — what should a defeated player do while others finish? Then return to leader entry and remaining gameplay questions.
 
