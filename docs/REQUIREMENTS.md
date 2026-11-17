@@ -44,7 +44,7 @@ Updated 2026-11-17. Canonical concise requirements after discovery. Historical a
 - Creatures have attack, flat damage-reducing defense, and persistent health. Example 6 attack vs defense2 deals 4 health damage.
 - Health bar at top; attack/defense at bottom. Specialized per-creature attack menus deferred.
 - Damage remains until healed. Auto end-turn recovery is possible later mode.
-- Attacking exhausts until owner's next turn. Exhausted creatures can block but take extra damage.
+- Attacking exhausts until owner's next turn. Blocking does not exhaust by default; creatures retain accumulated wounds and existing readiness/exhaustion. Exhausted creatures can block but take extra damage.
 - Exhaustion does NOT grant trample; overflow requires explicit trample ability. Proposed 1.5x after defense/round-up is only a test candidate.
 - Trample card-specific; weighted toward fitting colors but not universally exclusive. Exact interaction with flat defense/ordered blockers/exhaustion requires coherent formula.
 - Newly played creatures block immediately but attack only from owner's next turn, unless ability overrides.
