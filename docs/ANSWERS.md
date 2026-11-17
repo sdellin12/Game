@@ -661,3 +661,10 @@ Confirmed direction: small gameplay differences can distinguish variants for sin
 Need later define canonical card identity and validation for custom variants; evaluate near-duplicate spam during balance review without overriding permissive preference. No exact hashing/identity algorithm selected.
 
 Next: deck color mixing — one-color-only initially versus multicolor decks allowed from outset; propose up to two colors plus generic cards as a starting choice, without assuming it approved. Then provisional deck/hand/health values and discovery synthesis.
+
+## Deck color mixing — Initial scope
+Confirmed: start with single-color decks; two-color decks later. This applies to initial custom decks as well as starter decks. Previously approved generic no-color cards remain available to everyone. Universal resource payment remains; do not confuse a single deck color with colored resource costs.
+
+Maintain extensible deck identity/validation for future two-color support without implementing it initially or automatically allowing it in an advanced mode.
+
+Next: deck size — recommend 40 singleton draw-deck cards plus one separate leader as a provisional playtest starting point; ask if acceptable versus preference for larger decks. No deck/hand/health values chosen yet. Resource cards are not required due to automatic resource growth. Then other numerical defaults/remaining discovery and coherent rules draft.
