@@ -458,3 +458,10 @@ Confirmed: both Google TV and Roku must work from the start. Household devices: 
 Implementation still undecided. Build-planning team must verify current official platform capabilities, installation/distribution, networking and remote/input constraints before choosing an architecture; do not assume shared native binary, runtime, browser availability or one-click installation.
 
 Next: Q28 — must installed matches work entirely without internet while home Wi-Fi/local network remains available? Distinguish gameplay/local content from optional future content generation/downloads. Then remote play/hosting requirements.
+
+## Q28 — Offline priority and TV-free fallback
+Steve wants installed games to work without internet on the home local network, but explicitly says this is not a priority. He notes internet outages at home usually coincide with power outages. Record offline operation as a lower-priority goal, not a mandatory first-release acceptance gate or a decision to require cloud gameplay.
+
+Future desirable fallback: play without requiring a TV, explicitly can come later. No phone/tablet shared-board layout, hosting behavior or alternate hardware selected. Both TV platforms remain first-version requirements for the normal experience.
+
+Next: Q29 — same-household local-network participants only initially, or remote players from another location required? Then hosting, reconnect/save behavior, profiles and remaining creation/platform questions.
