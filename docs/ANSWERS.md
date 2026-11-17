@@ -712,3 +712,10 @@ Working interpretation stated to user: opportunity to play normally legal cards 
 This does not set "full hand" for revival to seven or five; revival specifics intentionally deferred.
 
 Next: leader battlefield duration — when condition allows entry, does leader stay as a combat creature until defeated, or perform one big action then return outside battle? Earlier role permits passive outside battle and big conditional entry but duration unresolved. Exact entry/return costs and revive cards remain for later card planning.
+
+## Leader battlefield duration and outside-battle effects
+Steve wants leader similar to an MTG commander: effects available outside battle, with ability to summon into battle. In context of stay-until-defeated versus one-shot return question, working interpretation is persistent battlefield creature once summoned, not automatic departure after one big action. This interpretation was stated back to user; do not silently adopt all Commander rules.
+
+Still established: no commander-damage count; leader and deck compatible color; access may depend on turn/resource conditions. Exact passive availability while on field, summon costs/conditions, immediate entry effect, repeat summoning and defeated-leader destination unresolved.
+
+Next: if leader defeated, can it return outside battle and later be summoned again, versus unavailable for rest of match? Recommend repeat access with a growing cost as a candidate, without assuming Commander tax adopted. Exact costs and revival specifics remain for card planning.
