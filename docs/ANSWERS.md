@@ -365,3 +365,10 @@ Verified reference: Pokemon TCG official rulebook https://assets.pokemon.com/ass
 Proposal to discuss: attack and persistent health as universal creature stats, optional armor/damage-reduction abilities for select cards rather than a mandatory third defense stat. Example 6 damage against 2 armor reduces damage to 4 if using that proposed armor model; this is unapproved. Separate defense adds calculation and can nullify small attackers, affecting multi-blocking, persistent wounds and heal balance.
 
 Next: Q18k — ask whether to start with attack + health, with armor as optional ability, or use three universal stats. Defer exhaustion/overflow numeric rules until stat model established.
+
+## Q18k — Three-stat creature model
+Confirmed: creatures have health, attack and defense. Preferred card layout: health bar at top, attack/defense at bottom (MTG referenced visually, not as adopting its toughness mechanic). Pokemon-style specialized attacks are deferred; use the shared combat model for now.
+
+Defense meaning/formula remains undecided. Existing ordered damage examples used defense as defeat threshold; with separate health that interpretation must be revised explicitly, not silently carried forward. Need coherent calculation for damage reduction, persistent wounds, exhausted multipliers, overflow and multi-block allocation.
+
+Next: Q18l — propose defense as flat incoming-damage reduction, with an example (6 attack, 2 defense, 8 health -> lose 4 health, retain 4), and ask if that matches intent or if defense should work another way. Minimum damage, per-hit reduction, exhaustion and ordering interactions remain open. No formula approved yet.
