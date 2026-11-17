@@ -132,3 +132,10 @@ This clarifies "require truth" toward explicit game-state agreements rather than
 Unresolved: voluntary acceptance versus imposed obligation, exact valid terms/targets/duration, rewards/costs, how enforcement works, what happens if assistance is impossible, conflicting promises and cancellation. No arbitrary natural-language contract engine approved.
 
 Next: Q09c — must all affected players explicitly accept a binding agreement before it activates, or may some cards impose obligations without consent? Then refine color identities and theme-to-mechanics mapping. Keep detailed agreement timing/edge cases for card/rules design.
+
+## Q09c — Forced obligations
+Confirmed direction: some cards may impose obligations without the affected player's agreement. Steve proposed this could be a leader's major skill. Forced obligations should not last for the whole game.
+
+Steve mentioned "after a certain amount of turns or with a cost of some kind." Meaning unresolved: expiration or paid escape for the affected player versus activation delay/cost for the imposing player (or both). Do not choose an interpretation silently. No exact duration, cost, leader skill, escape rule or permanent restriction approved.
+
+Next: Q09d — clarify whether turns/cost refers to ending/escaping the obligation, activating it, or both. Later detail legal effects, impossible assistance, conflicts, counters and duration counting during rules/card planning.
