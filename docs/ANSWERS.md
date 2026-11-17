@@ -407,3 +407,10 @@ Confirmed: ordinary help defending requires asking/permission from the defending
 Unresolved boundary: request/acceptance/secrecy versus actual committed combat actions. Public battlefield requirement suggests actual blocking must become visible before resolution; do not assume secretly resolving blockers or hiding relevant public actions. No general private chat, pre-authorized betrayal, timing extension, or private offer revealing hidden cards approved.
 
 Next: Q18q — confirm request/negotiation may stay private but committed blockers become public before resolution, giving others their normal response opportunity. Then move beyond detailed combat to Q19/Q20 combo limits/randomness and remaining discovery.
+
+## Q18q — Public deals after acceptance
+Confirmed: once a deal is made, it becomes public on the main screen so everyone can see what is happening. Committed blockers/actions are visible before resolution with ordinary response opportunities as proposed in the question. Visibility alone does not make ordinary promises binding; Gold/card-enforced commitments remain the exception.
+
+Candidate: secret deals could be exclusive to one color, e.g. black representing sneakiness. No final black identity or exclusive private-negotiation rule approved. Earlier private requests were a general feature; reconcile the proposed restriction explicitly rather than applying it silently.
+
+Next: Q18r — should all players make public offers while only the sneaky color may negotiate privately, with accepted deals always public? Alternatively keep private requests universal and define a distinct stealth mechanic later. Ask this scope choice; preserve accepted-deal visibility either way. Then Q19/Q20.
