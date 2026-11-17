@@ -312,3 +312,8 @@ Confirmed: defending player chooses which creatures block incoming attackers by 
 Allied help with blocking remains required. Still unresolved: how allied blockers are offered/accepted, multiple blockers per attacker, damage assignment, damage persistence, creature readiness and attack/block exhaustion.
 
 Next: Q18c — may multiple creatures team up to block one attacker, or should blocking be one-to-one? Recommend team blocking for big-creature counterplay; exact damage assignment to follow.
+
+## Q18c — Multiple blockers
+Confirmed: multiple creatures may block one attacker. Steve references MTG's approach for this mechanic. This does not silently adopt all MTG combat details or historical damage-assignment versions.
+
+Next: Q18d — clarify who divides attacker damage among multiple blockers. Proposed default: attacking player chooses allocation through a clear interface while blockers each deal their damage to the attacker simultaneously, absent special effects. No allocation restrictions, lethal-first rule, damage order, overflow or special combat abilities selected. Afterward damage persistence and readiness.
