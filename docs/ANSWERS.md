@@ -62,5 +62,12 @@ Confirmed: shared goal only for the initial version. Leader-specific alternate w
 
 Tentative preference: "Maybe by defeating the leader." Leader defeat is a candidate, not a finalized elimination rule.
 
-Next: Q07b / Q08 — should a leader's first defeat eliminate its player, or may the leader recover/return? Clarify the intended loss condition before designing leader durability, return costs or post-defeat participation.
+## Q07b / Q14 / Q18 — Revised combat and leader direction
+Steve changed direction: attack the player, with creatures/cards attacking and defending, using MTG as a reference. This supersedes leader defeat as the tentative victory condition. It does not adopt all MTG combat rules.
+
+Proposed leader behavior: stays outside battle initially, may have a passive ability there, and enters when a specific condition is met to deliver a major attack or other significant effect. Entry condition, off-battle passive, duration, repeat access, combat rules and impact are not finalized. Earlier desire for both strategic influence and combat participation remains compatible with this direction.
+
+Still confirmed: one shared initial victory goal, singleton decks, no separate commander-damage count. Exact player loss/win condition is unresolved; do not assume zero player health was explicitly selected yet.
+
+Next: Q07c — confirm whether reducing player health to zero eliminates that player, with the last remaining player winning. Then clarify post-elimination participation and leader entry design.
 
