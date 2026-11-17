@@ -719,3 +719,10 @@ Steve wants leader similar to an MTG commander: effects available outside battle
 Still established: no commander-damage count; leader and deck compatible color; access may depend on turn/resource conditions. Exact passive availability while on field, summon costs/conditions, immediate entry effect, repeat summoning and defeated-leader destination unresolved.
 
 Next: if leader defeated, can it return outside battle and later be summoned again, versus unavailable for rest of match? Recommend repeat access with a growing cost as a candidate, without assuming Commander tax adopted. Exact costs and revival specifics remain for card planning.
+
+## Leader resummoning and differentiated costs
+Confirmed: defeated leader returns outside battle and may be summoned again with increased summoning cost. Especially powerful leaders should have higher resummon costs. Costs may include alternatives such as sacrificing/exiling a creature, rather than exclusively resource increments.
+
+No fixed tax, escalation schedule, mandatory sacrifice for all leaders, target ownership, exile definition, replacement rules or option selection system chosen. "OP" means stronger-impact designs must pay appropriate costs, not permission to bypass overall balance limits. Exact cost combinations belong to leader/card planning.
+
+Next: clarify outside-battle effects after leader defeat — remain active immediately, or disabled until recovery/resummon? Recommend temporary disabling/recovery as candidate so leader defeat has impact beyond recast cost, but don't adopt without user decision. Then unresolved victory/revival closure and discovery synthesis; numerical card costs deferred.
