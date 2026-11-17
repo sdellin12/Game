@@ -199,3 +199,10 @@ Candidate implementation approaches: AI creates appropriate card text, or catego
 Persona remains independent of color; thematic ability compatibility introduces a separate constraint to resolve with free theme creation. Need clarification on user-approved extraordinary traits (e.g. winged cat) versus automatic defaults.
 
 Next: Q12b — should supported abilities be gated by explicit traits (e.g. wings permit flight), with fantasy exceptions possible by choosing a fitting trait, rather than permanently restricted by species? Then Q13 balance/approval.
+
+## Q12b / Q11 — Fantasy traits and creative enjoyment
+Confirmed: fantasy exceptions through appropriate traits (e.g. a winged cat able to fly) are acceptable and encouraged. Steve wants children to have almost as much fun creating cards and decks as playing matches. Creative construction is a core experience, not merely setup.
+
+Working direction: traits support thematic ability eligibility without rigid real-world species restrictions. Exact trait taxonomy, combination limits, trait/effect/color interactions and UI remain to design. No automatic entitlement to stronger cards from adding more traits approved; balance mechanism still unresolved.
+
+Next: Q13 — how to balance custom cards: enforce common power/cost limits, require household review, or offer balanced versus experimental creation modes. Present a concrete recommendation without assuming any selected approach.
