@@ -703,3 +703,12 @@ Next: propose initial player health value as adjustable playtest baseline, notin
 Confirmed playtest starting point: 30 player health. Steve originally imagined 50 and is comfortable starting lower and increasing if needed. Record 50 as an alternative to evaluate, not a second selected mode. Do not assert match-length balance without testing creature stats, damage, healing, alliances, milling and revival.
 
 Next: hand limit — propose maximum seven at end of own turn, with owner choosing surplus to discard, allowing temporary excess during turn. Distinguish from five-card opening hand and unresolved full-hand revival cost; no cap selected yet. Then remaining core defaults/leader proposals and discovery synthesis.
+
+## Maximum hand size
+Confirmed: maximum seven cards at end of own turn; if above seven, player must discard or play cards to reduce hand. Temporary excess before turn ends allowed. Owner chooses discards.
+
+Working interpretation stated to user: opportunity to play normally legal cards before ending turn, paying usual costs; then discard remaining excess. No free card plays, ignoring timing/costs, forced play when no affordable card, or universal ability to cast every card during cleanup approved. Exact end-phase/response ordering belongs in rules draft.
+
+This does not set "full hand" for revival to seven or five; revival specifics intentionally deferred.
+
+Next: leader battlefield duration — when condition allows entry, does leader stay as a combat creature until defeated, or perform one big action then return outside battle? Earlier role permits passive outside battle and big conditional entry but duration unresolved. Exact entry/return costs and revive cards remain for later card planning.
