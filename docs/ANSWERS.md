@@ -317,3 +317,10 @@ Next: Q18c — may multiple creatures team up to block one attacker, or should b
 Confirmed: multiple creatures may block one attacker. Steve references MTG's approach for this mechanic. This does not silently adopt all MTG combat details or historical damage-assignment versions.
 
 Next: Q18d — clarify who divides attacker damage among multiple blockers. Proposed default: attacking player chooses allocation through a clear interface while blockers each deal their damage to the attacker simultaneously, absent special effects. No allocation restrictions, lethal-first rule, damage order, overflow or special combat abilities selected. Afterward damage persistence and readiness.
+
+## Q18d — Blocker order instead of numeric assignment
+Steve prefers the attacking player chooses an order between defenders/blockers rather than manually allocating numeric damage (e.g. 2 to A and 3 to B). He is unsure of exact resolution; do not assume sequential retaliation.
+
+Candidate rule to confirm: attacker orders blockers; game allocates enough damage to defeat the first, then remainder to the next. All combatants still deal damage simultaneously, so a blocker assigned lethal damage deals its damage back. Remaining damage stays on blockers unless a specific overflow ability exists; no damage-to-player overflow approved.
+
+Next: Q18e — confirm automatic defeat-first allocation with a concrete example (5 attack versus two blockers with 3 defense each: first takes 3, second 2, both retaliate simultaneously). Then creature damage persistence. Ordering timing and special interactions remain open.
