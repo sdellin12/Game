@@ -37,5 +37,10 @@ Confirmed: four players is the regular match size. Aspiration: accommodate peopl
 ## Q04 — Match duration
 Confirmed: target a regular four-player game lasting approximately 40–60 minutes once players know how to play (the context of the question answered). This is a design/playtest target, not an enforced timer. Tutorial duration, larger-group duration and pacing mechanisms remain undecided.
 
-Next: Q05 — which Commander qualities should carry over, starting with what Steve most wants to preserve. Ask follow-ups individually rather than assuming Commander rules.
+## Q05 — Commander qualities
+Confirmed: Steve loves singleton format and wants a leader of the deck. No separate commander-damage count. Leader implementation need not follow MTG Commander and need not require casting.
+
+Unresolved: singleton scope/exceptions, deck size, whether differently themed versions of the same mechanical card count as duplicates; leader abilities, availability, battlefield role, defeat/reuse and deck-building restrictions. Do not assume a command zone, commander tax, always-active powers or any particular leader implementation.
+
+Next: Q05a/Q14 — ask which leader role Steve prefers, before moving on to other gameplay structure questions.
 
