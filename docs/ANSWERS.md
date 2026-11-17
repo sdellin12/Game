@@ -435,3 +435,12 @@ Confirmed: most card effects should be predictable. Occasional dice-roll/coin-fl
 Candidate color: Silver for that identity, explicitly tentative. Exact chance mechanics, odds, stakes/rewards, exclusivity, target randomness and frequency remain unselected. Do not infer real-money wagering, monetization, paid packs or a requirement that all Silver cards use randomness. Separate from optional future change-up extension; selected chance cards can belong to core card design.
 
 Next: Q22 — should all players have the full supported gameplay card/effect library available, or unlock cards/effects through play? Explain cosmetic progression as separate from power access; no collection system selected. Q21 accessibility is largely covered; revisit unresolved help controls later.
+
+## Q22 / Q21 — Universal access and reading independence
+Confirmed: everyone gets access to all gameplay cards and supported abilities/effects; no progression-based gameplay unlock gate. Cosmetic rewards/achievements were suggested previously but have not been selected.
+
+Confirmed requirement: card text scales to age/reading level so children can understand cards independently rather than always asking for help. Adults remain available for questions. Adapt presentation without silently changing mechanics between readers. Exact reading levels, manual controls, explanations/read-aloud and text generation approach remain open; no AI dependency or universal perfect-comprehension guarantee selected.
+
+Confirmed extensibility: add more cards and abilities/effects over time. Distinguish content using existing effects from newly implemented effects; initial fixed effect library is expandable, not permanently frozen. New effects require engine support/rules text/balance validation before use; exact authoring/plugin pipeline remains to design.
+
+Next: Q24/Q25 — intended audience/distribution (household only, invited friends, eventual public release) to inform content and platform planning. Q23 tutorial/learning approaches largely covered. Revisit reading-level UX and content limits later.
