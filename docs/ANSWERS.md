@@ -444,3 +444,10 @@ Confirmed requirement: card text scales to age/reading level so children can und
 Confirmed extensibility: add more cards and abilities/effects over time. Distinguish content using existing effects from newly implemented effects; initial fixed effect library is expandable, not permanently frozen. New effects require engine support/rules text/balance validation before use; exact authoring/plugin pipeline remains to design.
 
 Next: Q24/Q25 — intended audience/distribution (household only, invited friends, eventual public release) to inform content and platform planning. Q23 tutorial/learning approaches largely covered. Revisit reading-level UX and content limits later.
+
+## Q25 — Audience and visitors
+Confirmed initial audience: household only. Future desirable convenience: visitors scan a QR code or similar to download/install and play. Lower priority, not initial release requirement. No public release or app-store distribution selected.
+
+QR code may link to platform-appropriate installation/join instructions; do not promise one-step installation on all devices before verifying Android/iPad/TV constraints. Download versus room join are distinct steps to design later. No guest account/cloud service choice approved.
+
+Next: Q26 — first TV platform priority: Google TV, Roku, or both required initially? Android phones and kids' older iPads remain requested personal-device support; iPad hardware details deferred. Then Q28 offline operation and Q29 location.
