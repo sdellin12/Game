@@ -98,3 +98,12 @@ Proposed safeguard: a full hand must be given out; if the player lacks enough ca
 This updates the ownership uncertainty above: cost primarily from the defeated player's hand; exact leader ownership/activation remains implicit rather than finalized. Prior 'next question' notes are historical; the latest checkpoint governs.
 
 Next: Q08d — clarify whether short-handed players draw up to a required total and then give/discard that entire hand as the revival payment, or instead receive a fresh hand to keep after revival. Later examine how the cost feels with an empty hand, revival access/limits, retained state and final victory timing.
+
+## Q08d — Payment clarification and intentional deferral
+Confirmed direction: the player gives away or discards a hand as the revival payment; it is not a fresh hand kept as a revival reward. Earlier draw-when-short idea remains a candidate; exact top-up/additional-draw sequence and hand size are not settled.
+
+Optional complexity proposal, especially for adults: revival health could equal cards given away, with less health for discarded cards. This is illustrative, not an approved formula or mandatory age-based rules split.
+
+Steve explicitly wants to work through these specifics later during card planning. Do not continue drilling into revival formulas now. Preserve deferred questions: access and activation, required hand size/draw behavior, destinations, return health/state, repeat limits, participation while defeated, final victory timing and abuse cases. Review against the 40–60 minute target.
+
+Next: Q09 — concrete forms of helping during active battle. Then themes and card/deck creation; return to detailed revival rules during card planning.
