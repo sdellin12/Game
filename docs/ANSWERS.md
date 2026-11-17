@@ -245,3 +245,10 @@ Confirmed working rule: after one pending effect resolves, players get another o
 Steve explicitly wants this changeable in the future. Preserve revisability in rules architecture; do not assume an in-match toggle or arbitrary switching during a saved match. Proposed implementation guidance: separate timing policy from card UI and specify ruleset compatibility/version behavior during build planning.
 
 Next: Q16d — recommend a fixed rotating response order rather than fastest-tap priority; clarify acceptance. Then pacing controls and Q17 resources. Exact first responder, pass/reset semantics and timer remain undecided.
+
+## Q16d — Response priority
+Confirmed: fixed order around the table for response/pass opportunities, rather than fastest tap. Steve emphasizes fairness.
+
+Unresolved details: who starts each response window, rotation direction, reset after new responses, pass persistence, simultaneous triggers, pacing/auto-pass and private-information leakage through prompts. Defer these detailed proposals to rules/UX planning; do not assume an automatic timer or skip on inability to act.
+
+Next: Q17 — resource-system preference. Explain predictable growing/refilling allowance, resource cards drawn from deck, and earned/banked resources as options without selecting a system. Pacing controls remain open for later UX questions.
