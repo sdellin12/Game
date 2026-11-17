@@ -162,3 +162,10 @@ Confirmed direction: some "card types" should be locked to particular colors, wh
 Ambiguity: "card types" may mean specific effects/abilities or broad categories such as creatures/instant-like cards. Need clarification. No complete color roster, deck color identity, mixed-color rule, leader restriction, card cost or generic-card balance system selected.
 
 Next: Q10b — clarify whether color locks apply to particular effects (e.g. Gold binding bargains) while broad card categories remain available to all colors, versus locking whole categories. Then clarify who defines a deck's allowed colors and the creation workflow.
+
+## Q10b — Exclusive effects, not broad categories
+Clarified: colors own specific mechanical specialties. Gold is the only color that can enforce honesty/agreements. Steve offered tentative black/red (or another color to be decided) exclusivity for attack cards like MTG's Barbed Lightning.
+
+Do not treat black/red as finalized colors, adopt the referenced card, assume its exact rules, or interpret all combat/attacking as exclusive to one color. The intended boundaries of direct-damage versus other offensive effects remain to design. No exclusivity of broad categories (creatures/equipment/instant-like cards) was requested in this clarification.
+
+Next: Q10c — should a leader determine a deck's allowed colors, should players choose colors independently, or another system? Later develop complete color specialties and mixed-color limits.
