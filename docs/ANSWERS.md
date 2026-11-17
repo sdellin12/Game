@@ -57,5 +57,10 @@ Steve likes last-player-standing via player health, leader defeat, and victory-p
 
 These are alternatives under exploration, not approval of all approaches in the initial version. No primary victory condition, scoring system, mandatory leader-specific goal, or rule that defeating a leader eliminates its player has been selected.
 
-Next: Q07a — choose the initial match structure: a shared basic victory rule (with alternate modes later), a shared rule plus optional leader-specific alternate wins, or leader-specific goals as the main victory system. Clarify before discussing elimination.
+## Q07a — Initial victory structure
+Confirmed: shared goal only for the initial version. Leader-specific alternate wins and other victory modes are deferred.
+
+Tentative preference: "Maybe by defeating the leader." Leader defeat is a candidate, not a finalized elimination rule.
+
+Next: Q07b / Q08 — should a leader's first defeat eliminate its player, or may the leader recover/return? Clarify the intended loss condition before designing leader durability, return costs or post-defeat participation.
 
