@@ -23,6 +23,9 @@ User accepts iPad home-screen web app if secure and compatible with existing blo
 Restriction source confirmed: Screen Time. User wants no URL bar/arbitrary browser navigation. No further question on source. Apple documents managed full-screen Web Clips with Safari restricted, but that does not establish ordinary Screen Time compatibility. Test home-screen launch/external links/pop-ups/imports on actual iPads later. URL bar hiding alone insufficient; optional Guided Access not a navigation filter. Preserve restrictions; don't assume full-screen equals security. iPad models/OS still intentionally deferred.
 Actual PC specs known Ryzen5/GTX1650; RAM/VRAM unverified. Need current Mac/Xcode route only if native fallback used.
 
+## Current gameplay review
+User confirms blocking does not exhaust by default. Wounds and existing exhaustion persist; surviving ready blockers remain available in later combats. Next: P06, pooled multi-block retaliation versus defense applied separately, using a concrete example. iPad restriction test remains an independent feasibility task, no hardware changes now.
+
 ## Next actions after preference
 1. Prototype/test full-screen iPad web app under actual Screen Time restrictions (hardware details still deferred), no arbitrary browser navigation. If incompatible use accepted weekly signed native fallback. Maintain both TVs.
 2. Close core rules draft via worked examples (revival R01, leader access R02, combat P05–P08, blocking exhaustion). Exact card costs user deferred; don't restart endless micro-interview.
