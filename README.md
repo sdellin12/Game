@@ -10,6 +10,6 @@ Original household multiplayer card game: personal themed decks, private phone/t
 - [Rules Draft](docs/RULES_DRAFT.md): playtest procedures and explicitly unapproved open decisions.
 - [UX and Content Plan](docs/UX_CONTENT_PLAN.md): family experience, library and artwork worker.
 
-Discovery and the second expert planning review are complete. Product choices are distinguished from proposed technical/rule defaults. Current key tradeoff: native iPad installation/signing route; no paid services approved. Both Google TV and Roku remain required for the first completed version.
+Discovery and the second expert planning review are complete. Product choices are distinguished from proposed technical/rule defaults. Current feasibility task: secure iPad home-screen web app under existing browser restrictions; weekly native reinstalls accepted fallback. No paid services approved. Both Google TV and Roku remain required for the first completed version.
 
 Historical interview: [Answers](docs/ANSWERS.md). Original [question queue](docs/DISCOVERY.md) is archival, not current status. Read focused canonical docs instead of full history to conserve tokens.
