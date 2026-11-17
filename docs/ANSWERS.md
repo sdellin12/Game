@@ -300,3 +300,8 @@ Confirmed: attackers can be split across multiple opponents during combat. Exact
 Confirmed: kids use older iPads; app support on those devices is required alongside the previously requested Android phones and TV experiences. Exact iPad models and iOS/iPadOS versions unknown. No native-app versus installed-web-app choice approved. Verify compatibility and installation constraints against official sources during architecture research once device information is available; do not promise support for arbitrary old hardware.
 
 Next: ask for iPad models/software versions if known (Settings > General > About), with an option to record them later. Then resume Q18 blocker assignment and combat details. Existing platform queue must include iPadOS.
+
+## iPad follow-up — Deferred
+Steve does not have the iPads available and intended the requirement as a note for later. Keep older-iPad support in scope; collect model/software versions during platform/build planning, not now. Do not block gameplay discovery on this information.
+
+Next: Q18b — blocker assignment: defending player chooses which creatures block attackers versus attacker chooses creature targets. Helping other players defend remains confirmed; detailed allied-blocking consent/allocation follows later.
