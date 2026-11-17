@@ -215,3 +215,10 @@ Tradeoffs such as costs, fragility and weaknesses are candidates, not a finalize
 Deferred user request: eventually convene a very large expert subagent team to study Pokemon, Yu-Gi-Oh!, Elestrals and MTG for lessons toward strong balance. Explicitly not now. Plan this as a later comparative research/rules review phase after a concrete draft exists, with targeted official-source research, synthesis, simulation/playtests and iterative tuning. Do not treat the large team as already convened or research as completed; exact team size and method still open. This is an in-project future phase, not a scheduled automation request.
 
 Next: Q15 — normal turn structure: sequential player turns with other players able to intervene versus simultaneous planning/rounds. Initial leader role already covered by Q14; access details remain deferred. Then Q16 reaction timing and Q17 resources.
+
+## Q15 / Q16 — Turn structure and reactions
+Confirmed: sequential turn-based play, with MTG Arena as a reference. Players see public actions while private cards remain hidden on each player's device, allowing private planning during other turns. Instant-like cards should permit actions during another player's turn.
+
+This does not adopt all MTG Arena timing/priority rules, reveal card identities through prompts, or require simultaneous execution of planned actions. Existing TV public-battlefield requirement remains.
+
+Next: Q16a — choose reaction depth: can players respond to responses, or should each event have a single reaction opportunity? Afterward clarify multi-player reaction order and prompt/pacing behavior, then Q17 resources. No stack, priority order, timers or auto-pass rules selected yet.
