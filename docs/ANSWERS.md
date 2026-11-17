@@ -428,3 +428,10 @@ Steve accepts the recommended direction: allow interference and big reversals wh
 He proposes optional fun "change-ups," inspired by UNO reverse/skip effects, that kids may enjoy. Explicitly outside the main game/core initial rules; add as an optional extension as the game develops. No specific skip duration, reversed turn/response order, deck insertion, trigger, exact branded card or implementation approved. Future optional rules still need reconcile pacing, turn-based resource growth and anti-lockout goals.
 
 Next: Q20 — randomness beyond shuffled draws: mainly deterministic card effects versus some dice/coin/random-target effects, possibly confined to optional change-ups. Then Q21 support (largely covered), Q22 collection/progression and remaining audience/platform questions.
+
+## Q20 — Randomness and potential Silver identity
+Confirmed: most card effects should be predictable. Occasional dice-roll/coin-flip effects are welcome, reserved for "gambling" or risk-taking cards.
+
+Candidate color: Silver for that identity, explicitly tentative. Exact chance mechanics, odds, stakes/rewards, exclusivity, target randomness and frequency remain unselected. Do not infer real-money wagering, monetization, paid packs or a requirement that all Silver cards use randomness. Separate from optional future change-up extension; selected chance cards can belong to core card design.
+
+Next: Q22 — should all players have the full supported gameplay card/effect library available, or unlock cards/effects through play? Explain cosmetic progression as separate from power access; no collection system selected. Q21 accessibility is largely covered; revisit unresolved help controls later.
