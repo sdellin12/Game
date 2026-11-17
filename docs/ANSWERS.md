@@ -484,3 +484,8 @@ Confirmed: pause match when a player's device disconnects; on reconnect restore 
 Unresolved: reconnect identity/device replacement, disconnect detection, handling abandoned sessions and server restart. Keep private state protected during reconnect; exact implementation later.
 
 Next: Q34a — should household be able to deliberately save/pause a match and resume another day? Distinguish persistent saved matches from temporary disconnect recovery. Then profiles/deck storage and remaining content/UX questions.
+
+## Q34a — Deliberate saved matches
+Steve would like deliberate save/close/resume-another-day if possible, but it is not necessary. Lower-priority convenience, not an initial release blocker. Required temporary-disconnect pause/reconnect remains distinct. No persistence mechanism or server-restart recovery guarantee selected.
+
+Next: Q35 — propose household profiles stored on the server, with decks and reading preferences following each person between devices; ask whether profiles require a simple PIN versus unrestricted profile selection. Exact identity/access policy not decided. Then Q30 device allocation, Q31 TV creation privacy and remaining content/UX requirements as needed.
