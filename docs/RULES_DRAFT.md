@@ -17,7 +17,7 @@ All UI must show target/pending effect/next resolution. Preview conditional publ
 ## Combat with THREE stats
 Accepted: attack players/split targets; defenders choose blockers; allied help requires acceptance; multiple blockers ordered by attacker; automatic allocation and simultaneous retaliation. Flat defense reduction + persistent health supersedes early examples equating defense with lethal threshold.
 
-P05 Raw damage budget: ready blocker requires defense + remaining HP raw attack to defeat. Assign sufficient raw damage to first, then remainder next. If insufficient, apply defense to assigned amount then HP loss. No negative damage.
+P05 Raw damage budget — CONFIRMED for ready blockers after draft review: ready blocker requires defense + remaining HP raw attack to defeat. Assign sufficient raw damage to first, then remainder next. If insufficient, apply defense to assigned amount then HP loss. No negative damage.
 Example attacker attack8/defense2/currentHP10 vs A attack3/defense1/currentHP3 and B attack2/defense2/currentHP5:
 | Target | Raw assigned | Prevented | HP damage | Outcome |
 |---|---:|---:|---:|---|
@@ -58,3 +58,6 @@ Confirmed: blocking itself does not exhaust. Preserve accumulated wounds/existin
 
 ## Post-draft decision: pooled retaliation
 Confirmed: combine blockers' combat attack damage against the one attacker and subtract its defense once. Example two attack3 blockers against defense2 ->4 damage, not2. Still simultaneous; destroyed blockers retaliate. Source-specific abilities, damage tags and exhausted modifiers require explicit rules design; no pooling across unrelated attackers/spells implied. Next review P05 ready-blocker allocation with defense+remainingHP as raw damage needed to defeat each ordered blocker.
+
+## Post-draft decision: ready-blocker allocation
+Accepted example attack8 vs ordered A defense1/remainingHP3 and B defense2/remainingHP5: raw4 defeats A; remaining raw4 deals2 HP damage to B. Attacker chooses order, engine handles amounts. P07 exhausted multiplier and conversion/rounding still unapproved. Next confirm proposed 1.5x after-defense round-up with simple non-overflow example, before trample arithmetic.
