@@ -465,3 +465,8 @@ Steve wants installed games to work without internet on the home local network, 
 Future desirable fallback: play without requiring a TV, explicitly can come later. No phone/tablet shared-board layout, hosting behavior or alternate hardware selected. Both TV platforms remain first-version requirements for the normal experience.
 
 Next: Q29 — same-household local-network participants only initially, or remote players from another location required? Then hosting, reconnect/save behavior, profiles and remaining creation/platform questions.
+
+## Q29 — Initial multiplayer location
+Confirmed: initial players are in the same house on the same network. Remote play deferred. Visitors joining locally remains a lower-priority future convenience.
+
+Next: Q33 — explain hosting options and ask whether requiring a separate home server/computer is acceptable or the game must run using only TVs and personal devices. Do not select architecture before official platform feasibility review. Then reconnect/save behavior, profiles, creation content/art and other remaining requirements.
