@@ -20,11 +20,11 @@ Later large comparative balance team is deferred and has NOT run.
 
 ## Current decision and next question
 User accepts iPad home-screen web app if secure and compatible with existing blocked browser access. Weekly native reinstalls acceptable fallback. No annual Apple fee approved. This supersedes strict iPad-native-only preference, not other platform choices.
-Next ask: is browser access disabled through Screen Time or managed-device profile? Apple documents managed full-screen Web Clips with Safari restricted, but ordinary home-screen/Screen Time compatibility unknown; verify on actual devices later. Preserve restrictions; don't assume full-screen equals security. iPad models/OS still intentionally deferred.
+Restriction source confirmed: Screen Time. User wants no URL bar/arbitrary browser navigation. No further question on source. Apple documents managed full-screen Web Clips with Safari restricted, but that does not establish ordinary Screen Time compatibility. Test home-screen launch/external links/pop-ups/imports on actual iPads later. URL bar hiding alone insufficient; optional Guided Access not a navigation filter. Preserve restrictions; don't assume full-screen equals security. iPad models/OS still intentionally deferred.
 Actual PC specs known Ryzen5/GTX1650; RAM/VRAM unverified. Need current Mac/Xcode route only if native fallback used.
 
 ## Next actions after preference
-1. Clarify restriction source, then test secure/restricted iPad web app; weekly native reinstall fallback accepted. Maintain both TVs.
+1. Prototype/test full-screen iPad web app under actual Screen Time restrictions (hardware details still deferred), no arbitrary browser navigation. If incompatible use accepted weekly signed native fallback. Maintain both TVs.
 2. Close core rules draft via worked examples (revival R01, leader access R02, combat P05–P08, blocking exhaustion). Exact card costs user deferred; don't restart endless micro-interview.
 3. Choose feasible installed-client stack after real-device spike. Proposed Python+SQLite Linux server, Flutter personal clients candidate, Android TV view, separate Roku SceneGraph.
 4. Plan/start only when user requests implementation; current chat requested planning.
