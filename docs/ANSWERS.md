@@ -496,3 +496,10 @@ Confirmed: select a household profile by tapping the name; no PIN required. Serv
 Use a household-trust model, not claims of strong authentication. Keep opponent hands off the public TV and unrelated clients; define match-seat/device association and deliberate device switching without adding a mandatory PIN against this preference. No general user-management permissions selected.
 
 Next: Q30 — confirm every player uses their own phone/tablet during matches, versus shared-device or TV-only play required initially. TV remains public board. Then Q31 TV deck-creation visibility, controls/content/art and remaining requirements.
+
+## Q30 — Player devices
+Confirmed: first version may require each player to use their own phone/tablet during matches; this is Steve's ideal setup. TV is the shared public battlefield, personal devices show private hands. Shared-device/hot-seat or TV-only private-hand match play not required initially.
+
+This does not remove original requirement to create decks from the main TV app outside matches. TV-free fallback remains deferred.
+
+Next: Q31 — is TV deck/card creation visible to everyone in the room acceptable, with personal devices used for private building? Then remaining content/art, accessibility controls, household administration, budget and first-playable milestone questions.
