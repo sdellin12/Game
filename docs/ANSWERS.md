@@ -340,3 +340,10 @@ Confirmed default: surviving creatures keep damage until healed; no automatic en
 Steve thinks persistent damage could support bigger damage values but may be harder to handle. Stat scale remains undecided; do not infer a requirement for larger numbers. UI must make accumulated damage/current survivability understandable; exact defense versus health model and healing caps remain open.
 
 Next: Q18g — attack exhaustion: does attacking exhaust a creature until the start of its owner's next turn, preventing blocking/helping defend in the meantime? Explain attack-versus-defense tradeoff. Then new-creature readiness and allied blocking details.
+
+## Q18g — Exhaustion and partial blocking
+Confirmed: attacking exhausts/taps a creature until its owner's next turn. Steve adds a system allowing exhausted creatures to block at reduced effectiveness while taking increased damage, modifying the proposed complete blocking prohibition.
+
+Candidate number: a 1.5x multiplier for damage and blocking reduction. Exact interpretation unresolved: outgoing combat damage, damage interception, effective defense, or another blocking value; whether reduction divides by 1.5; rounding, damage assignment and spillover. Do not select formulas silently or double-count increased damage and reduced defense. No final multiplier approved.
+
+Next: Q18h — clarify whether reduced blocking means lower damage dealt back to attacker or intercepting only part of incoming damage so the rest reaches the player (or another model). Then propose concrete numeric example and resolve rounding later. Persistent wounds and ordered multi-block damage remain existing requirements; check interactions during rules review.
