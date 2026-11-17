@@ -52,5 +52,10 @@ Confirmed: start with player-versus-player battles only; shared enemies/events a
 
 Unresolved extension details: which capabilities can be extended, content packs versus executable plugins, internal/developer-authored versus third-party plugins, installation/update/version compatibility, cross-device consistency and platform constraints. "Plug and play" is the desired integration experience, not a verified guarantee for arbitrary plugins or platforms. Defer technical design to the build-planning team, but preserve this as an architecture requirement from the outset. It does not authorize adding future modes to the first release.
 
-Next: Q07 — victory conditions for the initial battle mode. Q14's initial leader-role question is covered; its details remain open.
+## Q07 — Victory conditions
+Steve likes last-player-standing via player health, leader defeat, and victory-point approaches. He proposed different game modes, a simple way to incorporate different victory conditions, and possibly a unique win condition for each leader.
+
+These are alternatives under exploration, not approval of all approaches in the initial version. No primary victory condition, scoring system, mandatory leader-specific goal, or rule that defeating a leader eliminates its player has been selected.
+
+Next: Q07a — choose the initial match structure: a shared basic victory rule (with alternate modes later), a shared rule plus optional leader-specific alternate wins, or leader-specific goals as the main victory system. Clarify before discussing elimination.
 
