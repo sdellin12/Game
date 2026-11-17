@@ -273,3 +273,10 @@ Confirmed: add one to resource capacity and refill each turn. Starting capacity 
 Supersedes Q16e automatic skipping: when a player has no playable response, still give that player a Pass button, with no other gameplay action available in that response window. Do not silently skip. Playability highlighting remains. Presentation on other screens should not reveal which response options a player has; exact UI/pacing remains to design.
 
 Next: Q17b — confirm capacity growth/refill happens at the start of that player's own turn only, meaning resources spent on their turn stay spent through opponents' turns until their next turn. Then acceleration, resource-color link and remaining rules questions.
+
+## Q17b — Own-turn refresh and resource effects
+Confirmed: growth/refill happens at the start of the player's own turn. Resources spent remain spent through opponents' turns until the player's next start-of-turn refresh unless a specific effect changes that.
+
+Steve wants rare, expensive cards that add resources, possibly also a leader skill. "Rare" denotes intended limited availability here; do not infer paid rarity, packs, ownership scarcity or monetization. Exact costs/access and leader implementation undecided.
+
+Next: Q17c — distinguish temporary spendable-resource gains from permanent capacity increases; ask whether both are desired as separate effects. Temporary duration, cap/overflow, costs and balance remain unresolved. Later revisit resource colors and initial capacity.
