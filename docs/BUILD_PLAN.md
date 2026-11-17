@@ -9,7 +9,7 @@
 5. Add creation/catalog and automated artwork queue.
 6. Validate expanded color library and family usability; package first completed version.
 
-Rules drafting can proceed while deferred hardware details unavailable; no need block independent design work. No silent PWA substitution, Roku deferral or paid generator.
+Rules drafting can proceed while deferred hardware details unavailable; no need block independent design work. iPad-only web option explicitly allowed if secure/restriction-compatible; no silent global PWA substitution, Roku deferral or paid generator.
 
 ## Milestones and exit checks
 | ID | Work | Reviewable exit |
@@ -80,4 +80,7 @@ Native mobile plugin restrictions handled through signed app updates; no univers
 Read PROJECT_STATE then focused doc. Avoid default rereading 100KB historical ANSWERS. Record stable decisions and next tasks; specialists get scoped briefs/outputs. Re-review only after material changes or phase gates.
 
 ## Next user decision
-Native iPad distribution preference: consider annual Apple Developer fee, tolerate periodic free provisioning maintenance, or explicitly relax iPad native requirement for a web install. No purchase/sign-in/setup initiated. Need compatible hardware/Mac route regardless of price preference.
+iPad direction now permits secure/restriction-compatible home-screen web app; weekly native reinstalls accepted fallback. Next clarify how browser access is blocked (Screen Time vs managed profile). Test permitted full-screen client on actual iPad before selecting web or native path. Hardware/OS deferred; Mac build route necessary only if native fallback selected. No fee or restriction changes approved.
+
+### M1 updated iPad gate
+Prove web client launches after restoring existing browser restrictions and cannot open arbitrary browsing through game UI; verify hand privacy, camera/import, local connection, reconnect and read-aloud. Standalone icon alone insufficient. If blocked, evaluate accepted weekly native fallback. No general browser enablement or removal of parental controls as implicit prerequisite.
