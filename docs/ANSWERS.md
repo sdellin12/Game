@@ -146,3 +146,10 @@ Steve primarily meant ability activation unlocks after a certain number of playe
 Confirmed interpretation: turn/resource gating is a candidate for accessing powerful abilities, including the forced-obligation concept. The prior no-full-game-lock preference remains. No turn count, resource system, cooldown, escape cost or duration selected. Do not assume every leader uses identical access conditions.
 
 Next: Q10 — can any interest theme use any trait/color/play style, or should themes constrain mechanical identities? Keep detailed unlock/contract design for later rules/card planning.
+
+## Q10 — Persona and color
+Confirmed: deck "persona" (interest/theme) should be independent of color. Steve is open to proposals about assigning color values. Do not restrict themes such as crochet, robots, cryptids or fantasy to predetermined colors.
+
+Proposal presented, not yet approved: assign card color from its mechanical approach/traits rather than artwork or subject matter. Derive a deck's displayed color profile from its included cards. For example Gold could identify binding-agreement mechanics in any persona. Other colors, multi-color rules, weighting, deck restrictions, resource costs and whether a player chooses a color identity before construction remain undecided.
+
+Next: Q10a — choose whether players select colors/play styles before deck creation, have the deck's color profile emerge from selected abilities/cards, or can use either guided path. Clarify ambiguous "color value" if needed; do not assume numerical pricing or a mana cost system.
