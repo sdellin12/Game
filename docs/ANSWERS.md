@@ -388,3 +388,10 @@ Color design now needs distinguish exclusive specialties (Gold enforcing agreeme
 Pending reconciliation: earlier idea that exhausted blockers grant attackers trample-like overflow. Latest answer rejects universal trample, but does not explicitly resolve this conditional exhausted-blocker exception. Baseline interpretation: ready blockers prevent excess player damage unless attacker has trample; verify exception rather than silently discard it. Exact trample math with defense/multiple blockers still to confirm.
 
 Next: Q18n — should exhausted blockers allow overflow even when attacker lacks trample, or should they only take multiplied damage with overflow still requiring trample? Then settle remaining damage model details and readiness.
+
+## Q18n — Exhaustion and overflow working rule
+Confirmed: exhausted blockers take extra creature damage; overflow still requires the attacker to have trample. Exhaustion does not grant automatic trample. This supersedes the earlier conditional-overflow candidate.
+
+Recommendation presented for testing, not finalized by the narrowly scoped confirmation question: multiply damage after flat defense by 1.5 and round up (6 incoming minus 2 defense = 4, then 1.5 = 6). Exact multiplier, rounding, allocation and trample interaction remain playtest/rules-design proposals. Do not treat this as a proven balance point.
+
+Next: Q18o — newly played creatures' readiness: can block immediately but cannot attack until owner's next turn, unless a specific ability overrides? Then allied-blocking consent and remaining core rules. Avoid further damage-formula drilling before a coherent rules draft.
