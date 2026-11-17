@@ -684,3 +684,10 @@ Confirmed: player loses when a required draw fails because deck is empty; not im
 Use clear reading-level wording for moving deck cards to discard; avoid requiring children to know "mill." Balance with 40-card baseline, revival hand consumption and anti-lockout goals. Loss cause/re-entry eligibility and multi-card draw edge cases remain to specify. Empty deck does not itself grant automatic reshuffle.
 
 Next: opening hand and normal draw cadence — propose five opening cards, one draw at start of each own turn, as provisional playtest numbers. Ask acceptance; no rule approved until answered. Then opening redraw, player health and leader-entry draft.
+
+## Opening hand and normal draws
+Confirmed initial playtest values: five-card opening hand and one card drawn at start of each own turn. Steve notes no mana/resource cards needed and a smaller hand reduces personal-device clutter.
+
+Do not infer a five-card maximum hand size, no card-draw abilities, or an exception skipping the starting player's draw. Maximum hand size, first-turn fairness and precise start-phase ordering remain unresolved. Resource-boost cards remain allowed despite absence of mandatory resource-source cards.
+
+Next: opening redraw — propose one optional full-hand redraw before game starts: shuffle initial five back, draw five once, no cost. Ask if acceptable before adopting. Then initial health/stat scale and remaining leader/revival rules proposals.
