@@ -489,3 +489,10 @@ Next: Q34a — should household be able to deliberately save/pause a match and r
 Steve would like deliberate save/close/resume-another-day if possible, but it is not necessary. Lower-priority convenience, not an initial release blocker. Required temporary-disconnect pause/reconnect remains distinct. No persistence mechanism or server-restart recovery guarantee selected.
 
 Next: Q35 — propose household profiles stored on the server, with decks and reading preferences following each person between devices; ask whether profiles require a simple PIN versus unrestricted profile selection. Exact identity/access policy not decided. Then Q30 device allocation, Q31 TV creation privacy and remaining content/UX requirements as needed.
+
+## Q35 — Profile selection
+Confirmed: select a household profile by tapping the name; no PIN required. Server-stored decks/reading preferences following profiles across devices was recommended in the question context; specific synchronization/storage behavior not separately confirmed.
+
+Use a household-trust model, not claims of strong authentication. Keep opponent hands off the public TV and unrelated clients; define match-seat/device association and deliberate device switching without adding a mandatory PIN against this preference. No general user-management permissions selected.
+
+Next: Q30 — confirm every player uses their own phone/tablet during matches, versus shared-device or TV-only play required initially. TV remains public board. Then Q31 TV deck-creation visibility, controls/content/art and remaining requirements.
