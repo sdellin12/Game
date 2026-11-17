@@ -510,3 +510,8 @@ Steve prefers the majority of card/deck creation on each person's own device. Pe
 This changes emphasis from original phone-or-TV creation brief, but does not explicitly remove TV editor support or say whether it may be deferred. TV editor/privacy scope needs one clarification; do not silently retain a full editor as a first-release gate or remove it entirely.
 
 Next: Q31a — may full TV card/deck editing be deferred, with initial creation on personal devices and TV focused on shared match display? Then remaining content/art/UX/budget and first-playable milestone.
+
+## Q31a — TV editor deferred
+Confirmed: full TV card/deck editor deferred. Initial TV apps focus on shared match display; creation tools focus on personal phones/tablets. Both Google TV and Roku remain required from the start. This supersedes the original requirement to build/edit decks on the TV initially.
+
+Next: Q24a — card artwork creation workflow: user-uploaded pictures/drawings, built-in art/assets, generated artwork, or a combination. Do not assume AI art, paid services, local image-generation compute or rights/distribution decisions. Then family content preferences, reading assistance, household controls, budget and first playable milestone.
