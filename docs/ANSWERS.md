@@ -736,3 +736,8 @@ Required valid card design options: flip/transform creatures into alternate form
 No detailed state/cost rules selected: alternate-form representation, transforms retained wounds/stats/readiness, combined-unit prerequisites, leader compatibility, components' zones, uncombine behavior, loss/disassembly, inherited effects and balance remain open. Maintain fixed supported effects/traits and creative freedom; not unrestricted invention of executable rules.
 
 Next: clarify whether transform/combine are available across colors when a creature's concept fits, or color-restricted specialties. Then state/defeat handling proposals and revive/victory closure as needed; no detailed implementation yet.
+
+## Transform/combine color availability
+Steve accepts availability across colors when fitting the concept, and likes colors shaping what transformations do. Treat transform/combine as broadly usable supported mechanics, with effects/costs still respecting color identity, traits and balance. No element/type transformation chart or specific final-form ability selected.
+
+Next: combined creature defeat — default components go to discard together versus separate into original creatures, potentially with card-specific exceptions. Explain stakes and recommend a default only as a proposal. Then finish high-level mechanics and carry exact transformation/wound/state formulas to coherent rules draft.
