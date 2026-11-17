@@ -266,3 +266,10 @@ Confirmed direction: resources gained each turn so stronger cards become playabl
 Leader growth is a candidate system with illustrative trigger, not a selected per-kill formula. Clarify whose creatures/credit, repeatability and snowball effects later. No turn-growth number, resource name, colors/cost relation, reset/refresh schedule or banking behavior chosen.
 
 Next: Q17a — does each turn increase a refillable spending allowance, or add currency that accumulates until spent? Explain unspent-resource handling, then later off-turn spending/refresh and leader acceleration.
+
+## Q17a / Q16f — Resource refill and revised pass behavior
+Confirmed: add one to resource capacity and refill each turn. Starting capacity and maximum not selected. In context, likely each player's own turn, but refresh timing must be explicitly clarified because out-of-turn play matters.
+
+Supersedes Q16e automatic skipping: when a player has no playable response, still give that player a Pass button, with no other gameplay action available in that response window. Do not silently skip. Playability highlighting remains. Presentation on other screens should not reveal which response options a player has; exact UI/pacing remains to design.
+
+Next: Q17b — confirm capacity growth/refill happens at the start of that player's own turn only, meaning resources spent on their turn stay spent through opponents' turns until their next turn. Then acceleration, resource-color link and remaining rules questions.
