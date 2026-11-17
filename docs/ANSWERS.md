@@ -47,5 +47,10 @@ Steve prefers a leader that both influences the deck/play style and participates
 
 Do not treat openness as approval of any specific ability, customization system, progression, or multiple leader modes in the first release. Leader access/cost, passive versus activated effects, defeat/reuse and restrictions remain open. Develop concrete proposals after core gameplay is clearer.
 
-Next: Q06 — player-versus-player focus versus shared threats; then Q07 victory conditions. Q14's initial role question is covered; ask its remaining details later.
+## Q06 — Initial match scope and extensibility
+Confirmed: start with player-versus-player battles only; shared enemies/events and other modes are outside initial scope. The full app must be designed for adding features later through APIs/plugin-style extension interfaces, aiming for straightforward integration.
+
+Unresolved extension details: which capabilities can be extended, content packs versus executable plugins, internal/developer-authored versus third-party plugins, installation/update/version compatibility, cross-device consistency and platform constraints. "Plug and play" is the desired integration experience, not a verified guarantee for arbitrary plugins or platforms. Defer technical design to the build-planning team, but preserve this as an architecture requirement from the outset. It does not authorize adding future modes to the first release.
+
+Next: Q07 — victory conditions for the initial battle mode. Q14's initial leader-role question is covered; its details remain open.
 
