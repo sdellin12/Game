@@ -624,3 +624,12 @@ Confirmed: players may use published cards in their own decks and make customize
 Need later reconcile singleton identity across reskins/variants so copying does not bypass deck limits; no exact mechanical identity/fingerprint rule selected. Reuse existing artwork where applicable; don't regenerate merely because card is reused.
 
 Next: Q39 — first family-playable milestone: starter decks/small library for rules playtesting first versus minimum custom-card creator required before family trial. Both TV platforms and Android/iPad final first-version requirements remain; distinguish internal prototypes from completed first version. Then resolve remaining core preferences and prepare coherent rules proposals before build-team phase.
+
+## Q39 — Starter-deck milestone
+Confirmed: ready-made starter decks acceptable for first family playtest. Steve proposes develop decks for each color first, then add themes used to generate flavor text and images. Personal themed creation remains in full project; this sequences mechanics before themed presentation.
+
+Do not generate card art now or assume all starter decks are designed/balanced. First completed version platform requirements unchanged. Rules text stays mechanically accurate and distinct from generated flavor.
+
+Next discussion: proposed starter roster, all unapproved except prior Gold identity direction and working secret-negotiation direction. Five-color proposal: Gold integrity/cooperation (binding agreements/protection); Black cunning (private negotiation/deception); Silver daring (selected chance/resource wagers, no real-money implication); Red drive (pressure/direct damage); Green resilience (growth/healing/endurance). Exact colors/count/traits/shared-versus-exclusive effects not selected; names are suggestions, not imported MTG color rules. Ask whether this starting lineup fits before designing decks.
+
+Remaining issues for coherent draft: singleton scope/reskin identity, starting health/deck/hand sizes (may recommend provisional numbers), leader access/entry/revival details deferred to card planning, precise combat math, eligibility/priority timing, meaningful defeated participation, iPad/native install/generation feasibility and prototype acceptance checks. Do not launch build team until discovery/scope and playable draft are adequately specified.
