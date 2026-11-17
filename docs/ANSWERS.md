@@ -139,3 +139,10 @@ Confirmed direction: some cards may impose obligations without the affected play
 Steve mentioned "after a certain amount of turns or with a cost of some kind." Meaning unresolved: expiration or paid escape for the affected player versus activation delay/cost for the imposing player (or both). Do not choose an interpretation silently. No exact duration, cost, leader skill, escape rule or permanent restriction approved.
 
 Next: Q09d — clarify whether turns/cost refers to ending/escaping the obligation, activating it, or both. Later detail legal effects, impossible assistance, conflicts, counters and duration counting during rules/card planning.
+
+## Q09d — Unlock clarification
+Steve primarily meant ability activation unlocks after a certain number of played turns, or through whatever energy/mana/resource system is selected. He is open to both activation requirements and expiration/escape constraints, but did not select a specific implementation.
+
+Confirmed interpretation: turn/resource gating is a candidate for accessing powerful abilities, including the forced-obligation concept. The prior no-full-game-lock preference remains. No turn count, resource system, cooldown, escape cost or duration selected. Do not assume every leader uses identical access conditions.
+
+Next: Q10 — can any interest theme use any trait/color/play style, or should themes constrain mechanical identities? Keep detailed unlock/contract design for later rules/card planning.
