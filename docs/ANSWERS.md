@@ -188,3 +188,14 @@ Confirmed: users can choose existing deck archetypes and customize them, or buil
 Steve began "I'd like ... both" in response to ability-creation choices, but elaborated in terms of deck-building depth. Do not silently equate assembling a full deck with inventing arbitrary new mechanics. Existing building-block versus genuinely new effect creation needs explicit clarification before designing a custom rules authoring/execution system.
 
 Next: Q12a — can a user invent an ability not in the supported ability library, or does full deck building mean selecting/combining supported abilities and cards? Then Q13 balance/approval.
+
+## Q12a — Supported effects and thematic fit
+Confirmed initial scope: a defined set of card rules/effects assigned to cards, rather than arbitrary user-invented executable mechanics.
+
+Cards' actual behavior and text should fit their identity. Steve's examples: a big dragon should not receive the same effect as a mouse or a sneaky attack; a cat should not fly like a winged creature. Record these as intended thematic coherence, not a finalized absolute species blacklist or prohibition on fantasy exceptions.
+
+Candidate implementation approaches: AI creates appropriate card text, or categories/subcategories define permitted behavior/abilities. No AI dependency, service, generation method or taxonomy selected. Need to distinguish readable descriptive/flavor text from authoritative rules text; proposals must preserve exact correspondence between displayed rules and supported executable effects.
+
+Persona remains independent of color; thematic ability compatibility introduces a separate constraint to resolve with free theme creation. Need clarification on user-approved extraordinary traits (e.g. winged cat) versus automatic defaults.
+
+Next: Q12b — should supported abilities be gated by explicit traits (e.g. wings permit flight), with fantasy exceptions possible by choosing a fitting trait, rather than permanently restricted by species? Then Q13 balance/approval.
