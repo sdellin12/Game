@@ -123,3 +123,12 @@ Steve also wants specific cards (e.g. instant-like cards or creature description
 Steve introduced ideas for "mana colors" tied to play styles beyond matching costs or elemental identities. No colors, resources, factions, restrictions or mechanics selected yet.
 
 Next: invite Steve to explain his mana-color/play-style ideas (adaptive ordering toward Q17 and theme mechanics). Afterward return to a concrete "require truth" example and unresolved Q10–Q13 creation questions.
+
+## Q09b / Q17 — Gold and structured agreements
+Steve proposes colors representing character traits. Candidate: Gold = honesty/integrity. Cards could enforce other players keeping bargains through on-screen selection of terms. Examples: help attack, help defend, or do not attack a specified player for the next turn. Explore support across different card types.
+
+This clarifies "require truth" toward explicit game-state agreements rather than detecting truth in conversation. Ordinary promises remain breakable; qualifying card effects are the proposed exception. Gold name/identity is a candidate, not a completed color/resource system. Colors as traits does not establish costs, resource generation, alignment restrictions or exclusive mechanics.
+
+Unresolved: voluntary acceptance versus imposed obligation, exact valid terms/targets/duration, rewards/costs, how enforcement works, what happens if assistance is impossible, conflicting promises and cancellation. No arbitrary natural-language contract engine approved.
+
+Next: Q09c — must all affected players explicitly accept a binding agreement before it activates, or may some cards impose obligations without consent? Then refine color identities and theme-to-mechanics mapping. Keep detailed agreement timing/edge cases for card/rules design.
