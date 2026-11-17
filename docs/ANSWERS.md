@@ -29,5 +29,10 @@ Proposed tutorial approaches:
 
 Interpretation limits: examples do not approve MTG's resource system, specific archetypes, or any particular deck-construction rules. "AI" opponent implementation is undecided; do not assume generative AI, a paid service, or a full general-purpose computer opponent. Questionnaire behavior, alternative creation paths, scenario structure and guidance controls require design later.
 
-Next: Q03 — typical and supported player count.
+## Q03 — Player count
+Steve: "Ideally anyone that wants to play. But regularly there should be four players"
+
+Confirmed: four players is the regular match size. Aspiration: accommodate people who want to join, including larger groups. No numerical maximum or unlimited-player guarantee has been agreed. Minimum count, supported range and scaling rules remain open; revisit after turn structure and pacing are clearer.
+
+Next: Q04 — desired duration of a regular four-player match.
 
