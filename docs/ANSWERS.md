@@ -238,3 +238,10 @@ Working behavior: newest pending response resolves first, then remaining pending
 Proposed UI/training, not a selected layout: visible pending-effect list, target indication, next-to-resolve highlight and conditional outcome preview. A preview must not expose hidden cards or promise an unchangeable outcome.
 
 Next: Q16c — after one effect resolves, can players add new responses before the next pending effect resolves, or does the existing chain finish without additions? Then multiplayer priority/pacing and Q17 resources.
+
+## Q16c — Responses between resolutions
+Confirmed working rule: after one pending effect resolves, players get another opportunity to respond before the next effect resolves. New responses follow newest-first resolution.
+
+Steve explicitly wants this changeable in the future. Preserve revisability in rules architecture; do not assume an in-match toggle or arbitrary switching during a saved match. Proposed implementation guidance: separate timing policy from card UI and specify ruleset compatibility/version behavior during build planning.
+
+Next: Q16d — recommend a fixed rotating response order rather than fastest-tap priority; clarify acceptance. Then pacing controls and Q17 resources. Exact first responder, pass/reset semantics and timer remain undecided.
