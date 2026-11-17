@@ -692,9 +692,9 @@ Do not infer a five-card maximum hand size, no card-draw abilities, or an except
 
 Next: opening redraw — propose one optional full-hand redraw before game starts: shuffle initial five back, draw five once, no cost. Ask if acceptable before adopting. Then initial health/stat scale and remaining leader/revival rules proposals.
 
-## Opening redraw — Selective replacement
-Steve accepts a free initial redraw, with preference for discarding unwanted opening cards and drawing that many, retaining the wanted cards. In context one free opportunity before match; no repeated unlimited redraw or subsequent penalty schedule selected.
+## Opening redraw — Selective replacement and reshuffle
+Confirmed: one free opening redraw in context; keep wanted cards, replace unwanted cards with equal number, without penalty. Steve explicitly confirms unwanted cards are reshuffled into deck, not sent to graveyard. No repeated unlimited redraws or later penalty schedule selected.
 
-Destination ambiguous: "discard" may mean graveyard or simply rejecting cards for reshuffle. Need clarify. Proposed beginner-friendly rule: set unwanted cards aside, draw equal replacements from remaining deck, then shuffle rejected cards back, preventing immediate repeats and graveyard seeding. This precise sequence is not yet approved.
+Exact order of reshuffling versus drawing replacements is not yet confirmed. Candidate for rules draft: set rejected cards aside, draw equal replacements, then shuffle rejected cards back to avoid instant redraw of same card. Do not mark that exact sequence user-approved; can propose with full rules draft rather than continue drilling now. No discard/graveyard setup triggers.
 
-Next: ask acceptance of set-aside/draw/shuffle-back versus actual graveyard discard for free opening redraw. Then health/stat scale and remaining rules synthesis. Do not trigger discard/enter-graveyard abilities during setup without explicit rule choice.
+Next: propose initial player health value as adjustable playtest baseline, noting it depends on creature stat scale and duration; no health value selected yet. Then remaining core timing/leader/revival choices and coherent rules draft, preserving details explicitly deferred by Steve.
