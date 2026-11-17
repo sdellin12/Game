@@ -652,3 +652,12 @@ Next: ask whether Steve prefers card-specific visible trait vulnerabilities over
 Steve accepts exploring explicit card-specific trait vulnerabilities while colors stay focused on play styles, and asks to move to the next item. No universal color matchup chart. Earlier goal remains: intuitive explanation and low beginner complexity. No damage bonus/tag roster/mandatory weakness chosen. Do not continue detailed weakness discussion now; near-ten color roster remains for proposed rules/card design.
 
 Next: singleton identity across custom variants — should renamed/reillustrated mechanically identical cards count as the same card for one-copy-per-deck limits? Recommend yes, independent of display names/art. Define substantial mechanical changes and loopholes later rather than assuming all stat tweaks create distinct legal cards. Then deck color mixing/size and remaining high-level preferences before synthesis.
+
+## Singleton variants — Small differences allowed
+Steve: "As long as they aren't identical. Even small changes should be fine. Kind of similar to how mtg goes by card name instead of character."
+
+Confirmed direction: small gameplay differences can distinguish variants for singleton; same character can appear across distinct cards. Do not impose a substantial-difference threshold. Working interpretation of "aren't identical" in context: changing only name/art does not distinguish mechanically identical copies; this interpretation was stated back to user, not a separate explicit clarification answer. Do not silently adopt a character-wide exclusion or assume name-only uniqueness overrides the nonidentical condition.
+
+Need later define canonical card identity and validation for custom variants; evaluate near-duplicate spam during balance review without overriding permissive preference. No exact hashing/identity algorithm selected.
+
+Next: deck color mixing — one-color-only initially versus multicolor decks allowed from outset; propose up to two colors plus generic cards as a starting choice, without assuming it approved. Then provisional deck/hand/health values and discovery synthesis.
