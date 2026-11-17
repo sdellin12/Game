@@ -333,3 +333,10 @@ Accepted example: 5 attack versus two blockers with 3 defense each deals 3 to th
 Unresolved: exact defense/damage model, special-effect interactions, when order locks, and overflow abilities. No default overflow damage to defending player approved.
 
 Next: Q18f — damage persistence: clear surviving creatures' damage at end of each player's turn versus keep wounds until healed/removed. Explain strategic differences without assuming MTG cleanup rules.
+
+## Q18f — Persistent damage
+Confirmed default: surviving creatures keep damage until healed; no automatic end-of-turn damage clearing. Automatic turn-end recovery, referenced to MTG, is a possible alternate mode for later exploration, not initial scope.
+
+Steve thinks persistent damage could support bigger damage values but may be harder to handle. Stat scale remains undecided; do not infer a requirement for larger numbers. UI must make accumulated damage/current survivability understandable; exact defense versus health model and healing caps remain open.
+
+Next: Q18g — attack exhaustion: does attacking exhaust a creature until the start of its owner's next turn, preventing blocking/helping defend in the meantime? Explain attack-versus-defense tradeoff. Then new-creature readiness and allied blocking details.
