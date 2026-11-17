@@ -3,7 +3,7 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Q07c confirmed as a working rule. Q08 requires continued participation plus conditional re-entry. Q08a remains undecided; Steve proposed a revive card as a candidate. Next: Q08b, explore who may use a revive card (defeated player, active player, or both). Do not force a final choice if uncertain; retain candidates for later prototype comparison. Later define participation, access, limits/reset state and final victory timing. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Q07c confirmed as a working rule. Q08 requires continued participation plus conditional re-entry. Re-entry mechanism under exploration. Latest proposal: leader revive abilities with selectable conditions/costs during leader creation; examples involve giving hand cards to another player or discarding the whole hand. Next: Q08c, clarify whose leader revives whom and whose hand pays. Do not force final choices; retain candidates for later comparison. Then participation, empty-hand eligibility, retained state, limits and final victory timing. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
@@ -30,6 +30,8 @@ Ask one question per turn. Clarify consequential ambiguity without inventing req
 - Revised leader proposal: outside battle initially, possibly with a passive ability; a specific condition allows entry for a major attack/effect. Condition, passive details, duration, reuse and strength remain unresolved.
 
 - Defeated players must have a way to participate and conditionally re-enter active battle. Trigger, participation actions, ally involvement, return state/cost/limits and final victory timing remain undecided. Preserve the 40–60 minute match target when proposing rules.
+
+- Leader-linked revival is the latest candidate: possible choice of revive condition during leader creation, with giving away/discarding hand cards as illustrative costs. Ownership/target, cost payer, selection limits and exact rules are unconfirmed. Revive cards have not been conclusively rejected.
 
 ## Open decisions
 Remaining reading-support details, supported player-count range and larger-group/tutorial duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
