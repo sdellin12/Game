@@ -528,3 +528,12 @@ Simple card creator controls requested:
 "3D model" here is an art-style example, not a requirement for interactive 3D assets. Camera permissions/import processing, cropping/background cleanup, visual prompt controls, text/name generation and preview/save UX remain to design. Generated art must not define executable rules; exact rules text should reflect selected supported effects.
 
 Next: Q38a — whether AI art may use a paid online service with a budget or must have no recurring/per-image cost. Explain generation compute/services can be distinct from local match hosting; do not assume user's ChatGPT subscription covers an embedded API. Then content/accessibility/controls and milestone.
+
+## Q38a — No paid image-generation usage
+Confirmed: no ongoing/per-image service costs. Steve can consider a local image generator if feasible; asks whether linking out to ChatGPT/Gemini avoids API fees.
+
+Research 2026-11-17: ChatGPT Plus image generation is included within app limits, ordinary API usage billed separately (https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus). Participating-tool allowance sharing exists for eligible tools but custom image-generation eligibility not established; do not assume arbitrary app integration. Gemini supports image generation without Google AI plan with usage limits (https://support.google.com/gemini/answer/16275805) and image downloading (https://support.google.com/gemini/answer/14286560).
+
+Proposal: generate a prompt in card creator, copy it, open chosen consumer service, user generates/downloads image, then imports it. No paid API call; user-mediated external workflow, not automatic generation/return. Availability/account/age restrictions and limits apply; do not require children to hold external AI accounts. Local generation would support a more integrated path if available hardware permits; storage capacity alone insufficient to establish feasibility.
+
+Next: ask CPU/RAM/GPU and GPU VRAM of Linux server or another available generation machine, allowing details to be deferred. Then finalize preferred fallback and remaining content/accessibility/budget/milestone discovery. Do not pick a local model before hardware verification.
