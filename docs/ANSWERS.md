@@ -42,5 +42,10 @@ Confirmed: Steve loves singleton format and wants a leader of the deck. No separ
 
 Unresolved: singleton scope/exceptions, deck size, whether differently themed versions of the same mechanical card count as duplicates; leader abilities, availability, battlefield role, defeat/reuse and deck-building restrictions. Do not assume a command zone, commander tax, always-active powers or any particular leader implementation.
 
-Next: Q05a/Q14 — ask which leader role Steve prefers, before moving on to other gameplay structure questions.
+## Q05a / Q14 — Leader role
+Steve prefers a leader that both influences the deck/play style and participates in battlefield combat. This is the initial design direction. He is open to cool proposals and possibly different leader mechanics players could choose or add eventually.
+
+Do not treat openness as approval of any specific ability, customization system, progression, or multiple leader modes in the first release. Leader access/cost, passive versus activated effects, defeat/reuse and restrictions remain open. Develop concrete proposals after core gameplay is clearer.
+
+Next: Q06 — player-versus-player focus versus shared threats; then Q07 victory conditions. Q14's initial role question is covered; ask its remaining details later.
 
