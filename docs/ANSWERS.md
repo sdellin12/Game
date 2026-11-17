@@ -153,3 +153,12 @@ Confirmed: deck "persona" (interest/theme) should be independent of color. Steve
 Proposal presented, not yet approved: assign card color from its mechanical approach/traits rather than artwork or subject matter. Derive a deck's displayed color profile from its included cards. For example Gold could identify binding-agreement mechanics in any persona. Other colors, multi-color rules, weighting, deck restrictions, resource costs and whether a player chooses a color identity before construction remain undecided.
 
 Next: Q10a — choose whether players select colors/play styles before deck creation, have the deck's color profile emerge from selected abilities/cards, or can use either guided path. Clarify ambiguous "color value" if needed; do not assume numerical pricing or a mana cost system.
+
+## Q10a / Q12 — Guided creation and color access
+Confirmed: a build wizard should help create decks and cards, ask questions to discover play styles, and provide deck suggestions based on answers. This extends the earlier questionnaire/tutorial requirement. Recommendation/generation implementation is not selected; do not assume generative AI.
+
+Confirmed direction: some "card types" should be locked to particular colors, while generic no-color cards should be usable by everyone. MTG Earthquake/Fireball and Sol Ring were references for color-specific versus universal access, not requests to copy those cards, names, power levels or mechanics. Persona remains independent of color.
+
+Ambiguity: "card types" may mean specific effects/abilities or broad categories such as creatures/instant-like cards. Need clarification. No complete color roster, deck color identity, mixed-color rule, leader restriction, card cost or generic-card balance system selected.
+
+Next: Q10b — clarify whether color locks apply to particular effects (e.g. Gold binding bargains) while broad card categories remain available to all colors, versus locking whole categories. Then clarify who defines a deck's allowed colors and the creation workflow.
