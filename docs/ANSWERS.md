@@ -757,3 +757,10 @@ Confirmed combination direction: injured components proportionally reduce combin
 Proposed formula (not yet approved): sum component current health / sum component maximum health; combined current health = combined maximum health times that ratio. Example equal 20-max components at 10/20 and 20/20 -> aggregate 30/40 = 75%; if combined max 40, starts at 30. Weight by max health, not average percentages, so tiny components don't count as much as large ones. Combined max-health formula, rounding, exhaustion aggregation, buffs and split-state reversal remain unselected.
 
 Next: confirm weighted aggregate-health formula with concrete 20+20 example. Then keep detailed combine stats/state calculations for coherent rules draft and return to remaining revival/victory closure before build planning.
+
+## Proportional combined health — Formula accepted
+Confirmed: combined creature starts at fraction sum(component current health) / sum(component maximum health) of its combined maximum health. Equal-max example 10/20 + 20/20 -> 75% accepted. Components weighted by maximum health, not equally averaged percentages.
+
+Combined max stats, rounding, buff treatment, exhaustion aggregation and separation mapping remain for rules/card design. No automatic healing from combine and no final numerical card stats selected.
+
+Next: one unresolved match-end boundary needed despite revival-detail deferral: when only one active player remains, does match end after current effects/responses resolve, or give defeated players a final revival window? Recommend a clearly bounded final opportunity so returns do not postpone victory indefinitely. Ask preference one at a time; exact revival costs/limits still deferred to card planning. Then consolidate discovery and invoke requested second build-planning team once high-level open issues addressed.
