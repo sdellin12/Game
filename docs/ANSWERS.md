@@ -206,3 +206,12 @@ Confirmed: fantasy exceptions through appropriate traits (e.g. a winged cat able
 Working direction: traits support thematic ability eligibility without rigid real-world species restrictions. Exact trait taxonomy, combination limits, trait/effect/color interactions and UI remain to design. No automatic entitlement to stronger cards from adding more traits approved; balance mechanism still unresolved.
 
 Next: Q13 — how to balance custom cards: enforce common power/cost limits, require household review, or offer balanced versus experimental creation modes. Present a concrete recommendation without assuming any selected approach.
+
+## Q13 — Balance boundaries and later research phase
+Confirmed: balance limits required for strength, defense, stats and effects, while creature design/concepts should remain creatively unrestricted. Steve's example: a glass-cannon Godzilla with Wolverine claws is acceptable but may require small size or a major weakness. Do not enforce lore-based power entitlement from names/art; exact size mechanics are not approved.
+
+Tradeoffs such as costs, fragility and weaknesses are candidates, not a finalized points formula. No experimental/unbalanced match mode was explicitly approved in this answer. Need to validate ability combinations as well as individual stats; no claim of guaranteed balance.
+
+Deferred user request: eventually convene a very large expert subagent team to study Pokemon, Yu-Gi-Oh!, Elestrals and MTG for lessons toward strong balance. Explicitly not now. Plan this as a later comparative research/rules review phase after a concrete draft exists, with targeted official-source research, synthesis, simulation/playtests and iterative tuning. Do not treat the large team as already convened or research as completed; exact team size and method still open. This is an in-project future phase, not a scheduled automation request.
+
+Next: Q15 — normal turn structure: sequential player turns with other players able to intervene versus simultaneous planning/rounds. Initial leader role already covered by Q14; access details remain deferred. Then Q16 reaction timing and Q17 resources.
