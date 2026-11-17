@@ -40,7 +40,7 @@ Updated 2026-11-17. Canonical concise requirements after discovery. Historical a
 ## Combat
 - Creatures attack players; attackers may split across opponents.
 - Defender chooses blockers; multiple creatures can block one attacker.
-- Attacker orders blockers; app allocates sufficient damage to defeat first then remainder next. Combat damage/retaliation simultaneous, so defeated blockers still retaliate.
+- Attacker orders blockers; app allocates sufficient damage to defeat first then remainder next. Combat damage/retaliation simultaneous, so defeated blockers still retaliate. Combine all blockers' attack damage against their attacker, then apply that attacker's defense once; scope is that one combat group, not unrelated effects.
 - Creatures have attack, flat damage-reducing defense, and persistent health. Example 6 attack vs defense2 deals 4 health damage.
 - Health bar at top; attack/defense at bottom. Specialized per-creature attack menus deferred.
 - Damage remains until healed. Auto end-turn recovery is possible later mode.
