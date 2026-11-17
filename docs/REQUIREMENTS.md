@@ -63,7 +63,7 @@ Updated 2026-11-17. Canonical concise requirements after discovery. Historical a
 - After defeat outside effects wait until owner's next turn (owner interpretation stated back); exact phase and passive while summoned unresolved.
 - Transform/flip alternate forms and combine/group creatures are valid supported mechanics across fitting colors; color shapes effects.
 - Transform preserves accumulated damage and readiness. Mapping when max health changes unselected.
-- Combined current health = combined max health × sum(component current health)/sum(component max health). Weighted fraction accepted. Combined max stats and rounding unselected.
+- Combined current health = combined max health × sum(component current health)/sum(component max health). Weighted fraction accepted. Combined is exhausted if any component exhausted; immediate attack only if every component was already attack-eligible. Combined max stats and rounding unselected.
 - Destroying combined creature destroys/discards all components unless explicit survival effect. Separate state and non-destroy removal cases unresolved.
 
 ## Creation, content and accessibility
@@ -114,3 +114,6 @@ User accepts secure web app on iPads, whose general browser access is blocked, a
 ## iPad restriction source confirmed
 Browser access blocked through Screen Time, not confirmed managed-device enrollment. User accepts web route if URL-bar/arbitrary-browser access can be blocked. Do not claim managed Web Clip documentation proves ordinary Screen Time support or full-screen display equals security. Prototype must test actual iPad OS with restrictions restored: home-screen launch, external link/pop-up/navigation behavior, imports/camera and reconnect. Keep in-app links/assets first-party/local; no arbitrary URL entry. Existing browser restriction preserved; weekly signed-native reinstall fallback accepted. Native wrapper with allowlisted embedded webview is another candidate only if needed, and still requires native signing/maintenance.
 Guided Access can restrict to one app, but is only optional extra containment and not proof that web navigation inside app is blocked. No parental settings changed during planning. Official reference https://support.apple.com/en-gb/111795 .
+
+## Transformation turn-ending proposal
+User proposes transformation might end player's turn. Not finalized: universal rule versus particular high-impact effects, transform versus combine scope, own-turn activation restrictions and response/cleanup timing need clarify. Existing combination readiness rule now accepted. Do not automatically end another player's turn for reactive transformation or skip required response/cleanup handling.
