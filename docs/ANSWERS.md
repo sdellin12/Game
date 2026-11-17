@@ -379,3 +379,12 @@ Confirmed: defense reduces incoming damage by its value. Accepted example: 8 hea
 Steve also wants a trample mechanic and says "This should be the standard unless we add cards ... change the specific condition." Ambiguity: standard refers to defense model alone or also to universal overflow. Clarify before adopting global trample.
 
 Next: Q18m — should every attack pass damage exceeding blockers' defense and remaining health to the defending player by default, or only attacks with an explicit trample ability? Use 8 attack vs one ready blocker with 2 defense/3 remaining health: proposed universal overflow would prevent 2, defeat blocker with 3, deal remaining 3 to player. This math is a proposal pending confirmation, not an approved general allocation formula. Mixed/multiple blockers and exhausted multiplier remain to reconcile.
+
+## Q18m — Trample is card-specific
+Confirmed: trample/overflow is not universal; it appears on specific cards. It may be more common in a suitable color and less common in others, using MTG green as an analogy rather than selecting green or importing MTG's color roster.
+
+Color design now needs distinguish exclusive specialties (Gold enforcing agreements) from shared mechanics weighted toward particular colors (trample). Do not interpret every color specialty as exclusive.
+
+Pending reconciliation: earlier idea that exhausted blockers grant attackers trample-like overflow. Latest answer rejects universal trample, but does not explicitly resolve this conditional exhausted-blocker exception. Baseline interpretation: ready blockers prevent excess player damage unless attacker has trample; verify exception rather than silently discard it. Exact trample math with defense/multiple blockers still to confirm.
+
+Next: Q18n — should exhausted blockers allow overflow even when attacker lacks trample, or should they only take multiplied damage with overflow still requiring trample? Then settle remaining damage model details and readiness.
