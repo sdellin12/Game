@@ -79,5 +79,8 @@ Confirmed: defeated players should retain a way to participate and be able to re
 
 This adds a qualification to the working zero-health/last-player-standing rule: zero health removes a player from active battle but need not permanently eliminate them. Need to define when victory is final relative to eligible returns, and prevent repeated returns from undermining the 40–60 minute target. These are design issues, not approved solutions.
 
-Next: Q08a — should re-entry be earned by the defeated player's own actions, granted through another player's help/deal, or allow both? Later clarify participation, limits/state and victory timing.
+## Q08a — Re-entry mechanism exploration
+Steve is unsure whether return should be earned independently, enabled by another player, or both, and wants to work through it. Candidate idea: a revive card of some sort. This does not select a card type, make revive cards the only return path, or resolve who can play them.
+
+Next: Q08b — explore whether a defeated player can use a revive card themselves, whether an active player must use it on them, or both. If undecided, retain candidates for concrete prototype comparison rather than forcing a final choice. Participation while defeated, availability/access to revive effects, return limits/state and victory timing remain open.
 
