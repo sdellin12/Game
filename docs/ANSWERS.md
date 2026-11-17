@@ -451,3 +451,10 @@ Confirmed initial audience: household only. Future desirable convenience: visito
 QR code may link to platform-appropriate installation/join instructions; do not promise one-step installation on all devices before verifying Android/iPad/TV constraints. Download versus room join are distinct steps to design later. No guest account/cloud service choice approved.
 
 Next: Q26 — first TV platform priority: Google TV, Roku, or both required initially? Android phones and kids' older iPads remain requested personal-device support; iPad hardware details deferred. Then Q28 offline operation and Q29 location.
+
+## Q26 / Q27 — Required TV platforms
+Confirmed: both Google TV and Roku must work from the start. Household devices: Google TV Streamer in bedroom; Roku TV in living room. Do not defer either platform by default. Android phones and older iPads remain personal-device requirements; exact iPad details intentionally deferred.
+
+Implementation still undecided. Build-planning team must verify current official platform capabilities, installation/distribution, networking and remote/input constraints before choosing an architecture; do not assume shared native binary, runtime, browser availability or one-click installation.
+
+Next: Q28 — must installed matches work entirely without internet while home Wi-Fi/local network remains available? Distinguish gameplay/local content from optional future content generation/downloads. Then remote play/hosting requirements.
