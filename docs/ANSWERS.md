@@ -503,3 +503,10 @@ Confirmed: first version may require each player to use their own phone/tablet d
 This does not remove original requirement to create decks from the main TV app outside matches. TV-free fallback remains deferred.
 
 Next: Q31 — is TV deck/card creation visible to everyone in the room acceptable, with personal devices used for private building? Then remaining content/art, accessibility controls, household administration, budget and first-playable milestone questions.
+
+## Q31 — Creation-device priority
+Steve prefers the majority of card/deck creation on each person's own device. Personal phones/tablets are the primary creation experience.
+
+This changes emphasis from original phone-or-TV creation brief, but does not explicitly remove TV editor support or say whether it may be deferred. TV editor/privacy scope needs one clarification; do not silently retain a full editor as a first-release gate or remove it entirely.
+
+Next: Q31a — may full TV card/deck editing be deferred, with initial creation on personal devices and TV focused on shared match display? Then remaining content/art/UX/budget and first-playable milestone.
