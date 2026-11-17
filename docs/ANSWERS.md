@@ -252,3 +252,17 @@ Confirmed: fixed order around the table for response/pass opportunities, rather 
 Unresolved details: who starts each response window, rotation direction, reset after new responses, pass persistence, simultaneous triggers, pacing/auto-pass and private-information leakage through prompts. Defer these detailed proposals to rules/UX planning; do not assume an automatic timer or skip on inability to act.
 
 Next: Q17 — resource-system preference. Explain predictable growing/refilling allowance, resource cards drawn from deck, and earned/banked resources as options without selecting a system. Pacing controls remain open for later UX questions.
+
+## Q16e — Playability and automatic passing
+Confirmed: highlight or otherwise mark cards legally playable during the current turn/window, referencing MTG Arena. Automatically skip players with no response available.
+
+Design interpretation to validate: use all legal response actions, costs, targets, timing and existing restrictions to determine availability, rather than card-type presence alone. If the rules later allow non-card response abilities, account for those too. No automatic skipping when a player has a legal response but merely has not acted, and no default timer approved.
+
+Privacy consideration for later UX design: auto-pass can reveal that a player currently has no legal response; do not expose the underlying hidden cards or the reason. Desired treatment of this inference remains unresolved.
+
+## Q17 — Growing resources and acceleration
+Confirmed direction: resources gained each turn so stronger cards become playable as the game builds; cards can accelerate resource growth. Steve proposed each leader also having an additional way to grow resources, e.g. an aggressive leader gains resources per creature killed.
+
+Leader growth is a candidate system with illustrative trigger, not a selected per-kill formula. Clarify whose creatures/credit, repeatability and snowball effects later. No turn-growth number, resource name, colors/cost relation, reset/refresh schedule or banking behavior chosen.
+
+Next: Q17a — does each turn increase a refillable spending allowance, or add currency that accumulates until spent? Explain unspent-resource handling, then later off-turn spending/refresh and leader acceleration.
