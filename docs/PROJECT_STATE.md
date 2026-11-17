@@ -3,7 +3,7 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Q07c confirmed as a working rule. Next: Q08, post-defeat participation. Then leader-entry design and remaining gameplay questions. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01–Q05 and initial Q14 leader role covered. Q06 answered. Q07c confirmed as a working rule. Q08 requires continued participation plus conditional re-entry. Next: Q08a, whether return is earned independently, enabled by another player's help/deal, or both. Later define actions, limits/reset state and final victory timing. Singleton scope/exceptions, deck size and detailed leader rules need later clarification. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
@@ -26,8 +26,10 @@ Ask one question per turn. Clarify consequential ambiguity without inventing req
 
 - Initial match scope: player-versus-player battles only. Future modes/features must be supported by intentionally designed API/plugin-style extension interfaces. Exact extension boundaries and plugin types remain open for build planning; do not promise arbitrary runtime plugins across platforms or add future modes to the initial scope.
 
-- Initial victory structure: one shared goal only. Revised direction supersedes leader-defeat candidate: players are attacked; creatures/cards attack and defend (MTG reference, not wholesale rule adoption). Working rule confirmed: zero player health defeats that player; last remaining player wins. Steve explicitly leaves this open to future revision. Starting health and simultaneous-defeat rules remain open. Other victory modes and leader-specific goals are deferred.
+- Initial victory structure: one shared goal only. Revised direction supersedes leader-defeat candidate: players are attacked; creatures/cards attack and defend (MTG reference, not wholesale rule adoption). Working rule confirmed: zero player health defeats that player; last remaining player wins. Steve explicitly leaves this open to future revision. Starting health and simultaneous-defeat rules remain open. Subsequent Q08 requires ongoing participation and conditional re-entry after defeat, so define final victory timing relative to possible returns; do not treat zero health as permanent elimination. Other victory modes and leader-specific goals are deferred.
 - Revised leader proposal: outside battle initially, possibly with a passive ability; a specific condition allows entry for a major attack/effect. Condition, passive details, duration, reuse and strength remain unresolved.
+
+- Defeated players must have a way to participate and conditionally re-enter active battle. Trigger, participation actions, ally involvement, return state/cost/limits and final victory timing remain undecided. Preserve the 40–60 minute match target when proposing rules.
 
 ## Open decisions
 Remaining reading-support details, supported player-count range and larger-group/tutorial duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
