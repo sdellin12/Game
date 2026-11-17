@@ -400,3 +400,10 @@ Next: Q18o — newly played creatures' readiness: can block immediately but cann
 Confirmed working default: newly played creatures may block immediately but cannot attack until their owner's next turn. Specific abilities can permit immediate attacks. Exact control-change timing and naming of the exception remain unselected; no wholesale adoption of MTG summoning rules.
 
 Next: Q18p — allied-blocking consent: should the defending player accept another player's offered blockers, or can helpers intervene without permission? This concerns ordinary helping, distinct from card effects that may force obligations. Then remaining core rules (randomness, collection/progression, scope/platforms).
+
+## Q18p — Consent and secret negotiation
+Confirmed: ordinary help defending requires asking/permission from the defending player. Requests may be private between participants on their devices, without alerting other players.
+
+Unresolved boundary: request/acceptance/secrecy versus actual committed combat actions. Public battlefield requirement suggests actual blocking must become visible before resolution; do not assume secretly resolving blockers or hiding relevant public actions. No general private chat, pre-authorized betrayal, timing extension, or private offer revealing hidden cards approved.
+
+Next: Q18q — confirm request/negotiation may stay private but committed blockers become public before resolution, giving others their normal response opportunity. Then move beyond detailed combat to Q19/Q20 combo limits/randomness and remaining discovery.
