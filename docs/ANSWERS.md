@@ -764,3 +764,8 @@ Confirmed: combined creature starts at fraction sum(component current health) / 
 Combined max stats, rounding, buff treatment, exhaustion aggregation and separation mapping remain for rules/card design. No automatic healing from combine and no final numerical card stats selected.
 
 Next: one unresolved match-end boundary needed despite revival-detail deferral: when only one active player remains, does match end after current effects/responses resolve, or give defeated players a final revival window? Recommend a clearly bounded final opportunity so returns do not postpone victory indefinitely. Ask preference one at a time; exact revival costs/limits still deferred to card planning. Then consolidate discovery and invoke requested second build-planning team once high-level open issues addressed.
+
+## Final revival window — Accepted
+Confirmed: when only one active player remains, provide one clearly bounded final opportunity for defeated players to meet revival conditions; if nobody returns, declare winner. Duration, resolution procedure, eligibility, simultaneous defeat, repeat-window abuse and exact revival costs remain proposals to resolve in coherent rules draft. Do not infer timed seconds or unlimited post-victory returns.
+
+Main high-level discovery interview complete. Begin user-requested second expert team for build planning, including platform feasibility, coherent rules draft/open decisions, family UX and staged delivery. Distinguish accepted requirements from proposed defaults; exact costs/card formulas explicitly deferred should not be treated as missing user intent requiring endless interview. Ask next clarification only for consequential product tradeoffs discovered in planning. No implementation requested yet.
