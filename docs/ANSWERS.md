@@ -537,3 +537,16 @@ Research 2026-11-17: ChatGPT Plus image generation is included within app limits
 Proposal: generate a prompt in card creator, copy it, open chosen consumer service, user generates/downloads image, then imports it. No paid API call; user-mediated external workflow, not automatic generation/return. Availability/account/age restrictions and limits apply; do not require children to hold external AI accounts. Local generation would support a more integrated path if available hardware permits; storage capacity alone insufficient to establish feasibility.
 
 Next: ask CPU/RAM/GPU and GPU VRAM of Linux server or another available generation machine, allowing details to be deferred. Then finalize preferred fallback and remaining content/accessibility/budget/milestone discovery. Do not pick a local model before hardware verification.
+
+## Q38b / Artwork — ChatGPT Plus workflow and art consistency
+Steve has ChatGPT Plus and prefers using it for image generation without API fees. Available alternative generation hardware is his existing PC; prior context lists Ryzen 5 and GTX 1650, exact RAM/VRAM not verified. Do not ask him to repeat known specs or assume local model feasibility.
+
+Requested: reusable prompt assembled from card data, art-style selection, mood selector (examples fun/funny, spooky), and a fixed portion ensuring consistent game-card composition/template fit. No specific final dimensions, frame or style taxonomy chosen.
+
+Working generation path: copy generated prompt, open ChatGPT on user's account, manually generate/download, import artwork. Plus image generation within its limits is separate from ordinary paid API use (official reference https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus). Do not imply arbitrary app integration, automatic result return or sharing adult login with children.
+
+Recommendation pending acceptance: generate artwork only, with fixed aspect/composition rules; app renders uniform frame, live health, attack/defense, name and reading-level-correct rules. This avoids baking mutable game text/stats into image pixels. Consistency prompt improves composition but cannot guarantee exact layouts by itself.
+
+Illustrative prompt schema (not final art specification): subject/persona; traits/appearance; visual style; mood; scene/ability cues; fixed output aspect ratio and safe framing; clear subject at small size; no text, numbers, card border or UI. Mechanical card data used as visual cues must not override supported rules.
+
+Next: confirm artwork-only generation with app-rendered consistent frame/text/stats versus generating entire card image. Then remaining content/accessibility/controls and initial milestone. Local image generator remains optional later, no additional hardware requested.
