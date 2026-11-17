@@ -3,7 +3,7 @@
 Updated: 2026-11-17. Phase: discovery interview. No gameplay rules or technology stack approved.
 
 ## Resume here
-Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01 answered; Q02 answered with clarification pending. Next: Q02a, whether complexity adaptation changes shared match rules, individual decks, or both as selectable options. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
+Read this file, docs/ANSWERS.md, and relevant questions from docs/DISCOVERY.md. Q01 answered; Q02 answered with clarification pending. Next: Q02b, preferred first-game learning experience; then Q03 player count. DISCOVERY.md's original status line predates the answers; this checkpoint and ANSWERS.md are authoritative for progress.
 
 Ask one question per turn. Clarify consequential ambiguity without inventing requirements. Save substantive answers and implications. Distinguish user decisions from proposals and unresolved questions. Complete discovery before convening a second expert team for implementation planning.
 
@@ -16,7 +16,7 @@ Ask one question per turn. Clarify consequential ambiguity without inventing req
 - Personal devices show playable cards privately. TV shows shared battlefield without exposing opponents' hidden cards.
 - Plan actual gameplay here, then build plan with a second expert team. All durable details saved to this repository.
 
-- Youngest intended player is six, learning to read quickly. Game should grow with children. Optional simpler wording/deck mechanics and youngest-player-based match adaptation are proposed approaches; scope and behavior require clarification.
+- Youngest intended player is six, learning to read quickly. Game should grow with children. Steve prefers retaining match depth and complex mechanics with understandable wording. His wife is also a card-game newcomer. A welcoming initial setup/learning experience and lasting family replay appeal are goals. Earlier match-simplification idea is not the preferred approach; exact onboarding tools and deck guidance remain open.
 
 ## Open decisions
 Audience/reading support, player count/duration, win/elimination rules, leader role, turn/resource/combat/reaction systems, helping/betrayal mechanics, deck construction, theme-to-mechanics mapping, custom-card balance, art/creation tools, progression, offline/remote play, hosting, TV priority, device/input needs, budget/distribution and first milestone.
