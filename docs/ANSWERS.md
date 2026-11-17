@@ -356,3 +356,12 @@ Candidate interpretation to confirm: exhausted blockers allow remaining damage t
 Still open: does overflow vulnerability replace the earlier extra creature damage multiplier, or apply in addition? Exact multiplier, reduced interception rule, rounding, multiple blockers (including mixed ready/exhausted), retaliation and existing overflow abilities need later specification.
 
 Next: Q18j — use the 6 attack/3 health example to propose overflow as the exhaustion penalty without an additional multiplier; ask whether Steve wants that or both penalties. Avoid treating reference to trample as wholesale adoption of MTG rules.
+
+## Q18j — Multiplied damage and creature stats
+Steve prefers multiplied incoming damage for exhausted blockers, rather than overflow alone. Exact multiplier and interaction with overflow remain unselected. He asks whether creatures should have health, attack and defense and whether Pokemon works that way.
+
+Verified reference: Pokemon TCG official rulebook https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/rulebook/pal_rulebook_en.pdf — Pokemon have HP, individual attacks with damage values, and weakness/resistance; no universal separate numeric defense stat.
+
+Proposal to discuss: attack and persistent health as universal creature stats, optional armor/damage-reduction abilities for select cards rather than a mandatory third defense stat. Example 6 damage against 2 armor reduces damage to 4 if using that proposed armor model; this is unapproved. Separate defense adds calculation and can nullify small attackers, affecting multi-blocking, persistent wounds and heal balance.
+
+Next: Q18k — ask whether to start with attack + health, with armor as optional ability, or use three universal stats. Defer exhaustion/overflow numeric rules until stat model established.
