@@ -677,3 +677,10 @@ Confirmed: running out of cards should remain a loss condition; Steve wants suff
 Ambiguity: immediate defeat when deck becomes empty versus defeat only when attempting a required draw from an empty deck. Revival interaction with deck-exhaustion defeat also unresolved; defer until revival rules coherent, do not silently make all loss types revivable or permanent.
 
 Next: clarify failed-required-draw versus immediate-empty loss trigger, recommend failed required draw. Then opening hand/draw cadence and remaining numerical defaults before synthesis.
+
+## Deck-exhaustion trigger and milling
+Confirmed: player loses when a required draw fails because deck is empty; not immediately upon emptying deck. Effects that deplete an opponent's deck should support mill-style strategies, referencing MTG. No specific color assignment, depletion rate, forced draw effect or card approved.
+
+Use clear reading-level wording for moving deck cards to discard; avoid requiring children to know "mill." Balance with 40-card baseline, revival hand consumption and anti-lockout goals. Loss cause/re-entry eligibility and multi-card draw edge cases remain to specify. Empty deck does not itself grant automatic reshuffle.
+
+Next: opening hand and normal draw cadence — propose five opening cards, one draw at start of each own turn, as provisional playtest numbers. Ask acceptance; no rule approved until answered. Then opening redraw, player health and leader-entry draft.
