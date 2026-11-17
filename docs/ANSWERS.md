@@ -114,3 +114,12 @@ Steve wants broad opportunities to help, inspired by what he loved about Munchki
 Design direction: support broad cooperative intervention within competitive battles. This is not approval of unrestricted actions at any time, every transfer type, or any exact combat/timing system. Attack contribution, defensive intervention, helpful card play and resource support should be explored with clear ownership, costs, timing and acceptance rules.
 
 Next: Q09a — are negotiated promises enforced by the app, nonbinding and breakable, or a choice between formal trades and informal promises? Then clarify theme-to-mechanics mapping. Exact combat assistance rules remain for rules design.
+
+## Q09a — Betrayal and card-enforced truth
+Confirmed: ordinary negotiated promises may be betrayed; the app should not automatically enforce every table deal.
+
+Steve also wants specific cards (e.g. instant-like cards or creature descriptions) that "require truth." Intent is recorded, but exact meaning is unresolved: binding game commitments, factual disclosures, restrictions, verification, duration and penalties all need examples/clarification. Do not assume speech monitoring, AI lie detection, or automatic knowledge of real-world statements. Instant-like cards were mentioned as examples; no MTG-style stack/timing rules adopted.
+
+Steve introduced ideas for "mana colors" tied to play styles beyond matching costs or elemental identities. No colors, resources, factions, restrictions or mechanics selected yet.
+
+Next: invite Steve to explain his mana-color/play-style ideas (adaptive ordering toward Q17 and theme mechanics). Afterward return to a concrete "require truth" example and unresolved Q10–Q13 creation questions.
