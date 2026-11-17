@@ -285,3 +285,10 @@ Next: Q17c — distinguish temporary spendable-resource gains from permanent cap
 Confirmed: both temporary resource gains and permanent capacity increases should exist. Permanent increases should cost a lot, while more casually played temporary effects cost less. Exact costs, availability, temporary expiration, whether permanent effects also refill immediately, and caps remain unresolved for card/rules balancing. Do not impose equal costs across all effects or interpret casual availability as monetization.
 
 Next: Q17d — should resources be a universal pool with color controlling card eligibility/mechanics, or should paying card costs require particular resource colors? Recommend universal pool for accessibility while preserving color identities; no selection yet.
+
+## Q17d — Initial universal resources and later color specificity
+Confirmed: begin with one universal resource type for card payment; preserve an easy path to specific/colored resource costs later as players learn. In context "shared resources" means a universal type, not a communal balance shared among opponents; each player's own-turn growth/refill and spending pool remain.
+
+Initial color identity and exclusive effects continue to matter through card/deck eligibility, not colored payment. Colored payment is deferred, not an initial selectable mode. Build planning should isolate cost/payment rules and use extensible cost data; exact future implementation and migration/version compatibility require design and cannot be guaranteed without validation.
+
+Resource numbers/caps and card costs remain for balancing. Next: Q18 — combat targeting: can a player split attackers among multiple opponents in one combat, or attack only one opponent? Then blocker assignment, damage persistence and readiness/summoning timing.
