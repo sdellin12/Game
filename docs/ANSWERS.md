@@ -748,3 +748,12 @@ Confirmed: when a combined creature is destroyed, all component creatures are de
 Exact survival effect, which components survive, health/readiness on separation, death-trigger counting, exile/bounce/control changes and leader components remain unresolved for rules/card design.
 
 Next: transformation wounds — propose preserve accumulated damage/readiness when switching forms, rather than automatically healing/resetting, unless a card explicitly changes them. Ask whether this default matches preference. Then consolidate remaining revival/victory closure and other core open questions; avoid exhaustive card edge cases in interview.
+
+## Transform state and proportional combination health
+Confirmed: transformation preserves accumulated damage and ready/exhausted state, unless an explicit card effect changes them. If form max-health changes, precise carryover mapping still needs rules specification; don't silently treat fixed damage and fixed health percentage as identical.
+
+Confirmed combination direction: injured components proportionally reduce combined creature's remaining health; a component at 50% should not make whole combined creature 50% unless aggregate state warrants it.
+
+Proposed formula (not yet approved): sum component current health / sum component maximum health; combined current health = combined maximum health times that ratio. Example equal 20-max components at 10/20 and 20/20 -> aggregate 30/40 = 75%; if combined max 40, starts at 30. Weight by max health, not average percentages, so tiny components don't count as much as large ones. Combined max-health formula, rounding, exhaustion aggregation, buffs and split-state reversal remain unselected.
+
+Next: confirm weighted aggregate-health formula with concrete 20+20 example. Then keep detailed combine stats/state calculations for coherent rules draft and return to remaining revival/victory closure before build planning.
