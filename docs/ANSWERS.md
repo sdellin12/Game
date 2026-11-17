@@ -470,3 +470,10 @@ Next: Q29 — same-household local-network participants only initially, or remot
 Confirmed: initial players are in the same house on the same network. Remote play deferred. Visitors joining locally remains a lower-priority future convenience.
 
 Next: Q33 — explain hosting options and ask whether requiring a separate home server/computer is acceptable or the game must run using only TVs and personal devices. Do not select architecture before official platform feasibility review. Then reconnect/save behavior, profiles, creation content/art and other remaining requirements.
+
+## Q33 — Preferred host and storage
+Confirmed preference: run the game from Steve's home Linux server if possible, including storing the card library there; he reports substantial available storage. This is the preferred authoritative match host and centralized content-storage direction, subject to feasibility validation. TV and personal devices remain clients; no implementation stack selected.
+
+Server hardware/OS/runtime capacity, deployment, backups, profile/deck persistence and content delivery details remain to verify during build planning. Do not assume ample storage implies adequate AI-generation compute or commit to generation on server. No deployment or server modification authorized/performed in this discovery step.
+
+Next: Q34 — what should happen on a temporary player-device disconnect: pause and restore their hand/turn on reconnect, versus continue/automatic actions? Recommend pause/reconnect for household matches; then saved-session resumption and profiles.
