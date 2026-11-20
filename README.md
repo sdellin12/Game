@@ -9,7 +9,7 @@ Original household multiplayer card game: personal themed decks, private phone/t
 - [Architecture Proposal](docs/ARCHITECTURE_PROPOSAL.md): native clients, Linux server and verified platform constraints.
 - [Rules Draft](docs/RULES_DRAFT.md): playtest procedures and explicitly unapproved open decisions.
 - [UX and Content Plan](docs/UX_CONTENT_PLAN.md): family experience, library and artwork worker.
-- [Game Lore]: Lore for the game and plans for expansion.
+- [Game Lore](docs/Game Lore.md): Lore for the game and plans for expansion.
 
 Discovery and the second expert planning review are complete. Product choices are distinguished from proposed technical/rule defaults. Current feasibility task: secure iPad home-screen web app under existing browser restrictions; weekly native reinstalls accepted fallback. No paid services approved. Both Google TV and Roku remain required for the first completed version.
 
