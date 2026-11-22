@@ -327,3 +327,12 @@ changes, initial-phase trigger collector, turn/resource state or Recharge. The
 future match coordinator must validate legality and atomically resolve/stabilize
 items before using the internal finish-resolution transition. Combat-lab coverage
 and report claims remain combat-only.
+
+
+## Turn/draw foundation implemented (still not full-match coverage)
+crucible_core.turns now models pure turn-flow and required-draw/refill choices with
+explicit experimental policy parameters and recorded shuffle permutations. It
+emits failure/end/Recharge intent for a future atomic match coordinator; it does
+not implement elimination, Start/End effects or resources. Unresolved repeat/
+bypass interactions reject. See experiments/TURN_DRAW_FOUNDATION.md for coverage,
+tests, trust boundaries and migration limits. No final refill price is adopted.

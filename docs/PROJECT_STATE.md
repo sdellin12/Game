@@ -5,16 +5,16 @@ playtests yet. Current rules include paid draw-time refill and Recharge; cost20 
 provisional. See DECK_REFILL_DESIGN.md and FULL_MATCH_TIMING_SPEC.md.
 
 ## Current next step
-Steve requested card information requirements before further implementation.
-CARD_INFORMATION_CONTRACT.md is now approved. CARD_CONTENT_EXAMPLES.md provides
-filled creature/action/reaction/upgrade/persistent/leader/form/token content and a
-live-overlay fixture for separate standard/full-art template work. Examples are
-illustrative; no card catalog, renderer or balance claims are adopted.
+Standard/full-art v1 layouts are complete in design/cards with shared fixtures,
+SVG outputs, offline gallery and local PNG references. docs/CARD_DESIGN.md is the
+current design/handoff source; the ZIP bundle is dist/CardTemplate-Handoff-v1.zip.
+Illustrations remain clearly marked placeholders; no final game art is claimed.
 
-Queued after that: priority-core edge-case review and pure turn/required-draw/refill
-state with explicit test-cost parameters, then atomic cleanup/elimination. Steve
-requested both review and implementation. Do not infer a final refill price,
-stacked Recharge debt or bypass interactions. Priority core remains isolated.
+Steve authorized moving directly into priority-core edge-case review and pure
+turn/required-draw/refill state after both templates. Use explicit test-cost
+parameters; do not adopt a final refill price, repeated Recharge debt or bypass
+interactions without specification. No saved-match schema migration is authorized
+by the design files. See the later continuation record for implementation status.
 
 ## Read
 1. REQUIREMENTS.md — current confirmed product/UX/content.
@@ -198,3 +198,23 @@ and resource tokens, plus live wounds/status overlays. Same content feeds both
 styles; example abilities/costs/trait vocabulary are not approved game content.
 Documentation only, no tests or schema changes. Priority review/turn-draw work
 remain queued behind the template task as requested.
+
+
+Latest completed work: standard/full-art template v1,15 content fixtures/30 SVGs,
+offline preview, five local PNG reference pairs and verified50-file LLM handoff ZIP.
+CARD_DESIGN.md is the design source of truth. SVG information-parity/capacity tests
+pass; character art remains placeholder. Firefox computer-use URL enforcement was
+unsupported, so visual QA used local resvg rendering without automating Firefox.
+
+Then completed focused priority-core self-review and added crucible_core.turns:
+immutable phase flow, partial required draws, explicit refill choice/payment and
+recorded shuffle, own-turn end intent, off-turn Recharge and stale-command guards.
+No final refill cost adopted. Repeated Recharge/bypass interactions fail closed.
+No full-match coordinator, automatic Start/End effects, resources, elimination or
+saved-match schema is claimed. See experiments/TURN_DRAW_FOUNDATION.md.
+Next implementation recommendation: integrate these primitives through an atomic
+match coordinator with cleanup/elimination fixtures before enabling full-match mode.
+
+Final validation for template/turn foundation: 89 Windows tests pass; paired SVGs
+regenerate deterministically; 50-file design ZIP SHA256 manifest verified. No core
+combat changes or saved-format migrations. Full-match mode remains disabled.
