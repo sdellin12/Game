@@ -1,16 +1,17 @@
-# Original Family Card Battler
+# The Crucible
+Original household card battler: imaginative themed decks, private phone/tablet hands and a shared TV battlefield. Planning only; no implementation or balance runs yet.
 
-Original household multiplayer card game: personal themed decks, private phone/tablet hands and shared TV battlefield. Planning only; implementation not started.
+## Current design
+- [Project checkpoint](docs/PROJECT_STATE.md)
+- [Confirmed requirements](docs/REQUIREMENTS.md)
+- [Rules baseline and implementation gaps](docs/RULES_DRAFT.md)
+- [Delivery plan](docs/BUILD_PLAN.md)
+- [UX and artwork contracts](docs/UX_CONTENT_PLAN.md)
+- [Lore bible](docs/Game_Lore.md)
+- [Platform architecture proposals](docs/ARCHITECTURE_PROPOSAL.md)
 
-## Resume or review
-- [Project State](docs/PROJECT_STATE.md): short checkpoint and next decision.
-- [Requirements](docs/REQUIREMENTS.md): consolidated accepted requirements and deferred scope.
-- [Build Plan](docs/BUILD_PLAN.md): proposed milestones, validation and model guidance.
-- [Architecture Proposal](docs/ARCHITECTURE_PROPOSAL.md): native clients, Linux server and verified platform constraints.
-- [Rules Draft](docs/RULES_DRAFT.md): playtest procedures and explicitly unapproved open decisions.
-- [UX and Content Plan](docs/UX_CONTENT_PLAN.md): family experience, library and artwork worker.
-- [Game Lore](docs/Game_Lore.md): Lore for the game and plans for expansion.
+Current work: specialist plan for a local, reproducible balance-testing desktop lab using the eventual game's shared rules engine. No per-simulation AI/API calls. Tester plan will be linked when complete.
 
-Discovery and the second expert planning review are complete. Product choices are distinguished from proposed technical/rule defaults. Current feasibility task: secure iPad home-screen web app under existing browser restrictions; weekly native reinstalls accepted fallback. No paid services approved. Both Google TV and Roku remain required for the first completed version.
+Current rules use attack/health only, persistent wounds,30 player health and permanent elimination; old defense/full-bypass/player-revival plans are superseded. All ten colors support approachable decks. No real-money progression.
 
-Historical interview: [Answers](docs/ANSWERS.md). Original [question queue](docs/DISCOVERY.md) is archival, not current status. Read focused canonical docs instead of full history to conserve tokens.
+[Historical interview](docs/ANSWERS.md) and [original discovery queue](docs/DISCOVERY.md) are archival, not current instructions. Canonical docs above preserve accepted decisions, provisional numeric test candidates and unresolved engineering details.
