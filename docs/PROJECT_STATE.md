@@ -1,39 +1,36 @@
-# Project State — Resume Here
-Updated 2026-11-17. Phase: discovery complete; expert build-planning draft complete; no implementation started.
+# The Crucible — Resume Here
+Updated 2026-11-22. Planning only; no implementation, simulations, hardware benchmarks or family playtests performed.
 
-## Read in order
-1. [Confirmed requirements](REQUIREMENTS.md) — concise canonical product/gameplay brief.
-2. [Build plan](BUILD_PLAN.md) — milestones, dependencies, validation and next work package.
-3. Focused detail only as needed: [architecture](ARCHITECTURE_PROPOSAL.md), [rules](RULES_DRAFT.md), [UX/content](UX_CONTENT_PLAN.md).
-4. ANSWERS.md is historical interview record with superseded brainstorms; do NOT read it all by default. DISCOVERY.md is original question queue, no longer current progress.
+## Read
+1. REQUIREMENTS.md — current confirmed product/UX/content.
+2. RULES_DRAFT.md — current mechanics and remaining engineering specifications.
+3. BALANCE_TESTER_PLAN.md — local tester design after specialist synthesis (current task).
+4. BUILD_PLAN.md — proposed tester and full-game stages.
+5. Game_Lore.md — current fiction; architecture/UX as needed.
+ANSWERS.md and DISCOVERY.md are historical and superseded; do not reread full interview by default.
 
-## Latest decisions
-- One bounded final revival opportunity before last active player wins; exact procedure/eligibility still draft.
-- Combination health = combinedMax × sumCurrentHP/sumMaxHP. All components destroyed when combined creature destroyed, except explicit survival effects.
-- Leader resummon costs escalate and can include sacrifice/exile; outside effects recover owner's next turn.
-- Baseline: four players,40–60min;40 singleton+leader,5 opening,1 draw/own turn,7 hand end turn,30HP provisional; one-color+generic.
-- Full requirements and revisions consolidated in REQUIREMENTS.md; do not recover defaults from obsolete interview entries.
+## Latest accepted baseline
+- No player revival. Permanent elimination at health<=0/failed required draw/concede; no final revival window.
+- No universal defense stat. ATK/HP only; persistent damage; block doesn't exhaust; one blocker per attacker, multiple blockers allowed.
+- Breakthrough overflow after lethal allocations; Pierce deferred. Challenge allows direct creature fight, no blockers/player overflow; group retaliation once; challenged creature cannot also block.
+- Exhausted-blocker damage ceil1.5 before prevention; ordinary blocked status persists even if blockers leave.
+- Start2 resources, natural base grows1/own turn to10, separate permanent bonuses beyond10; refill, stored spend-directly tokens. Green growth/Silver reserves.
+- 40 singleton+leader, one color+generic,5 opening/partial redraw,1 draw/own turn,7 end hand,30 playerHP. First-player draw skip duel only.
+- Main before/after combat, fixed turns; chain responses newest first untimed. Exact priority/cross-controller triggers/terminal sequencing require engine spec.
+- Leader reserve reset/recovery until next own start, cumulative+2 per battlefield removal; negated summon no increase, retries allowed; accumulated increase undiscountable. No leader copy/control/combine.
+- Transform/combine proportional HP roundUP actual whole numbers, no hidden fractions; no entry/departure from assembly; compatibility and disassembly rules in rules doc.
+- Ten color identities, all offer easy-to-pilot decks incl Silver/Gold. Mostly0–1 creature abilities; initial24 creatures/10 actions-reactions/6 persistent.
+- Ability-free candidate ATK/HP: cost1=2/1,1/2,0/3; cost2=3/2,2/3,1/4; cost3=4/3,3/4,2/5. Not tested.
+- Theme-first builder, leader choices, guided roles, private draft practice, shared permanent card catalog, independent optional shared deck copies.
+- Permanent earned-only cosmetics/achievements, no real money EVER. All art retained, per-instance public treatments, no in-match changes.
+- Desktop local test lab requested: no per-test AI, CSV/JSON/HTML, reproducible seeds/replays/multiple policy skill levels; mobile report companion later proposal.
 
-## Completed
-Two user-requested expert teams: initial discovery; second platform/rules/UX planning. Their results saved in focused docs and synthesized into BUILD_PLAN. Parent verified official Apple/Roku/Android/Flutter sources. No code, installs, hardware benchmark or gameplay testing performed.
-Later large comparative balance team is deferred and has NOT run.
+## Current user request
+First sync everything discussed to GitHub, then relevant expert subagents discuss/plan design and implementation of tester. Documentation updates authorized on sdellin12/Game. Implementation not requested yet.
+Core requirements/rules/build/UX/lore have now been consolidated. Next specialist planning and synthesis into BALANCE_TESTER_PLAN.md, then verify links/content and report.
+User authorizes sensible tests/candidate numbers without approval for each fixture; ask consequential tradeoffs with selectable options+optional text.
 
-## Current decision and next question
-User accepts iPad home-screen web app if secure and compatible with existing blocked browser access. Weekly native reinstalls acceptable fallback. No annual Apple fee approved. This supersedes strict iPad-native-only preference, not other platform choices.
-Restriction source confirmed: Screen Time. User wants no URL bar/arbitrary browser navigation. No further question on source. Apple documents managed full-screen Web Clips with Safari restricted, but that does not establish ordinary Screen Time compatibility. Test home-screen launch/external links/pop-ups/imports on actual iPads later. URL bar hiding alone insufficient; optional Guided Access not a navigation filter. Preserve restrictions; don't assume full-screen equals security. iPad models/OS still intentionally deferred.
-Actual PC specs known Ryzen5/GTX1650; RAM/VRAM unverified. Need current Mac/Xcode route only if native fallback used.
-
-## Current gameplay review
-User confirms blocking does not exhaust by default. Wounds and existing exhaustion persist; surviving ready blockers remain available in later combats. P06 confirmed: blockers pool combat attack vs their attacker; apply its defense once. P05 ready-blocker allocation confirmed: raw lethal = defense+remainingHP, then remainder next. P07 confirmed initial 1.5x after defense rounded up for exhausted-blocker HP damage. User revises card-specific trample reference: defense reduces hit, bypass creature HP, remainder directly hits player. Supersedes lethal-first overflow. Full bypass accepted for playtest with normal blocker retaliation: blocker uninjured, player takes attack minus defense, no exhaustion multiplier on player. Combined defense confirmed for each bypass attacker: max(0,attack-sum blocker defense), blockers unharmed and retaliate. Combined readiness confirmed: any exhausted -> combined exhausted; all must be attack-eligible. New proposal: transformation ends player's turn. Next clarify universal versus explicit powerful-card cost, including combine scope; don't implement universal end-turn yet. Final keyword naming/costs later. Original keyword names later. iPad restriction test remains an independent feasibility task, no hardware changes now.
-
-## Next actions after preference
-1. Prototype/test full-screen iPad web app under actual Screen Time restrictions (hardware details still deferred), no arbitrary browser navigation. If incompatible use accepted weekly signed native fallback. Maintain both TVs.
-2. Close core rules draft via worked examples (revival R01, leader access R02, combat P05–P08, blocking exhaustion). Exact card costs user deferred; don't restart endless micro-interview.
-3. Choose feasible installed-client stack after real-device spike. Proposed Python+SQLite Linux server, Flutter personal clients candidate, Android TV view, separate Roku SceneGraph.
-4. Plan/start only when user requests implementation; current chat requested planning.
-5. First proposed engineering slice: Linux public-card endpoint and installed viewers on all required actual platforms. Follow BUILD_PLAN acceptance gates.
-
-## Working conventions
-One consequential question at a time. Accepted requirements versus proposals labeled. Decisions saved to GitHub sdellin12/Game main; no Library mirror for repo items.
-Use scoped briefs and compact canonical docs to conserve tokens; retain historical answers for provenance. New versions should update canonical requirements/state, not grow this file into interview transcript.
-Models recommended: Sol ordinary work, Astra focused difficult review; agents inherited session model. No model switch claimed.
+## Known gates
+Windows PC Ryzen5/GTX1650 (RAM/VRAM unknown), Linux home server previously discussed but deployment not verified. Tester CPU work independent of art/GPU/mobile install.
+Actual iPads under Screen Time require restriction-safe delivery test; web accepted, weekly native fallback. Both Roku/GoogleTV required completed game. No paid art API; unattended ChatGPT Plus worker path unverified.
+No estimates/claims of balanced cards before evidence. Bots see legal information only; full-game coverage cannot be inferred from combat-only simulation.
