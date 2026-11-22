@@ -55,7 +55,7 @@ Every removal recovery until own next start; outside abilities disabled and resu
 Transform changes don't reset spent limits. Leader special reserve replacement doesn't make every removal a defeat: actual removal reason needed for triggers.
 
 ## Permanent elimination (supersedes ALL revival history)
-30HP; health<=0, failed required draw, or concede removes permanently. No player revival. After valid pending effects/cleanup last active wins, simultaneous all-out draw. Need exact terminal checkpoint ordering specified alongside trigger queue; do not award winner midway through simultaneous processing.
+30HP; health<=0, unrecovered failed required draw, or concede removes permanently. No player revival. After valid pending effects/cleanup last active wins, simultaneous all-out draw. Use the reviewed atomic terminal checkpoints alongside the trigger queue; do not award winner midway through simultaneous processing.
 All battlefield objects controller owns/controls cleared: ordinary nontoken cards to owners' discard, resource/creature tokens disappear, leaders reserve (no ordinary play after eliminated); cards OWNED by eliminated player elsewhere also leave play. Borrowed creatures they control go owners' discard, same for concede. Exact handling combined cross-owner components remains gap.
 Their pending actions/ongoing effects removed, paid costs stay spent. Surviving players' pending effects resolve if valid. Eliminated controller ordinary triggers removed, explicit elimination exceptions only. Surviving departure triggers applicable; cleanup is departure not defeat/sacrifice. Actual same-event creature lethal defeats still genuine.
 Own-turn elimination: finish current effect/defeat processing, other valid pending effects, skip remaining phases, cleanup expirations then advance; skipped End phase triggers don't occur.
@@ -97,7 +97,22 @@ batch. There is no timer and no early disclosure to later defenders.
 
 A costly fixed-life payment to shuffle discard/graveyard cards back into the deck
 is requested. Repeat use should require a deliberately life-generating deck.
-This is accepted design intent, not yet a fully specified executable rule. See
-DECK_REFILL_DESIGN.md for provisional cost/timing and evaluation. No free automatic
-reshuffle or rescue after failed required draw is approved. Player max30 and no
+Timing is approved below; cost and advanced repeat/bypass interactions are not
+yet adopted. See DECK_REFILL_DESIGN.md for evaluation and implementation gates. No free automatic
+reshuffle or player revival is approved; the paid draw-time exception below applies. Player max30 and no
 player revival remain unchanged.
+
+
+## Approved deck exhaustion / Recharge revision
+Before a required empty-deck draw fails, offer a valid fixed-life refill. Draw
+available cards first; successful refill completes remaining required draws.
+Declining/unavailable payment/refill makes that required draw fail and eliminates
+the player at atomic cleanup. Finish the current effect before turn progression.
+Own-turn deck depletion ends that turn after current/pending work; an empty next
+Start offers paid refill and then ends that turn with no normal draw/Main/Combat.
+An own-turn refill ends only the current turn. Off-turn refill leaves the active
+turn intact and makes the affected player's next turn Recharge: automatic Start
+and End/mandatory effects, no normal draw or voluntary plays/abilities/Combat.
+Blocking/reactions work normally on other players' turns. Explicit future mechanics
+may bypass the penalty. Cost20 is only a test candidate; repeat-penalty stacking
+and bypass interactions still need specification. See DECK_REFILL_DESIGN.md.

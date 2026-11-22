@@ -12,7 +12,7 @@ accepted rules. No dependency on another TCG's timing system is implied.
 - Newest pending effect resolves first; responses reopen after each resolution.
 - Targets/modes/costs lock on confirmation; costs paid before responses, no refund.
 - Simultaneous combat and defeat; no responses between damage and lethal cleanup.
-- Permanent elimination for health <=0, failed required draw or confirmed concede.
+- Permanent elimination for health <=0, unrecovered failed required draw or confirmed concede.
 - Surviving pending effects may still resolve; no winner halfway through cleanup.
 - Eliminated controller's pending actions/ordinary triggers removed. Elimination
   cleanup is departure, not defeat. No player revival.
@@ -68,7 +68,9 @@ Explicit card replacement effects may modify these operations only when supporte
 
 Draw performs one required draw, except the first starting-player draw in a duel.
 Stabilize, queue draw triggers, then open priority before Main. A zero-card deck
-alone is not defeat. A required draw attempted without a card records failure.
+alone is not elimination. Own-turn depletion can end that turn; at an exhausted
+required draw, apply the approved paid refill procedure before recording an
+unrecovered failed draw. See DECK_REFILL_DESIGN.md for Start/refill/Recharge timing.
 Optional draws occur only when their optional instruction is accepted.
 
 End: queue end triggers, resolve the chain and responses to quiescence, then
@@ -128,10 +130,20 @@ approve; the resolver must not guess whether payment is allowed.
 
 ## Multi-draw and zero health inside one item
 
-Proposed draw-N default (still needs approval): attempt individual draws in order. An unavailable required
-draw marks a failed-draw cause; drawing the available cards is not rolled back.
-Other independent instructions of the same atomic item finish. Replenishing the
-deck later in that item does not erase the failed draw. Stabilize after the item.
+Approved deck-exhaustion revision: attempt required draws in order. Before an
+empty-deck draw becomes an unrecovered failure, offer the eligible fixed-life
+refill. Successful payment/refill resumes the remaining required draws, then
+finishes the current atomic effect. A declined/unavailable refill records the
+failed draw and eliminates at cleanup; ordinary later reshuffling does not erase
+that recorded failure. Drawing available cards is not rolled back.
+
+On-own-turn refill ends only that turn after pending work; own-turn deck depletion
+also requests turn end. An empty next Start offers refill and then ends that turn.
+Off-turn refill preserves the active turn and makes the affected player's next
+turn Recharge: automatic Start/End processing, no normal draw, voluntary plays or
+Combat. Ordinary defense/reactions remain available on other players' turns.
+See DECK_REFILL_DESIGN.md for the approved timing, lore and remaining cost/stacking
+gaps. No general mid-effect reaction window is introduced.
 
 Health is evaluated at the atomic boundary, consistent with the confirmed rule
 that cleanup follows the current effect. Thus damage and healing within the same
@@ -226,7 +238,7 @@ This replaces the earlier proposed sequential public blocker confirmations.
 | T04 | Simultaneous lethal attacker/blocker both deal damage; neither can react before departure. |
 | T05 | A/B lose together, C survives with pending self-damage -> no premature win; C can later lose -> draw. |
 | T06 | A loses with own heal pending -> heal removed; no revival. Surviving B-controlled pending heal remains if valid, regardless of source owner. |
-| T07 | A must draw3 with2 cards ->2 draws recorded and failed-draw cause; later deck refill does not rescue. |
+| T07 | Draw3 with deck2 -> draw2; eligible paid refill resumes final draw; decline/unavailable refill records failure and eliminates at cleanup. |
 | T08 | One item damages then heals A -> evaluate final HP; separate later heal cannot rescue boundary elimination. |
 | T09 | A owns creature controlled by B; A eliminated -> card departs; B's valid departure trigger survives. |
 | T10 | Eliminated controller's borrowed creature departs to surviving owner's discard; cleanup is not defeat. |
@@ -243,8 +255,9 @@ This replaces the earlier proposed sequential public blocker confirmations.
 
 Priority/reset order, cross-controller trigger order, whole-effect player-health
 checks, safe-boundary concession, Start/End boundaries and eliminated-seat duration
-anchors are approved. Remaining proposals needing approval: failed multi-draw
-behavior. Blocker lock/reveal and subsequent ordering/reaction windows are approved. Self-lethal cost legality is deferred to
+anchors are approved. Paid draw-time refill and Recharge timing are approved in
+DECK_REFILL_DESIGN.md. Exact life cost and repeat/bypass interactions remain open.
+Blocker lock/reveal and subsequent ordering/reaction windows are approved. Self-lethal cost legality is deferred to
 an authored-cost specification; reject unsupported cost definitions. Then implement pure match
 state/command validation, priority/chain and stabilization with exact fixtures;
 only then connect turns/resources, combat and simple hidden-safe policies.
@@ -295,3 +308,22 @@ Requested a costly fixed-life discard-to-deck refill mechanic, intended to make
 repeat use require deliberate life-gain support. That mechanic is accepted intent;
 exact availability, timing and cost remain proposals in DECK_REFILL_DESIGN.md.
 No failed-draw forgiveness or automatic reshuffle is inferred from this request.
+
+
+Owner follow-up: approved completing required draws after paid refill, elimination
+when a required draw has no accepted valid refill, and full Recharge maintenance
+turns after off-turn refill. An own-turn refill ends only the current turn; it
+does not additionally penalize the following turn. DECK_REFILL_DESIGN.md supersedes
+the previous Main-only refill proposal and unconditional failed-draw recommendation.
+
+
+## Implemented foundation (not a full-match engine)
+`crucible_core.priority` now implements immutable response-window state, revision-
+checked add/pass transitions, exactly-one-item resolution handoff, active-player
+priority reset and ordered post-resolution trigger batches. Window reopen retains
+monotonic revision/effect IDs. Ten exact tests cover these transitions and illegal
+commands. It has no effect evaluator, costs, private projections, eliminated-seat
+changes, initial-phase trigger collector, turn/resource state or Recharge. The
+future match coordinator must validate legality and atomically resolve/stabilize
+items before using the internal finish-resolution transition. Combat-lab coverage
+and report claims remain combat-only.

@@ -38,3 +38,18 @@
   1. **The Pull:** Vanguard Cores hum as rifts open, drawing Researchers into **The Crucible** amid an unexplained shattering of the Prime Matrix.
   2. **The Relic-Ring:** Reveals the stone-and-metal colosseum, silent **Ring-Keepers**, and the conqueror scouting realms.
   3. **Sparks & Retreat:** Shows a Vanguard Core shedding **40 Sparks**, defeated creatures unraveling, knocked-out Leaders retreating before escalating resummons, and eliminated Researchers watching from outside the ring. Setup intros are optional future production; combat animations remain brief and nonblocking.
+
+
+## Recharge (working name)
+A Researcher's Vanguard Core can spend their life energy to gather unraveled
+Sparks from the discard and rebuild its card supply. The Core then needs time to
+stabilize. Recharging during the Researcher's own turn uses the rest of that turn;
+recharging during another Researcher's turn means resting on the next own turn.
+Automatic Start/End maintenance still occurs during a Recharge turn, and existing
+creatures can defend while the Researcher can react on opponents' turns.
+
+Child-facing explanation: "Your Core needs a recharge. Spend life to rebuild your
+deck, finish your draws, then rest." This recovers eligible discarded cards, not
+eliminated players. It does not refund resource costs, restore cards from exile,
+or grant free automatic reshuffles. Exact life price remains a balance candidate;
+DECK_REFILL_DESIGN.md defines the approved timing and implementation gates.

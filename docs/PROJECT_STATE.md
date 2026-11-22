@@ -1,5 +1,14 @@
 # The Crucible — Resume Here
-Updated 2026-11-22. First combat-only core/CLI implemented. No full-match simulations, desktop GUI, target-PC benchmarks or family playtests yet.
+Updated 2026-11-22. Combat lab/desktop/portable build implemented; isolated priority
+core foundation added. No complete full-match engine, match simulations or family
+playtests yet. Current rules include paid draw-time refill and Recharge; cost20 is
+provisional. See DECK_REFILL_DESIGN.md and FULL_MATCH_TIMING_SPEC.md.
+
+## Current next step
+Integrate approved timing incrementally: pure turn/required-draw state and refill
+choices under explicit test-cost parameters, then atomic cleanup/elimination.
+Do not infer a final refill price, stacked Recharge debt or bypass interactions.
+The priority core is isolated and has no effect evaluator or saved-match schema.
 
 ## Read
 1. REQUIREMENTS.md — current confirmed product/UX/content.
@@ -10,7 +19,7 @@ Updated 2026-11-22. First combat-only core/CLI implemented. No full-match simula
 ANSWERS.md and DISCOVERY.md are historical and superseded; do not reread full interview by default.
 
 ## Latest accepted baseline
-- No player revival. Permanent elimination at health<=0/failed required draw/concede; no final revival window.
+- No player revival. Permanent elimination at health<=0/unrecovered failed required draw/concede; no final revival window.
 - No universal defense stat. ATK/HP only; persistent damage; block doesn't exhaust; one blocker per attacker, multiple blockers allowed.
 - Breakthrough overflow after lethal allocations; Pierce deferred. Challenge allows direct creature fight, no blockers/player overflow; group retaliation once; challenged creature cannot also block.
 - Exhausted-blocker damage ceil1.5 before prevention; ordinary blocked status persists even if blockers leave.
@@ -36,6 +45,8 @@ TCG references can inform costs/wording/archetypes, but keep other games' rules 
 Windows PC Ryzen5/GTX1650 (RAM/VRAM unknown), Linux home server previously discussed but deployment not verified. Tester CPU work independent of art/GPU/mobile install.
 Actual iPads under Screen Time require restriction-safe delivery test; web accepted, weekly native fallback. Both Roku/GoogleTV required completed game. No paid art API; unattended ChatGPT Plus worker path unverified.
 No estimates/claims of balanced cards before evidence. Bots see legal information only; full-game coverage cannot be inferred from combat-only simulation.
+
+## Implementation history (older status statements are superseded above)
 
 ## Codex continuation — Windows checkpoint runner
 Existing 27 tests passed on Windows. Added sequential bounded matrix batches,
@@ -146,3 +157,21 @@ intent: costly fixed-life discard-to-deck refill, with repeat use relying on a
 life-gain plan. Standard action vs card ability vs emergency timing still needs
 selection; 20 life is a test candidate, not an approved/balanced price. Failed-draw
 handling remains unresolved; no rescue/revival inferred. See DECK_REFILL_DESIGN.md.
+
+
+Latest owner decisions: required draws finish after successful paid refill;
+unrecoverable/declined required-draw refill eliminates. Own-turn depletion/refill
+ends that turn; next empty Start can refill then end. Off-turn refill makes next
+own turn Recharge (automatic Start/End, no normal draw/voluntary plays/Combat).
+Own-turn refill does not additionally consume the following turn. Off-turn defense
+and reactions remain. Canonical timing/lore consolidated in DECK_REFILL_DESIGN.md;
+old Main-only proposal superseded. Price20 remains provisional; repeated Recharge
+stacking/bypass interactions are not invented. Documentation-only; no engine code.
+
+
+Latest continuation: consolidated approved refill/Recharge timing and Core-recharge
+lore, superseding Main-phase-only refill. Added isolated crucible_core.priority
+with immutable response windows, revision/holder checks, one-item resolution
+handoff, active-first trigger batches and monotonic IDs. Ten focused tests pass;
+full-suite evidence is recorded in experiments/PRIORITY_FOUNDATION.md. No game save
+format changes or new full-match claims. Price and repeat/bypass rules remain open.

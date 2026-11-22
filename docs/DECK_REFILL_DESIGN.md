@@ -1,97 +1,132 @@
-# Life-for-deck refill — design proposal
+# Deck exhaustion, life refill and Recharge
 
-Status 2026-11-22: Steve requested the mechanic and strategic goal. Availability,
-timing and exact cost are not selected yet. No implementation, balance result or
-full-match coverage is claimed. Existing schemas/saves are unchanged.
+Status: owner-approved timing/design direction, 2026-11-22. Exact life cost is a
+balance candidate, not adopted. No full-match engine, saved-match schema change or
+balance result is claimed. This supersedes the earlier Main-phase-only proposal.
 
-## Accepted intent
+## Approved rules
 
-Pay a fixed, expensive amount of player life to reshuffle discard/graveyard cards
-into the deck. A second use in one game should require deliberate life generation.
-This is a health/resource strategy, not player revival or free discard recycling.
-The fixed cost should not silently escalate each use or impose a once-per-game
-cap; either would change the requested repeat-use design.
+1. Refill is a standard deck-exhaustion procedure, not dependent on a specific
+   card/leader. Pay a fixed, expensive amount of player life and reshuffle the
+   discard/graveyard into the deck. Repeated use should require deliberate life
+   generation; no escalating cost or once-per-game cap is adopted.
+2. Required draws happen in order. If drawing3 with only2 cards, draw those2,
+   offer payment/refill before the third draw fails, then complete the third draw
+   after successful refill. Finish the effect already resolving. This is an
+   explicit choice inside draw resolution, not player revival after elimination.
+3. If a required draw cannot be completed and the player cannot or declines to
+   pay for a valid refill, eliminate that player at the normal atomic cleanup
+   boundary. Drawing available cards is not rolled back. An empty discard cannot
+   supply a refill. Ordinary later deck recovery does not undo an unrecovered
+   failed draw that was already recorded.
+4. When a player's deck becomes empty during their own normal turn, request an
+   end to that turn after the current effect/pending work. No further ordinary
+   voluntary actions are allowed. If there are unfinished required draws in the
+   current effect, apply the refill procedure above before ending the turn.
+5. If the deck remains empty without an unrecovered required-draw failure, that
+   player can pay/refill at the start of their next own turn. That turn then ends
+   without a normal draw, Main or Combat. If payment is declined/unavailable,
+   the normal required draw cannot be completed and elimination follows.
+6. A refill during your own turn consumes only that current turn. It does NOT
+   also make your following turn Recharge. This includes refill at your own Start.
+7. A refill during someone else's turn leaves that active player's turn intact.
+   The refilling player's next turn is Recharge (placeholder name): automatic
+   Start recovery/resource refill and End cleanup occur, but skip the normal draw,
+   voluntary cards/abilities and Combat. Mandatory effects still resolve. That
+   player can block/react normally on other players' turns.
+8. A future explicitly authored mechanic may bypass the turn-ending/Recharge
+   penalty. No generic bypass exists and no bypass card is implemented yet.
 
-## Recommended first candidate (awaiting choice)
+At an exhausted Start, complete the automatic Start boundary/mandatory work and
+offer refill before the required normal draw. An own-turn end request does not
+truncate a resolving effect or erase surviving pending effects. Drain mandatory
+work and other players' valid responses, then process End triggers, hand-limit
+and expiration cleanup once. Required choices can still be answered; no new
+voluntary play/ability window is created for the player ending their turn.
+Recharge is a real turn for scheduled Start/End boundaries and duration anchors,
+not permanent elimination or skipping all maintenance. No extra normal draw is
+awarded merely for paying at Start. A draw explicitly required by a mandatory
+trigger/effect is distinct from the skipped normal turn draw.
 
-A standard action available to every surviving player during their own Main phase
-with an empty chain. Confirm the action, pay 20 life, then queue the refill so
-opponents have normal reaction opportunities. Require health strictly greater
-than the cost so payment leaves at least1 HP. The discard must contain at least
-one eligible card. A failed required draw cannot be undone by this action.
+This is a narrow refill choice within an atomic item; no general reaction window
+opens halfway through an effect. The original effect already had its normal
+response opportunity. Future prevention/replacement effects must be explicitly
+specified, not approximated as an interruptible Main-phase refill spell.
 
-At resolution, move eligible ordinary cards from your current discard into your
-remaining deck and shuffle together. Do not touch hand, exile, leader reserve or
-another player's zones. Cards discarded in response are included; cards removed
-from discard in response are not. Existing deck need not be empty. No immediate
-draw is included. The 20-life payment is a cost, not damage: prevention does not
-pay/reduce it. Costs remain spent if the effect is negated or its discard becomes
-empty. Initial content should not alter this fixed life cost.
+## Eligible cards and provisional payment contract
 
-This recommendation makes refill a planned main-phase action. An empty deck can
-still be lethal when an opponent forces a draw before your next Main, preserving
-an answer for milling. A low-deck warning can help young players remember without
-automatically spending their life or exposing private cards.
+Move eligible ordinary cards from the player's discard into their remaining deck
+and shuffle together. Preserve hand, exile, leader reserve and other players'
+zones. Tokens are not persistent deck cards. No bonus draw is added; only finish
+required draws already pending. Uniform shuffle must use pinned recorded RNG.
 
-## Why test20 with starting/max30?
+Candidate cost:20 life, payable only with health strictly greater than20, leaving
+at least1. Payment is a cost, not damage; prevention does not absorb it. The price,
+payment floor and any future cost modifiers still need adoption/evaluation.
+Existing player maximum30 and rare/expensive healing outside dedicated styles
+remain. No universal strong healing is introduced solely to support refill.
 
-- First use: 30 ->10 HP. This creates a serious immediate combat risk.
-- A second use needs at least21 HP: from10, recover at least11 before paying again.
-- After a second use at21, only1 HP remains. Comfortable repeat use needs more.
-- Candidate15 permits a second use after only1 healing (30 ->15 ->heal1 ->16 ->1),
-  which is weaker pressure than Steve's requested deliberate life-gain investment.
-- The recurring sustainable threshold is not just11: over repeated cycles the
-  strategy needs20 net life per refill plus enough to offset incoming damage.
+At max30, candidate20 leaves10. Another payment would need at least21 health, so
+recover at least11 first; repeated sustainable cycles require20 net life per
+refill plus incoming damage. Candidate15 would permit a second refill after only1
+healing. These are arithmetic illustrations, not evidence of balance. Adding a
+lost turn is a substantial extra cost: compare provisional15/20/25 with the turn
+penalty in place before adopting20. Owner selected timing, not a final price.
 
-These are arithmetic illustrations, not evidence that20 is balanced. Healing
-remains rare/expensive outside dedicated styles and caps at30. Universal strong
-healing should not be introduced solely to make repeat refill easy.
+## Lore and presentation
 
-## Other selectable implementations
+Placeholder name: **Recharge**. The Researcher's Vanguard Core spends their life
+energy gathering unraveled Sparks from the discard and rebuilding its supply.
+The Core must stabilize before it can shape new creatures or launch another
+attack. On their own turn, this consumes the rest of that turn; on an opponent's
+turn, stabilization occupies their next turn. Existing creatures can still defend
+and the Researcher can react during opponents' turns.
 
-1. Card/leader ability: refill requires a legal authored ability with explicit
-   timing/cost. More deck commitment and potential color/style identity, but a
-   deck missing that enabler cannot use the mechanic; repeat access can loop.
-2. Emergency empty-deck prompt: immediately before a required draw would fail,
-   offer payment and refill. Easier to remember, but introduces a new choice
-   inside atomic draw resolution and weakens milling. Must explicitly specify
-   draw-N mid-effect behavior, no-discard handling, response timing and payment
-   legality. Do not implement this as an accidental exception to elimination.
+Child-facing wording: "Your Core needs a recharge. Spend life to shuffle your
+discard back into your deck. Finish your draws, then rest this turn. If you
+recharge on another player's turn, rest on your next turn instead."
+Start-turn prompt must clearly say "Refill, then rest this turn" and show actual
+cost/remaining HP. Own-turn depletion warning says "Your deck is empty. Your turn
+will end after this effect." Do not silently auto-spend life or imply revival.
+No card, resource payment or upgrade is refunded by the fictional Spark recovery.
 
-## Required evaluation before adopting a cost
+## Required evaluation
 
-Compare provisional15/20/25 under the SAME future full-match rules. Freeze each
-candidate within an experiment; do not tune until a favored deck wins. Include:
+Compare frozen candidate costs under the same future full-match rules. Include
+simple aggression, defensive life-gain/refill and milling policies, multiple seat
+orders, turn count, lost turns, life spent/gained, repeated refills, reused recovery
+cards, and loop/incompletion rates. Test how a depleted player's first lost turn
+plus a later Start refill costs another turn; this can be punishing for a child.
+No combat-only result establishes these outcomes or a balanced refill price.
 
-- Simple attacking decks vs defensive life-gain/refill decks and milling pressure.
-- Time to finish, repeat-refill count, effective life spent/gained, card reuse,
-  decisions per turn and incompletion/loop rate; not just victory counts.
-- Opponents forcing draws while empty, negating refill after payment, removing
-  discard cards, responding with damage, and recovery cards recycled by refill.
-- Multiple policy styles and seat rotation. The present combat lab cannot measure
-  any of these full-match outcomes yet; never label them as completed tests.
+## Future fixtures and explicit gaps
 
-## Future exact fixtures
-
-| Case | Recommended standard-action expectation |
+| Case | Expected timing |
 |---|---|
-| Health30, cost20, discard nonempty, own Main/empty chain | Pay to10, queue refill; no automatic draw. |
-| Health20 or lower | Reject unchanged; never pay down to0 to create a revival path. |
-| Outside Main or pending chain | Reject ordinary action; special exceptions require explicit cards. |
-| Discard empty when confirming | Reject without payment. |
-| Discard emptied in response / effect negated | Payment remains; no cards recovered. |
-| Deck contains cards | Mix eligible discard into remaining deck, then shuffle uniformly. |
-| Cards in hand/exile/leader reserve | Unchanged. |
-| Tokens in invalid zones | Reject invalid state; no token cards added. |
-| Required draw already failed | Refill cannot erase that failure under the proposed failure rule. |
-| Save before/after refill resolution | Pinned shuffle/random outcomes replay identically; public count, private order. |
+| Own effect draw3, deck2, payment legal | Draw2, pay/refill, draw1, finish effect, end current turn only. |
+| Required draw exhausted, no valid payment/refill | Record unrecovered failure; eliminate at cleanup; no later revival. |
+| Own draw1 consumes last card exactly | No failed draw; finish effect/pending work, end turn, offer Start refill next own turn. |
+| Own Start empty, accepts refill | Automatic Start work, pay/refill, no normal draw/Main/Combat, End maintenance. |
+| Own Start empty, declines/cannot pay | Required draw fails; elimination, not an endless empty-deck stall. |
+| Off-turn forced draw exhausts deck and refill succeeds | Finish required draws/effect, leave active turn intact, next own turn Recharge. |
+| Recharge turn | Start/End maintenance and mandatory effects, no normal draw/voluntary plays/Combat. |
+| Opponent attacks before/after Recharge turn | Ordinary blocking/reaction rules still apply. |
+| Health-cost/modifier/recovery loop | Explicit cost legality and loop diagnostics; never silently award a draw. |
+| Saved pending refill/Recharge | Restore exact choice, draw remainder, penalty state and pinned RNG; no second payment/draw. |
 
-## Implementation gate and rollback
+Still to specify before implementation: exact cost/payment floor; whether several
+off-turn refills before the same next turn accumulate multiple Recharge turns;
+mandatory draw/refill during a Recharge turn; and explicit penalty-bypass wording.
+Do not invent stacking or bypass behavior from the placeholder lore. Initial
+content requiring those unresolved interactions must remain unsupported until
+specified. Self-lethal health costs elsewhere remain a separate authored-cost rule.
 
-Choose availability/timing first, then settle failed-draw policy. Standard action
-needs an explicit registered command, health-cost transaction, eligible-zone
-movement, reaction chain, deterministic shuffle and checkpoint/replay fixtures.
-None are present in the combat-only lab. Do not add a standalone simulated refill
-that forks future game rules. Preserve old content/schema defaults; any future
-saved-match change needs versioning, compatibility tests and a migration plan.
-Until approval, keep this document as a proposal and existing engine unchanged.
+## Implementation and rollback gate
+
+Implement only in the reusable full-match engine: draw cursor/remaining count,
+refill decision, atomic health payment, zone movement, pinned shuffle, turn-end
+request and Recharge obligation. Keep this out of an independent simulator-only
+mini-engine. No such engine is enabled by the current combat lab.
+Future saved state needs versioned fields/defaults, compatibility fixtures and a
+migration/rollback plan. Existing report/checkpoint schemas are untouched now.
+Retain old experiment builds; never relabel old failed-draw semantics as new rules.

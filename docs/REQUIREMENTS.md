@@ -28,7 +28,7 @@ Reading level affects explanations, never rules or strength. Setting accessible 
 Lobby requires legal confirmed deck, selected leader and ready status for everyone before host starts. Deck/leader selections visible openly in lobby, card lists private unless deliberately shared. Changes clear readiness; match start freezes choices/rules/definitions/cosmetics.
 Five opening cards; one free selective redraw: set rejected cards aside, draw replacements, shuffle rejected back. Choices private; replacement counts revealed only once all lock. Starting player and fixed order revealed after redraw (leaders already visible).
 One draw at each own turn start; first player skips first draw in duel only. Seven-card end-turn limit, legal plays before ending then discard excess. Discard does not normally reshuffle.
-30 player health initial; failed required draw or health <=0 permanently eliminates. Empty deck alone does not; milling supported. No player revival or final revival windows. Last active wins after pending valid effects/cleanup; simultaneous all-out is draw.
+30 player health initial; an unrecovered failed required draw or health <=0 permanently eliminates. Empty deck alone does not eliminate; the approved Recharge extension below can end an own turn. Milling supported. No player revival or final revival windows. Last active wins after pending valid effects/cleanup; simultaneous all-out is draw.
 
 ## Gameplay detail
 RULES_DRAFT.md is the consolidated mechanics reference: attack/health only with persistent wounds, exhausted blocking, Challenge, Breakthrough, phases, costs/response chain, leaders, transformation/combine, tokens, upgrades and elimination. Old flat defense/full bypass and all player-revival rules are superseded.
@@ -78,7 +78,17 @@ User wants rigorous local computation instead of spending AI tokens per test. Bu
 
 ## Deck-refill extension requested 2026-11-22
 Add a costly fixed-life trade to reshuffle discard/graveyard into the deck. Repeat
-use should need deliberate life-gain support. Exact timing/availability/cost are
-pending design selection (DECK_REFILL_DESIGN.md). This is an explicit exception
+use should need deliberate life-gain support. Draw-time refill/turn-loss/Recharge timing is approved below; exact life cost
+remains provisional (DECK_REFILL_DESIGN.md). This is an explicit exception
 to the ordinary non-reshuffling discard rule, not a free automatic recycle.
 Simultaneous private blocker locking/reveal is approved for multiplayer defense.
+
+
+Deck-refill timing now approved: finish remaining required draws after valid
+paid discard refill; eliminate if no accepted valid refill can complete a required
+draw. Own-turn exhaustion/refill ends the current turn; an empty next Start offers
+refill and then ends that turn. Off-turn refill causes a full next-turn Recharge
+with Start/End maintenance but no normal draw, voluntary play/abilities or Combat.
+Ordinary off-turn blocking/reactions remain. No additional next-turn penalty for
+an own-turn refill. Recharge lore is Vanguard Core stabilization. Exact fixed
+life cost is not adopted; evaluate with the lost-turn cost included.
