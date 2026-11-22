@@ -1,6 +1,6 @@
 # Card information contract — standard and full art
 
-Status: proposed shared template contract, 2026-11-22. Based on confirmed
+Status: shared template contract approved by Steve on 2026-11-22. Based on confirmed
 REQUIREMENTS.md, RULES_DRAFT.md and UX_CONTENT_PLAN.md. Steve requested this before
 priority review/turn-draw implementation. This defines information, not visual
 layout, new card mechanics, database schemas or an implemented renderer. Treat
@@ -136,5 +136,6 @@ standard/full-art variants and check that no gameplay information disappears:
 
 Suggested content slots: name; color identity; type/role; play/access cost;
 artwork; traits; rules/abilities; optional creature stats; optional leader/form
-panels; optional flavor/footer; separate live-state overlays. Templates can be
-worked on independently once this shared information contract is approved.
+panels; optional flavor/footer; separate live-state overlays. This contract is approved; standard/full-art templates can now be worked on
+independently. See [filled examples](CARD_CONTENT_EXAMPLES.md) for the shared
+content handoff. Example card designs/costs are illustrative, not adopted content.

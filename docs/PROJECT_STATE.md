@@ -6,9 +6,10 @@ provisional. See DECK_REFILL_DESIGN.md and FULL_MATCH_TIMING_SPEC.md.
 
 ## Current next step
 Steve requested card information requirements before further implementation.
-Review CARD_INFORMATION_CONTRACT.md: shared standard/full-art face information,
-conditional type fields, separate live overlays and optional decoration. Templates
-will be developed separately. Contract is proposed, not a renderer/schema change.
+CARD_INFORMATION_CONTRACT.md is now approved. CARD_CONTENT_EXAMPLES.md provides
+filled creature/action/reaction/upgrade/persistent/leader/form/token content and a
+live-overlay fixture for separate standard/full-art template work. Examples are
+illustrative; no card catalog, renderer or balance claims are adopted.
 
 Queued after that: priority-core edge-case review and pure turn/required-draw/refill
 state with explicit test-cost parameters, then atomic cleanup/elimination. Steve
@@ -187,3 +188,13 @@ focused canonical requirements. Common name/color/type/access/art/rules regions;
 conditional creature/leader/trait/form content; live state overlays and optional
 catalog/flavor data are separate. No new mechanics, card schemas, renderer or tests
 added. Pending priority review and turn/draw implementation remain queued.
+
+
+Latest card-template decisions: Steve approved the shared information contract and
+requested filled examples. Added CARD_CONTENT_EXAMPLES.md, covering base/ability
+creatures, zero ATK, Action, Reaction, Upgrade, other persistent, Leader with two
+ability locations, two linked transform faces, Combined Form/components, creature
+and resource tokens, plus live wounds/status overlays. Same content feeds both
+styles; example abilities/costs/trait vocabulary are not approved game content.
+Documentation only, no tests or schema changes. Priority review/turn-draw work
+remain queued behind the template task as requested.

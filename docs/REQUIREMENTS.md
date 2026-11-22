@@ -92,3 +92,13 @@ with Start/End maintenance but no normal draw, voluntary play/abilities or Comba
 Ordinary off-turn blocking/reactions remain. No additional next-turn penalty for
 an own-turn refill. Recharge lore is Vanguard Core stabilization. Exact fixed
 life cost is not adopted; evaluate with the lost-turn cost included.
+
+
+## Card-face information contract approved 2026-11-22
+CARD_INFORMATION_CONTRACT.md is the shared baseline for standard and full-art
+cards: name, color/Generic identity, type/role, play/access information, artwork
+and applicable rules content. Creature stats, traits, leader/location abilities,
+forms and unusual costs appear when relevant. Live instance overlays are separate
+from base definitions. Cosmetics preserve all gameplay information. Filled
+CARD_CONTENT_EXAMPLES.md entries are template candidates, not approved/balanced
+starter content. No catalog schema or renderer implementation is implied.

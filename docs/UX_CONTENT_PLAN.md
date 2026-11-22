@@ -22,9 +22,12 @@ Save each committed action incl pending chain, resume paused. Midnight local act
 See tester plan for independent simulation data; simulation never writes family achievements or currency.
 
 
-## Shared card information contract (proposed)
-See [CARD_INFORMATION_CONTRACT.md](CARD_INFORMATION_CONTRACT.md) for the proposed
+## Shared card information contract (approved 2026-11-22)
+See [CARD_INFORMATION_CONTRACT.md](CARD_INFORMATION_CONTRACT.md) for the approved
 standard/full-art content matrix, conditional creature/leader/form fields, live
 state overlays and accessibility acceptance examples. It specifies information,
 not a fixed template design. Full art must preserve the same gameplay content.
 No renderer, catalog schema or template asset is changed by this proposal.
+
+[CARD_CONTENT_EXAMPLES.md](CARD_CONTENT_EXAMPLES.md) supplies illustrative filled
+content for template work; it does not publish new mechanics or balanced cards.
