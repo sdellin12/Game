@@ -1,5 +1,12 @@
 # Build Plan — Proposed Delivery Sequence
 
+Current implementation: Windows-tested combat core, CLI, equal-budget groups,
+SQLite checkpoints/attempt history, cooperative controls, comparison summaries
+and a thin Tkinter desktop shell. See COMBAT_LAB_QUICKSTART.md and PROJECT_STATE.md.
+Historical planning statements below are superseded by this implementation status.
+Full matches, bots, packaged executable and process workers remain pending.
+
+
 Implementation update 2026-11-22: user authorized starting the tester. First pure
 combat core/CLI/export/replay slice implemented and validated on Linux. See
 COMBAT_LAB_QUICKSTART.md and experiments/FIRST_COMBAT_SLICE.md. Full-game/mobile/TV

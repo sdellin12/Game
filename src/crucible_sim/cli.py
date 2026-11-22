@@ -7,6 +7,7 @@ import html
 import json
 import platform
 import sys
+import sqlite3
 from dataclasses import asdict
 from importlib.resources import files
 from pathlib import Path
@@ -152,7 +153,7 @@ def matrix_scenarios():
                                          (Attack("attacker", "B", ("blocker",)),), name)
 
 
-def export(records: list[dict], output: Path, experiment: str) -> None:
+def export(records: list[dict], output: Path, experiment: str, progress: dict | None = None) -> None:
     if output.exists():
         raise CombatError("output already exists; choose a new directory")
     manifest = {"schema_version": SCHEMA, "experiment": experiment,
@@ -166,6 +167,12 @@ def export(records: list[dict], output: Path, experiment: str) -> None:
                                            for e in r["result"]["events"]
                                            if e["target_kind"] == "player"),
                "interpretation": "Exact encounter results, not match wins or proof of balance."}
+    from .comparisons import comparison_summary
+    comparisons = comparison_summary(records)
+    summary["comparisons"] = comparisons
+    if progress is not None:
+        manifest["progress"] = progress
+        summary["progress"] = progress
     output.mkdir(parents=True)
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     (output / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
@@ -186,6 +193,10 @@ def export(records: list[dict], output: Path, experiment: str) -> None:
     rows = "".join("<tr><td>" + html.escape(r["input"].get("name", "")) + "</td><td>" +
                    html.escape(", ".join(r["result"]["defeated_creatures"]) or "None") +
                    "</td><td>" + html.escape(r["result_hash"][:12]) + "</td></tr>" for r in records)
+    comparison_rows = "".join("<tr>" + "".join("<td>" + html.escape(str(row[key])) + "</td>" for key in
+        ("attacking_board", "defending_board", "encounters", "player_damage_range", "attacker_losses_range", "defender_losses_range")) + "</tr>" for row in comparisons["matchups"])
+    comparison_html = ("<h2>Board comparisons</h2><p>" + html.escape(comparisons["interpretation"]) +
+        "</p><table><tr><th>Attacking ATK/HP</th><th>Defending ATK/HP</th><th>Encounters</th><th>Player damage range</th><th>Attacker losses</th><th>Defender losses</th></tr>" + comparison_rows + "</table>")
     document = ("<!doctype html><html lang='en'><meta charset='utf-8'>"
                 "<meta name='viewport' content='width=device-width,initial-scale=1'>"
                 "<title>Crucible combat experiment</title><style>"
@@ -194,8 +205,9 @@ def export(records: list[dict], output: Path, experiment: str) -> None:
                 "table{border-collapse:collapse;width:100%}</style><h1>Crucible combat lab</h1>"
                 "<p><strong>Combat-only: no full-match win rates or balance claims.</strong></p>"
                 f"<p>{len(records)} exact encounters. Engine: {engine_hash()[:12]}.</p>"
-                "<h2>Coverage and assumptions</h2><pre>" + html.escape(json.dumps(COVERAGE, indent=2)) +
-                "</pre><h2>Encounters</h2><table><thead><tr><th>Scenario</th>"
+                "<h2>Run progress</h2><pre>" + html.escape(json.dumps(progress, indent=2)) +
+                "</pre><h2>Coverage and assumptions</h2><pre>" + html.escape(json.dumps(COVERAGE, indent=2)) +
+                "</pre>" + comparison_html + "<h2>Encounters</h2><table><thead><tr><th>Scenario</th>"
                 "<th>Defeated creatures</th><th>Result hash</th></tr></thead><tbody>" + rows +
                 "</tbody></table><p>Inspect results.jsonl for complete input, damage calculations and output.</p></html>")
     (output / "report.html").write_text(document, encoding="utf-8")
@@ -225,6 +237,16 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     matrix = sub.add_parser("matrix", help="enumerate approved numeric profiles")
     matrix.add_argument("--output", type=Path, required=True)
+    batch = sub.add_parser("batch", help="resume a bounded matrix batch")
+    batch.add_argument("--experiment", choices=("matrix", "groups"), default="matrix")
+    batch.add_argument("--budget", type=int, default=3)
+    batch.add_argument("--checkpoint", type=Path, required=True)
+    batch.add_argument("--control-file", type=Path, help="optional UTF-8 file containing pause or cancel")
+    batch.add_argument("--limit", type=int, default=100)
+    batch.add_argument("--output", type=Path, required=True)
+    groups = sub.add_parser("groups", help="equal-budget group combat enumeration")
+    groups.add_argument("--budget", type=int, default=3)
+    groups.add_argument("--output", type=Path, required=True)
     run = sub.add_parser("run", help="resolve a structured combat scenario")
     run.add_argument("scenario", type=Path)
     run.add_argument("--output", type=Path, required=True)
@@ -237,13 +259,52 @@ def main(argv: list[str] | None = None) -> int:
         else:
             if args.output.exists():
                 raise CombatError("output already exists; choose a new directory")
+            if args.command == "batch":
+                from .batch import run_batch, checkpoint_status
+                if args.experiment == "groups":
+                    from .groups import group_scenarios
+                    inputs = list(group_scenarios(args.budget))
+                else:
+                    inputs = list(matrix_scenarios())
+                stop_status = None
+                def show_progress(event):
+                    nonlocal stop_status
+                    if event["status"] in ("paused", "cancelled"):
+                        stop_status = event["status"]
+                        print(f"Batch {stop_status}; completed jobs are saved.")
+                    elif event["status"] == "error":
+                        print(f"Job {event['ordinal']} failed: {event['error']}", file=sys.stderr)
+                    elif event["attempted_this_batch"] % 100 == 0:
+                        print(f"Attempted {event['attempted_this_batch']} jobs this batch.")
+                def control():
+                    if args.control_file is None or not args.control_file.exists():
+                        return None
+                    value = args.control_file.read_text(encoding="utf-8-sig").strip().lower()
+                    if value not in ("", "pause", "cancel"):
+                        raise CombatError("control file must be empty or contain pause or cancel")
+                    return value or None
+                records = run_batch(args.checkpoint, args.limit, scenarios=inputs,
+                                    progress=show_progress, control=control)
+                progress = checkpoint_status(args.checkpoint)
+                progress.update(requested_combats=len(inputs), pending_combats=len(inputs) - len(records),
+                                run_status=stop_status or ("completed" if len(records) == len(inputs) else "batch_limit"))
+                export(records, args.output, f"resumable {args.experiment}", progress=progress)
+                print(f"Checkpoint contains {len(records)}/{len(inputs)} combats; report: {args.output}")
+                return 2 if progress["failed_jobs_pending_retry"] else (130 if stop_status == "cancelled" else 0)
+            if args.command == "groups":
+                from .groups import group_scenarios
+                inputs = group_scenarios(args.budget)
+                records = [run_scenario(s) for s in inputs]
+                export(records, args.output, f"equal-budget groups: {args.budget}")
+                print(f"Exported {len(records)} exact group combats to {args.output}")
+                return 0
             inputs = matrix_scenarios() if args.command == "matrix" else [
                 json.loads(args.scenario.read_text(encoding="utf-8"))]
             records = [run_scenario(s) for s in inputs]
             export(records, args.output, args.command)
             print(f"Exported {len(records)} combat-only records to {args.output}")
         return 0
-    except (CombatError, OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+    except (CombatError, OSError, sqlite3.Error, json.JSONDecodeError, KeyError, TypeError) as exc:
         print(f"Experiment rejected: {exc}", file=sys.stderr)
         return 2
 

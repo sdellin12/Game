@@ -36,3 +36,62 @@ TCG references can inform costs/wording/archetypes, but keep other games' rules 
 Windows PC Ryzen5/GTX1650 (RAM/VRAM unknown), Linux home server previously discussed but deployment not verified. Tester CPU work independent of art/GPU/mobile install.
 Actual iPads under Screen Time require restriction-safe delivery test; web accepted, weekly native fallback. Both Roku/GoogleTV required completed game. No paid art API; unattended ChatGPT Plus worker path unverified.
 No estimates/claims of balanced cards before evidence. Bots see legal information only; full-game coverage cannot be inferred from combat-only simulation.
+
+## Codex continuation — Windows checkpoint runner
+Existing 27 tests passed on Windows. Added sequential bounded matrix batches,
+atomic SQLite completion checkpoints, replay validation on resume and partial
+reports through the `batch` CLI. See quickstart. Equal-budget creature groups,
+parallel workers and desktop shell remain pending.
+
+## Equal-budget group continuation
+Added budget 1â€“3 exact-cost profile groups, all-attack directional encounters,
+all legal ordinary blocker assignments/orders, including unblocked attacks.
+32 tests pass on Windows; budget-1 CLI exported/replayed 18 encounters.
+Group scenarios are full-health/ready/no-shield numeric fixtures; deployment,
+optional attack subsets and group checkpoints remain pending. Repeated numeric
+profiles do not establish singleton deck legality or equal card economy.
+
+
+## Group checkpoint continuation
+Equal-budget groups now use the same bounded SQLite runner via
+`batch --experiment groups --budget 3`. Existing matrix checkpoint pins/schema
+are preserved; changed inputs reject without discarding progress. Windows:
+34 tests pass, including resumed groups versus uninterrupted results, changed
+input rejection, and CLI partial export/replay. Runner remains sequential with
+in-memory input enumeration and resume validation. Parallel workers, failure
+attempt history and desktop controls remain pending.
+
+
+## Batch progress and failure reporting
+Added an atomic per-attempt SQLite history and structured progress in batch
+JSON/HTML reports. Failed simulation jobs remain retryable and errors survive
+successful retries. CLI reports errors, periodic progress and unresolved-failure
+exit status. Legacy checkpoint results/pins are preserved with an additive table;
+old attempt history is unavailable. Abrupt interruptions remain pending jobs.
+Windows validation: 36 tests pass, including injected failure/retry/history and
+legacy checkpoint compatibility. No worker pool or desktop shell yet.
+
+## Cooperative pause/cancel controls
+Runner accepts pause/cancel requests between combat jobs, preserving committed
+results for resume. CLI exposes --control-file; exports distinguish pause,
+cancel, batch-limit and completion. Cancel exits 130; pending jobs remain pending.
+No checkpoint schema changes. Existing input generation/resume validation and
+export are not interruptible by the cooperative control. Windows: 38 tests pass,
+including stop after two jobs/resume equivalence and zero-attempt cancellation
+with accurate partial report counts. Desktop interface remains pending.
+
+## First desktop shell
+Added Tkinter experiment/checkpoint selection, run/resume, pause/cancel, child
+process logs and latest-report opening. Computation runs in a separate Python
+process. Closing requests pause and waits for export. Launch: py -3 run_desktop.py.
+Windows: 40 tests pass; Tk construction and window-to-child two-combat run,
+completion log and report availability smoke checks pass. No visual layout review,
+packaged executable, full-match mode or advanced replay inspector yet.
+
+## Desktop review and comparison summaries
+Visually reviewed the default Windows layout. Added readable completion/pending/
+error status and a minimum window size. Automated real-child-process checks cover
+pause, cancel, resume, close waiting for export, report link invocation and bad
+checkpoint recovery. Reports now show per-board observed damage/loss ranges and
+encounter denominators, including partial-run caveats. No policy win estimates.
+45 Windows tests pass; full budget-3 export/replay: 18,445 exact encounters.

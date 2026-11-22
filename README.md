@@ -1,5 +1,14 @@
 # The Crucible
-Original household card battler: imaginative themed decks, private phone/tablet hands and a shared TV battlefield. The first combat-only balance-lab slice is implemented; the full game and desktop interface are not built yet.
+Original household card battler: imaginative themed decks, private phone/tablet hands and a shared TV battlefield. The combat-only balance lab includes a desktop window, resumable batches and comparison reports. The full game is not built yet.
+
+## Open the desktop lab
+
+```powershell
+py -3 run_desktop.py
+```
+
+Choose a checkpoint and Run / Resume. Pause/cancel preserve completed jobs.
+Reports show exact outcome ranges; they do not establish match win rates.
 
 ## Run the combat lab
 

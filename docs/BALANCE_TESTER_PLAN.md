@@ -1,5 +1,12 @@
 # The Crucible Balance Lab — Expert Design and Implementation Plan
 
+Current implementation: Windows-tested combat core, CLI, equal-budget groups,
+SQLite checkpoints/attempt history, cooperative controls, comparison summaries
+and a thin Tkinter desktop shell. See COMBAT_LAB_QUICKSTART.md and PROJECT_STATE.md.
+Historical planning statements below are superseded by this implementation status.
+Full matches, bots, packaged executable and process workers remain pending.
+
+
 ## Implementation update — 2026-11-22
 User authorized moving ahead. First combat-only core and CLI slice now exists,
 with 27 passing tests, 1,156 exported/replayed deterministic encounters and a

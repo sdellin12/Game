@@ -12,6 +12,9 @@ dependencies = []
 [project.scripts]
 crucible-sim = "crucible_sim.cli:main"
 
+[project.gui-scripts]
+crucible-lab = "crucible_lab.desktop:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
