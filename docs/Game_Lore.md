@@ -15,10 +15,10 @@
 * **Static Arena:** Matches take place in **The Relic-Ring**, a steady, ancient stone-and-metal colosseum suspended between realities. Keeping the arena stable and readable on the TV screen ensures the creatures, Leaders, and action stay front and center without overwhelming younger players.
 * **The Ring-Keepers:** Silent, ancient overseers who watch over the Relic-Ring and keep the tournament structure orderly.
 
-## 4. Vanguard Cores, Sparks, Leaders & Revival
-* **40 Sparks per Deck:** Each Leader's **Vanguard Core** sheds **40 glowing Sparks**—matching the 40-card deck. When a creature is played, Sparks weave into the form; when a creature is knocked out, its Sparks unravel back into the energy pool rather than being permanently lost.
+## 4. Vanguard Cores, Sparks, Leaders & Elimination
+* **40 Sparks per Deck:** Each Leader's **Vanguard Core** sheds **40 glowing Sparks**—matching the 40-card deck. When a creature is played, Sparks weave into the form; when a creature is knocked out, its Sparks unravel visually; its card follows the normal discard rules. This does not refund resources or return cards to the deck. The discovery remains in the shared catalog.
 * **Leader Retreats & Resummoning:** A Leader anchors their squad in the Relic-Ring. If knocked out, they pull back outside the ring to recover, requiring a higher cost to resummon back into the fight.
-* **Player Revival:** Even if a player is knocked out of a match, they can spend reserve cards to trigger a **Revival** from their Vanguard Core for a dramatic comeback.
+* **Player Elimination:** A Researcher whose health reaches zero or who fails a required draw leaves that match permanently, but can spectate and cheer with reactions. Player revival is not part of the current game. Leader retreat and resummoning remain separate mechanics.
 
 ## 5. Ten Color Sparks & Tactical Edge
 * **Accessible Baseline + Tactical Edge:** In the initial version, all ten colors share a welcoming, competitive baseline so players aren't locked into rigid archetypes on day one. Each color provides a distinct **tactical edge** and signature flavor while keeping room for varied builds and future expansion:
@@ -37,4 +37,4 @@
 * Short, lightweight TV intros/cutscenes can play during game setup to introduce the world without slowing down game night:
   1. **The Pull:** Vanguard Cores hum as rifts open, drawing Researchers into **The Crucible** amid an unexplained shattering of the Prime Matrix.
   2. **The Relic-Ring:** Reveals the stone-and-metal colosseum, silent **Ring-Keepers**, and the conqueror scouting realms.
-  3. **Sparks & Revival:** Shows a Vanguard Core shedding **40 Sparks**, defeated creatures unraveling back, knocked-out Leaders retreating before escalating resummons, and players using reserve cards to **Revive**.
+  3. **Sparks & Retreat:** Shows a Vanguard Core shedding **40 Sparks**, defeated creatures unraveling, knocked-out Leaders retreating before escalating resummons, and eliminated Researchers watching from outside the ring. Setup intros are optional future production; combat animations remain brief and nonblocking.
