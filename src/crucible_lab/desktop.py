@@ -1,5 +1,7 @@
 """Responsive Tk shell; all simulation work stays in a child process."""
 import os
+import threading
+import queue
 import subprocess
 import sys
 import tempfile
@@ -15,7 +17,8 @@ def batch_command(checkpoint, output, control, experiment, budget, limit):
         raise ValueError('Choose matrix or groups')
     if not 1 <= int(budget) <= 3 or int(limit) < 1:
         raise ValueError('Budget must be 1–3 and batch size must be positive')
-    return [sys.executable, '-u', '-m', 'crucible_sim.cli', 'batch',
+    prefix = [sys.executable, '--worker'] if getattr(sys, 'frozen', False) else [sys.executable, '-u', '-m', 'crucible_sim.cli']
+    return prefix + ['batch',
             '--experiment', experiment, '--budget', str(budget), '--limit', str(limit),
             '--checkpoint', str(checkpoint), '--output', str(output),
             '--control-file', str(control)]
@@ -68,6 +71,8 @@ class LabWindow:
         self.cancel.pack(side='left')
         self.open_button = ttk.Button(buttons, text='Open latest report', command=self.open_report, state='disabled')
         self.open_button.pack(side='right')
+        self.inspect_button = ttk.Button(panel, text='Inspect exported replays...', command=self.inspect_replays)
+        self.inspect_button.pack(anchor='w', pady=(0, 8))
         ttk.Label(panel, textvariable=self.status, wraplength=730).pack(anchor='w')
         self.log = tk.Text(panel, height=14, wrap='word', state='disabled')
         self.log.pack(fill='both', expand=True, pady=8)
@@ -95,6 +100,7 @@ class LabWindow:
             self.log_path = Path(self.temp.name) / 'runner.log'
             self.log_file = self.log_path.open('w', encoding='utf-8')
             env = os.environ.copy()
+            env["CRUCIBLE_WORKER_LOG"] = str(self.log_path)
             env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1]) + os.pathsep + env.get("PYTHONPATH", "")
             self.process = subprocess.Popen(command, stdout=self.log_file, stderr=subprocess.STDOUT, env=env,
                                             creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
@@ -154,6 +160,37 @@ class LabWindow:
         self.cancel.configure(state='disabled')
         if self.closing:
             self.root.destroy()
+
+    def inspect_replays(self):
+        directory = filedialog.askdirectory(title='Choose exported run folder',
+            initialdir=str(self.report.parent) if self.report else None)
+        if not directory:
+            return
+        self.inspect_button.configure(state='disabled')
+        self.status.set('Verifying replays before opening inspector...')
+        results = queue.Queue()
+        def load():
+            from .replay import load_replays
+            try:
+                results.put((load_replays(directory), None))
+            except Exception as exc:
+                results.put((None, str(exc)))
+        threading.Thread(target=load, daemon=True).start()
+        def poll_load():
+            try:
+                records, error = results.get_nowait()
+            except queue.Empty:
+                self.root.after(100, poll_load)
+                return
+            self.inspect_button.configure(state='normal')
+            if error:
+                self.status.set('Replay verification failed.')
+                messagebox.showerror('Cannot inspect replays', error)
+            else:
+                from .replay import ReplayWindow
+                ReplayWindow(self.root, records)
+                self.status.set(f'Opened {len(records)} verified public combat replays.')
+        self.root.after(100, poll_load)
 
     def open_report(self):
         if self.report:

@@ -3,6 +3,10 @@ Original household card battler: imaginative themed decks, private phone/tablet 
 
 ## Open the desktop lab
 
+Portable Windows build: double-click `dist/CrucibleLab/CrucibleLab.exe` after
+[building the bundle](docs/COMBAT_LAB_QUICKSTART.md#portable-windows-app).
+The desktop also includes verified, searchable combat replay inspection.
+
 ```powershell
 py -3 run_desktop.py
 ```

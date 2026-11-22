@@ -236,3 +236,39 @@ trials or policy probabilities. Partial reports cover only jobs already complete
 Desktop review on Windows confirmed readable default layout, pause/cancel,
 resume, report-link invocation, close-while-running and recovery from a malformed
 checkpoint. No packaged executable or full-match simulation is supplied.
+
+## Replay inspector
+
+Click **Inspect exported replays...** and choose a report directory. Loading
+recomputes its records against the current engine before opening. Verification
+runs in a background thread so the desktop remains responsive. Search by scenario
+name or job ID, select an encounter, and inspect the public before/after boards,
+declarations and simultaneous damage calculations. A mismatched engine or altered
+record is rejected. This is a single-combat inspector, not a turn-by-turn match
+replay. Data is loaded into memory. No hidden hands or full-match state exist.
+
+## Portable Windows app
+
+The local build is `dist/CrucibleLab/CrucibleLab.exe`. Double-click it; Python
+is bundled. Keep the entire folder including `_internal` together. A distributable
+folder ZIP is `dist/CrucibleLab-Windows.zip`. Store checkpoints/reports outside
+the app directory so replacing the app cannot replace experiment data.
+
+To rebuild on Windows (tested Python 3.14.3):
+
+```powershell
+py -3 -m venv .venv-build
+.\.venv-build\Scripts\python.exe -m pip install -r requirements-build.txt
+.\.venv-build\Scripts\python.exe scripts/build_windows.py
+```
+
+Build dependencies are isolated; runtime has no per-simulation services. The
+bundle contains the app, candidate profile JSON, Python and Tk, not the reference
+corpora. PyInstaller one-folder distribution documentation:
+https://pyinstaller.org/en/stable/usage.html
+
+Source and frozen engine hashes can differ: use a new checkpoint for the packaged
+build and inspect its reports with that same build. Keep old source/build copies
+for old replays. Never edit hashes to force compatibility. Checkpoint schema is
+unchanged. The app is unsigned, with no installer or automatic updates. It was
+tested on this Windows machine, not a clean machine without Python installed.

@@ -46,7 +46,13 @@ def digest(value: object) -> str:
 
 def engine_hash() -> str:
     import crucible_core.combat as combat
-    return hashlib.sha256(Path(combat.__file__).read_bytes()).hexdigest()
+    source = Path(combat.__file__)
+    if source.suffix == '.py' and source.is_file():
+        data = source.read_bytes()
+    else:
+        import marshal
+        data = marshal.dumps(combat.__loader__.get_code(combat.__name__))
+    return hashlib.sha256(data).hexdigest()
 
 
 def profiles() -> dict:

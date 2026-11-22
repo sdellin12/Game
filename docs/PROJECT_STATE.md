@@ -95,3 +95,12 @@ pause, cancel, resume, close waiting for export, report link invocation and bad
 checkpoint recovery. Reports now show per-board observed damage/loss ranges and
 encounter denominators, including partial-run caveats. No policy win estimates.
 45 Windows tests pass; full budget-3 export/replay: 18,445 exact encounters.
+
+## Replay inspector, portable package and PR review
+Added asynchronous verified export loading, searchable encounter selection,
+public before/after boards and simultaneous damage details. Added reproducible
+Windows one-folder build + ZIP and frozen-worker dispatch with bundled content.
+Source/packaged engine hashes may differ; use new checkpoints per build, preserve
+older builds for replay. No checkpoint schema migration. Windows tests and build
+smokes are recorded in docs/experiments/PR1_REVIEW.md. PR remains open for merge
+review; full-match mode, clean-machine package testing and signing remain pending.
