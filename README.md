@@ -10,7 +10,7 @@ Original household card battler: imaginative themed decks, private phone/tablet 
 - [Lore bible](docs/Game_Lore.md)
 - [Platform architecture proposals](docs/ARCHITECTURE_PROPOSAL.md)
 
-Current work: specialist plan for a local, reproducible balance-testing desktop lab using the eventual game's shared rules engine. No per-simulation AI/API calls. Tester plan will be linked when complete.
+[Balance Tester Design and Implementation Plan](docs/BALANCE_TESTER_PLAN.md) — completed four-specialist planning synthesis for a local reproducible Windows desktop lab using the eventual game's shared rules engine. No per-simulation AI/API calls; implementation not started.
 
 Current rules use attack/health only, persistent wounds,30 player health and permanent elimination; old defense/full-bypass/player-revival plans are superseded. All ten colors support approachable decks. No real-money progression.
 
