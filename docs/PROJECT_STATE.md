@@ -5,6 +5,10 @@ playtests yet. Current rules include paid draw-time refill and Recharge; cost20 
 provisional. See DECK_REFILL_DESIGN.md and FULL_MATCH_TIMING_SPEC.md.
 
 ## Current next step
+The atomic coordinator foundation is now implemented and tested; see the latest
+continuation below and experiments/ATOMIC_COORDINATOR.md. Recommended next slice:
+automatic Start/resource maintenance and legal action-cost transactions.
+
 Standard/full-art v1 layouts are complete in design/cards with shared fixtures,
 SVG outputs, offline gallery and local PNG references. docs/CARD_DESIGN.md is the
 current design/handoff source; the ZIP bundle is dist/CardTemplate-Handoff-v1.zip.
@@ -218,3 +222,22 @@ match coordinator with cleanup/elimination fixtures before enabling full-match m
 Final validation for template/turn foundation: 89 Windows tests pass; paired SVGs
 regenerate deterministically; 50-file design ZIP SHA256 manifest verified. No core
 combat changes or saved-format migrations. Full-match mode remains disabled.
+
+
+## Latest continuation — atomic coordinator foundation
+Added crucible_core.match: immutable typed effects, suspended refill choices,
+whole-effect health checks, simultaneous cleanup/permanent elimination, original
+seat rotation, controlled pending-item cancellation, lifecycle trigger ordering,
+serial safe-boundary concessions and deferred terminal checks. End intent retains
+the final response window; triggers, seven-card hand checks and supplied expiration
+consequences settle before advancement. Existing combat kernel has a restricted
+closed-window snapshot adapter. 25 new tests; full Windows suite: 114 passing.
+See experiments/ATOMIC_COORDINATOR.md for the exact scope and trust boundary.
+
+Full-match mode remains disabled. Resources/automatic Start, production action
+legality, attack/block declaration, hidden projections, leaders/combined forms and
+general duration anchors remain separate gates. No persisted state/catalog/report
+format changed. Standard/full-art layouts are unchanged; CARD_DESIGN.md and the
+portable design ZIP have updated engine-status notes for another LLM.
+Recommended next: Start/resource maintenance and legal cost transactions, then
+attack/block flow and private projections.

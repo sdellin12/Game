@@ -67,8 +67,8 @@ def _name(value):
     return type(value) is str and bool(value.strip())
 
 
-def _validate_player(player):
-    if type(player) is not DrawPlayer or not _name(player.player_id) or not _integer(player.health, 1):
+def _validate_player(player, *, allow_nonpositive_health=False):
+    if type(player) is not DrawPlayer or not _name(player.player_id) or (type(player.health) is not int or (player.health <= 0 and not allow_nonpositive_health)):
         raise TurnError('expected a living DrawPlayer with positive health')
     if any(type(flag) is not bool for flag in (player.recharge_due, player.end_turn_requested)):
         raise TurnError('invalid player timing flags')
@@ -168,8 +168,11 @@ def _advance_draw(state):
     return replace(state, status='needs_refill', failure=None)
 
 
-def begin_required_draw(player, turn, count, policy, *, request_id):
-    _validate_player(player); _validate_turn(turn); _validate_policy(policy)
+def begin_required_draw(player, turn, count, policy, *, request_id, defer_health_check=False):
+    if type(defer_health_check) is not bool:
+        raise TurnError('invalid deferred health-check flag')
+    _validate_player(player, allow_nonpositive_health=defer_health_check)
+    _validate_turn(turn); _validate_policy(policy)
     if not _integer(count) or not _integer(request_id, 1) or turn.phase == 'Finished':
         raise TurnError('invalid draw count/request or finished turn')
     if count and player.player_id == turn.active_player and turn.recharge:

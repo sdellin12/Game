@@ -336,3 +336,15 @@ emits failure/end/Recharge intent for a future atomic match coordinator; it does
 not implement elimination, Start/End effects or resources. Unresolved repeat/
 bypass interactions reject. See experiments/TURN_DRAW_FOUNDATION.md for coverage,
 tests, trust boundaries and migration limits. No final refill price is adopted.
+
+
+## Atomic coordinator subset implemented
+crucible_core.match now integrates typed effects with priority, required-draw
+choices and atomic stabilization: permanent elimination, owned/controlled object
+cleanup, surviving-controller pending items/triggers, serial safe-boundary
+concessions and terminal checkpoints. End response/trigger/hand-limit/expiration
+sequencing and original-seat rotation have focused fixtures. Combat integration
+is a final closed-window snapshot adapter only. See experiments/ATOMIC_COORDINATOR.md
+for exclusions; general durations, Start/resources, legal card commands, leaders,
+combined forms, attack/block declaration and private projections remain unimplemented.
+Full-match mode stays disabled. No final refill price or save schema is adopted.
