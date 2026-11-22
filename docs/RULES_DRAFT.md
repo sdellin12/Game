@@ -28,6 +28,12 @@ Challenge: qualified creature chooses enemy creature instead of player, same dec
 Assistance ordinarily defense for oneself; special cards enable helping another, recipient may decline. Gold benefits bounded, meaningful help; no reward from empty offers/loops.
 Damage zero after prevention does not trigger dealt-damage; attack triggers independent. Player health is checked after the whole resolving effect: damage followed by healing inside that same effect may leave a surviving player; a later effect cannot revive an eliminated player. After current effect/combat atomic resolution, <=0 defeated before new responses; simultaneous defeated creatures deal their damage and witness applicable simultaneous defeat triggers.
 
+## Card play zones - approved 2026-11-22
+Confirmed hand cards become public pending cards alongside their effects. Actions
+and Reactions enter their owners' discard after resolution or negation, so a card
+cannot refill itself during its own effect. Creature/persistent cards enter the
+battlefield only on resolution. Cancelled pending cards go to owners' discard.
+
 ## Healing/protection/upgrades
 Healing stops max; unused excess no benefit unless explicit. No initial overheal, future expensive effects deferred. Player max30 initially, healing very rare/expensive except dedicated style; creature healing separate.
 Health boost increases current+max by stated amount; when boost/health-upgrade lost, preserve currentHP capped new max (not subtract wounds), expiration alone not defeat. Same boost doesn't stack repeatedly unless explicit.

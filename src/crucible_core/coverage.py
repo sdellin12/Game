@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 1,
+    'version': 2,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -12,10 +12,15 @@ MATCH_COVERAGE = {
         'committed-attacks', 'private-simultaneous-blocker-locks',
         'explicit-damage-orders', 'post-declaration-and-final-response-windows',
         'shared-simultaneous-damage-kernel', 'combat-lock-projection',
+        'allowlisted-player-spectator-bot-views', 'session-bound-command-routing',
+        'server-seeded-recorded-refill-shuffles', 'hand-pending-battlefield-discard-transactions',
+        'single-locked-player-creature-effect-target', 'pending-card-negation-and-cancellation',
+        'plain-creature-and-capacity-permanent-card-entry',
     ),
     'excluded': (
-        'production-match-save-and-reconnect', 'general-player-bot-projections',
-        'hand-card-play-and-zone-transitions', 'generic-targets-modes-x-discounts',
+        'production-match-save-and-reconnect', 'network-session-authentication',
+        'lobby-opening-hand-redraw-and-complete-content-pack',
+        'advanced-zone-moves-exile-bounce-and-hand-transfers', 'multiple-targets-modes-x-discounts',
         'authored-health-sacrifice-costs-and-replacements', 'leaders-and-recovery',
         'transform-combine-and-continuous-stat-modifiers', 'general-duration-scheduler',
         'discard-draw-damage-and-attack-trigger-abilities',
