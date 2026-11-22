@@ -4,7 +4,7 @@ Updated 2026-11-22. Planning only; no implementation, simulations, hardware benc
 ## Read
 1. REQUIREMENTS.md — current confirmed product/UX/content.
 2. RULES_DRAFT.md — current mechanics and remaining engineering specifications.
-3. BALANCE_TESTER_PLAN.md — local tester design after specialist synthesis (current task).
+3. BALANCE_TESTER_PLAN.md — completed four-specialist tester design/implementation plan.
 4. BUILD_PLAN.md — proposed tester and full-game stages.
 5. Game_Lore.md — current fiction; architecture/UX as needed.
 ANSWERS.md and DISCOVERY.md are historical and superseded; do not reread full interview by default.
@@ -27,7 +27,7 @@ ANSWERS.md and DISCOVERY.md are historical and superseded; do not reread full in
 
 ## Current user request
 First sync everything discussed to GitHub, then relevant expert subagents discuss/plan design and implementation of tester. Documentation updates authorized on sdellin12/Game. Implementation not requested yet.
-Core requirements/rules/build/UX/lore have now been consolidated. Next specialist planning and synthesis into BALANCE_TESTER_PLAN.md, then verify links/content and report.
+Core requirements/rules/build/UX/lore consolidated and verified. Four-specialist review completed: engine architecture, experimental statistics, hidden-safe bots/adversarial QA and Windows desktop UX/packaging. Synthesis saved in BALANCE_TESTER_PLAN.md. Recommended next work when implementation is requested: T0/T1 pure combat core, nine approved candidate profiles and independent expected fixtures; CLI runner before desktop UI. No coding or test runs yet.
 User authorizes sensible tests/candidate numbers without approval for each fixture; ask consequential tradeoffs with selectable options+optional text.
 
 ## Known gates
