@@ -3,25 +3,25 @@ Updated: 2026-11-22
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation commit: 2458747 (atomic coordinator).
+- Latest implementation: Start/resources, ability costs and committed combat flow.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
-- Engine foundations: priority, turn/draw/refill and atomic match coordination.
-- Last validation: 114 Windows tests pass; 50 handoff file hashes verified.
+- Engine: managed turns, exact ability costs, private blocker locks and atomic cleanup.
+- Validation: 148 Windows tests; 36,214 unchanged legacy combat outcomes.
 - Full-match mode remains disabled pending the integration work below.
 
 ## Next implementation
-Recommended: automatic Start/resource maintenance and legal cost transactions.
-Then: attack/block declaration flow and private player/bot projections.
-Leaders, combined forms and general duration scheduling remain integration gates.
-The latest user message sets efficiency rules; it does not select a new feature.
+Completed all three selected slices; see experiments/START_COST_COMBAT.md.
+Recommended next: general private player/bot projections and command routing.
+Then: hand-card play/zone transitions; leaders and duration scheduling remain gates.
+Versioned implementation coverage: src/crucible_core/coverage.py.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.
 - Product decisions: REQUIREMENTS.md.
 - Gameplay rules: RULES_DRAFT.md (canonical; avoid duplicate baseline summaries).
 - Timing implementation: FULL_MATCH_TIMING_SPEC.md.
-- Coordinator scope/evidence: experiments/ATOMIC_COORDINATOR.md.
+- Current engine evidence/audit: experiments/START_COST_COMBAT.md.
 - Card design/handoff: CARD_DESIGN.md.
 - Lab operation: COMBAT_LAB_QUICKSTART.md.
 Expand reads only when a concrete dependency requires it.

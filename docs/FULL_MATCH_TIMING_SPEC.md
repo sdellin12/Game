@@ -200,16 +200,10 @@ that need those rules in the initial full-match content pack. No approximation.
 
 ## Combat integration gate
 
-The current resolve_combat API validates fresh attackers and exhausts them while
-resolving damage. A match engine declares attacks/exhaustion BEFORE response and
-blocker windows. It cannot pass already-exhausted declarations back through that
-fresh-command validator or silently flip state flags to force acceptance.
-
-Before full-match combat, separate validated declaration state from the shared
-pure damage kernel. Preserve the existing CLI API as an adapter if practical;
-regression fixtures must show identical damage. Add committed attack records,
-blocked-status memory, chosen blocker/Challenge orders, and pre-damage target
-revalidation. Do not create a simulator-only second combat algorithm.
+The legacy resolve_combat API remains the fresh-attack adapter for the lab.
+Committed match attacks now pay exhaustion/usage before responses and pass through
+combat_flow to the same damage kernel. Private lock/reveal and explicit damage
+orders are implemented; see experiments/START_COST_COMBAT.md for evidence.
 
 Approved blocker disclosure 2026-11-22: each defending controller chooses privately
 and locks its complete blocker assignment, including an explicit no-block choice.
@@ -338,13 +332,8 @@ bypass interactions reject. See experiments/TURN_DRAW_FOUNDATION.md for coverage
 tests, trust boundaries and migration limits. No final refill price is adopted.
 
 
-## Atomic coordinator subset implemented
-crucible_core.match now integrates typed effects with priority, required-draw
-choices and atomic stabilization: permanent elimination, owned/controlled object
-cleanup, surviving-controller pending items/triggers, serial safe-boundary
-concessions and terminal checkpoints. End response/trigger/hand-limit/expiration
-sequencing and original-seat rotation have focused fixtures. Combat integration
-is a final closed-window snapshot adapter only. See experiments/ATOMIC_COORDINATOR.md
-for exclusions; general durations, Start/resources, legal card commands, leaders,
-combined forms, attack/block declaration and private projections remain unimplemented.
-Full-match mode stays disabled. No final refill price or save schema is adopted.
+## Current implementation status
+See PROJECT_STATE.md for the compact checkpoint and
+experiments/START_COST_COMBAT.md for the Start/cost/combat audit and validation.
+Versioned coordinator coverage is in src/crucible_core/coverage.py; the lab keeps
+its separate combat-only report coverage.

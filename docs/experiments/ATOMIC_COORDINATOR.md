@@ -1,6 +1,7 @@
 # Atomic coordinator foundation
-Updated 2026-11-22. Internal immutable experiment state, not a playable match or
-production save format. Full-match mode remains disabled.
+Initial slice recorded 2026-11-22. Later extensions and current scope are in
+START_COST_COMBAT.md and src/crucible_core/coverage.py. The exclusions and
+validation below describe this initial checkpoint.
 
 ## Implemented subset
 `crucible_core.match` coordinates the existing priority, turn/draw and combat
@@ -76,6 +77,5 @@ revert the optional deferred-health draw parameter to roll back; do not delete
 experiment data. A persisted match schema will need a separate versioned migration
 and rollback design before it is introduced.
 
-Recommended next slice: automatic Start/resource maintenance and legal action-cost
-transactions with conservation/rejection fixtures; then attack/block declaration
-flow and private projections before enabling full-match play.
+The recommended Start/cost/combat follow-up is now implemented; see
+START_COST_COMBAT.md. Current next work is tracked only in PROJECT_STATE.md.

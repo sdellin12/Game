@@ -180,14 +180,6 @@ are untested candidate content, not approved starter cards.
   Replaced browser visual checking with local resvg rendering after the browser
   tool's policy limitation; no browser automation bypass was attempted.
 
-After template completion: focused priority-core review and pure turn/draw/refill
-foundation were completed in the same continuation. The full source suite passes
-89 tests. See PROJECT_STATE.md and experiments/TURN_DRAW_FOUNDATION.md in the
-repository for engine status; no template information changed for that phase.
-Atomic match-coordinator/cleanup integration has now been completed as a restricted
-internal foundation: 25 additional fixtures, 114 total passing tests. See
-experiments/ATOMIC_COORDINATOR.md in the repository for coverage and exclusions.
-The next engine recommendation is automatic Start/resource maintenance and legal
-cost transactions, followed by attack/block declaration flow and private views.
-Full-match play remains disabled. No card layout or card information changed.
-Keep this document current when editing design files independently.
+Engine work has not changed card layouts or card information. Current engine
+status is maintained in PROJECT_STATE.md in the repository. Keep this document
+current when editing design files independently.
