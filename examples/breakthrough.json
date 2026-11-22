@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "name": "8 attack breaks through 3-health and 2-health ready blockers",
+  "required_mechanics": ["breakthrough", "ordered-multiblock"],
+  "state": {
+    "players": [{"player_id":"A","health":30},{"player_id":"B","health":30}],
+    "creatures": [
+      {"instance_id":"giant","controller":"A","attack":8,"health":8,"max_health":8,"keywords":["breakthrough"]},
+      {"instance_id":"first","controller":"B","attack":2,"health":3,"max_health":3},
+      {"instance_id":"second","controller":"B","attack":2,"health":2,"max_health":2}
+    ]
+  },
+  "attacks": [{"attacker_id":"giant","target_player":"B","blockers":["first","second"]}]
+}
