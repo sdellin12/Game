@@ -1,6 +1,6 @@
 """Finite equal-cost public boards; no deployment or policy simulation."""
 from dataclasses import replace
-from itertools import combinations_with_replacement, permutations, product
+from itertools import combinations, combinations_with_replacement, permutations, product
 from crucible_core import Attack, CombatError, CombatState, Creature, Player, Shield
 from .cli import encode, profiles
 
@@ -27,35 +27,61 @@ def blocker_assignments(attackers, defenders):
                 yield assignment
 
 
-CONDITIONS = ('baseline', 'wounded', 'exhausted', 'shielded')
+CONDITIONS = ('baseline', 'wounded', 'exhausted', 'shielded', 'mixed')
 
 
-def group_scenarios(budget=3, condition='baseline'):
+def board_variants(creatures, condition):
+    if condition == 'mixed':
+        options = []
+        for c in creatures:
+            states = [c, replace(c, health=1)]
+            if c.controller == 'B':
+                states.extend([replace(c, exhausted=True),
+                               replace(c, shields=(Shield(f'{c.instance_id}-shield', 2),))])
+            options.append(tuple(dict.fromkeys(states)))
+        yield from product(*options)
+    elif condition == 'wounded':
+        yield tuple(replace(c, health=1) for c in creatures)
+    elif condition == 'exhausted':
+        yield tuple(replace(c, exhausted=c.controller == 'B') for c in creatures)
+    elif condition == 'shielded':
+        yield tuple(replace(c, shields=(Shield(f'{c.instance_id}-shield', 2),))
+                    if c.controller == 'B' else c for c in creatures)
+    else:
+        yield creatures
+
+
+def group_scenarios(budget=3, condition='baseline', attack_mode='all'):
     if condition not in CONDITIONS:
         raise CombatError('unsupported group condition')
+    if attack_mode not in ('all', 'subsets'):
+        raise CombatError('attack mode must be all or subsets')
+    if condition == 'mixed' and (type(budget) is not int or budget > 2):
+        raise CombatError('mixed conditions are bounded to budgets 1–2')
     groups = list(creature_groups(budget))
     for attackers in groups:
         for defenders in groups:
-            creatures = tuple(Creature(f'{side}{i}', side, p['attack'], p['health'], p['health'])
-                              for side, group in [('A', attackers), ('B', defenders)]
-                              for i, p in enumerate(group))
-            if condition == 'wounded':
-                creatures = tuple(replace(c, health=1) for c in creatures)
-            elif condition == 'exhausted':
-                creatures = tuple(replace(c, exhausted=c.controller == 'B') for c in creatures)
-            elif condition == 'shielded':
-                creatures = tuple(replace(c, shields=(Shield(f'{c.instance_id}-shield', 2),))
-                                  if c.controller == 'B' else c for c in creatures)
-            for assignment in blocker_assignments(len(attackers), len(defenders)):
-                attacks = tuple(Attack(f'A{i}', 'B', tuple(f'B{j}' for j in blockers))
-                                for i, blockers in enumerate(assignment))
-                label = lambda group: '+'.join(p['id'] for p in group)
-                name = (f'budget={budget}; cards/width={len(attackers)}/{len(defenders)}; '
-                        f'unused=0/0; {label(attackers)} attacks {label(defenders)}; '
-                        f'blocks={assignment}; full HP; ready; no shields; deployment unmodeled')
-                if condition != 'baseline':
-                    descriptions = {'wounded': 'all creatures at 1 HP; ready; no shields',
-                                    'exhausted': 'full HP; all defenders exhausted; no shields',
-                                    'shielded': 'full HP; ready; each defender has 2 prevention'}
-                    name = name.replace('full HP; ready; no shields', descriptions[condition])
-                yield encode(CombatState((Player('A'), Player('B')), creatures), attacks, name)
+            base = tuple(Creature(f'{side}{i}', side, p['attack'], p['health'], p['health'])
+                         for side, group in [('A', attackers), ('B', defenders)]
+                         for i, p in enumerate(group))
+            for variant, creatures in enumerate(board_variants(base, condition)):
+                selections = [tuple(range(len(attackers)))] if attack_mode == 'all' else [
+                    selected for size in range(len(attackers) + 1)
+                    for selected in combinations(range(len(attackers)), size)]
+                for selected in selections:
+                    for assignment in blocker_assignments(len(selected), len(defenders)):
+                        attacks = tuple(Attack(f'A{attacker}', 'B', tuple(f'B{j}' for j in blockers))
+                                        for attacker, blockers in zip(selected, assignment))
+                        label = lambda group: '+'.join(p['id'] for p in group)
+                        name = (f'budget={budget}; cards/width={len(attackers)}/{len(defenders)}; '
+                                f'unused=0/0; {label(attackers)} attacks {label(defenders)}; '
+                                f'blocks={assignment}; full HP; ready; no shields; deployment unmodeled')
+                        if condition != 'baseline':
+                            descriptions = {'wounded': 'all creatures at 1 HP; ready; no shields',
+                                            'exhausted': 'full HP; all defenders exhausted; no shields',
+                                            'shielded': 'full HP; ready; each defender has 2 prevention',
+                                            'mixed': f'mixed board variant {variant}; inspect individual state'}
+                            name = name.replace('full HP; ready; no shields', descriptions[condition])
+                        if attack_mode == 'subsets':
+                            name += '; attacking=' + (','.join(f'A{i}' for i in selected) or 'none')
+                        yield encode(CombatState((Player('A'), Player('B')), creatures), attacks, name)

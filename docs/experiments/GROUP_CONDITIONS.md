@@ -30,3 +30,19 @@ The rebuilt portable Windows executable also exported and replayed 18 budget-1
 encounters for each added condition. Desktop condition selection is tested through
 a real worker/export; matrix mode rejects group-only conditions before creating
 checkpoint files. Existing source and packaged baseline entry points remain.
+
+## Optional attacks and mixed states continuation
+60 Windows tests pass. Optional baseline budget2 enumerates 1,071 encounters.
+Mixed budget2 enumerates 18,333 all-attack or 35,058 attacker-subset encounters.
+The full 35,058 encounter subset export replayed exactly. Mixed budget1 with
+subsets also exported/replayed 165 encounters in the rebuilt Windows package.
+No-attack boards remain unchanged and are included in comparison summaries.
+Individual-state deduplication prevents duplicate full/1HP options on 1HP bodies.
+Baseline budget2 input digest is regression-pinned to the prior implementation.
+Tests cover held attackers retaining readiness, zero-attack outcomes, mixed-state
+bounds, changed-mode checkpoint rejection and desktop option propagation.
+These are finite choice counts, not games, probabilities or balance conclusions.
+
+The packaged first-run walkthrough (baseline budget1, subsets, limit100) completed
+27/27 encounters and replay verification. The final suite also protects empty
+zero-player combat snapshots from a comparison-export regression.

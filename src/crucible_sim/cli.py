@@ -254,14 +254,16 @@ def main(argv: list[str] | None = None) -> int:
     matrix.add_argument("--output", type=Path, required=True)
     batch = sub.add_parser("batch", help="resume a bounded matrix batch")
     batch.add_argument("--experiment", choices=("matrix", "groups"), default="matrix")
-    batch.add_argument("--condition", choices=("baseline", "wounded", "exhausted", "shielded"), default="baseline")
+    batch.add_argument("--condition", choices=("baseline", "wounded", "exhausted", "shielded", "mixed"), default="baseline")
+    batch.add_argument("--attack-mode", choices=("all", "subsets"), default="all")
     batch.add_argument("--budget", type=int, default=3)
     batch.add_argument("--checkpoint", type=Path, required=True)
     batch.add_argument("--control-file", type=Path, help="optional UTF-8 file containing pause or cancel")
     batch.add_argument("--limit", type=int, default=100)
     batch.add_argument("--output", type=Path, required=True)
     groups = sub.add_parser("groups", help="equal-budget group combat enumeration")
-    groups.add_argument("--condition", choices=("baseline", "wounded", "exhausted", "shielded"), default="baseline")
+    groups.add_argument("--condition", choices=("baseline", "wounded", "exhausted", "shielded", "mixed"), default="baseline")
+    groups.add_argument("--attack-mode", choices=("all", "subsets"), default="all")
     groups.add_argument("--budget", type=int, default=3)
     groups.add_argument("--output", type=Path, required=True)
     run = sub.add_parser("run", help="resolve a structured combat scenario")
@@ -280,10 +282,10 @@ def main(argv: list[str] | None = None) -> int:
                 from .batch import run_batch, checkpoint_status
                 if args.experiment == "groups":
                     from .groups import group_scenarios
-                    inputs = list(group_scenarios(args.budget, args.condition))
+                    inputs = list(group_scenarios(args.budget, args.condition, args.attack_mode))
                 else:
-                    if args.condition != 'baseline':
-                        raise CombatError('group conditions require --experiment groups')
+                    if args.condition != 'baseline' or args.attack_mode != 'all':
+                        raise CombatError('group conditions/attack subsets require --experiment groups')
                     inputs = list(matrix_scenarios())
                 stop_status = None
                 def show_progress(event):
@@ -307,14 +309,14 @@ def main(argv: list[str] | None = None) -> int:
                 progress = checkpoint_status(args.checkpoint)
                 progress.update(requested_combats=len(inputs), pending_combats=len(inputs) - len(records),
                                 run_status=stop_status or ("completed" if len(records) == len(inputs) else "batch_limit"))
-                export(records, args.output, f"resumable {args.experiment}; condition={args.condition}", progress=progress)
+                export(records, args.output, f"resumable {args.experiment}; condition={args.condition}; attacks={args.attack_mode}", progress=progress)
                 print(f"Checkpoint contains {len(records)}/{len(inputs)} combats; report: {args.output}")
                 return 2 if progress["failed_jobs_pending_retry"] else (130 if stop_status == "cancelled" else 0)
             if args.command == "groups":
                 from .groups import group_scenarios
-                inputs = group_scenarios(args.budget, args.condition)
+                inputs = group_scenarios(args.budget, args.condition, args.attack_mode)
                 records = [run_scenario(s) for s in inputs]
-                export(records, args.output, f"equal-budget groups: {args.budget}; condition={args.condition}")
+                export(records, args.output, f"equal-budget groups: {args.budget}; condition={args.condition}; attacks={args.attack_mode}")
                 print(f"Exported {len(records)} exact group combats to {args.output}")
                 return 0
             inputs = matrix_scenarios() if args.command == "matrix" else [

@@ -1,6 +1,6 @@
-# Full-match timing and elimination specification — draft 1
+# Full-match timing and elimination specification — draft 2
 
-Status: proposed engineering specification for review, 2026-11-22. This does not
+Status: partially approved engineering specification, reviewed 2026-11-22. This does not
 change confirmed rules or enable full-match simulation. REQUIREMENTS.md and
 RULES_DRAFT.md remain canonical. The rules explicitly left several sequencing
 choices open; recommendations below fill those gaps for review, not silently as
@@ -36,7 +36,7 @@ stabilization procedure; publish permitted events and durable save. Validation
 failure changes nothing, including RNG and usage counters. Pending effects keep
 captured parameters and source IDs after their source leaves.
 
-## Priority — recommended default (requires approval)
+## Priority — approved 2026-11-22
 
 1. At an ordinary phase response window, the active player has first priority.
 2. A legal chain addition clears all passes; priority moves to the next active
@@ -78,21 +78,21 @@ if consequences increase hand size. Expire turn-end durations, stabilize, and
 advance. Ordinary main plays do not reopen from this loop. Any authored effect
 that could repeat indefinitely needs explicit limits or a detected-loop diagnostic.
 
-## Trigger collection and cross-controller order — proposed
+## Trigger collection and cross-controller order — approved 2026-11-22
 
 For each atomic event batch, capture trigger candidates using the appropriate
 pre/post-event snapshots. Simultaneously defeated sources witness that batch;
 source departure alone does not erase a trigger already captured. Elimination
 filtering below still removes an eliminated controller's ordinary triggers.
 
-Recommended ordering: active seat first, then other active seats in turn order.
+Approved ordering: active seat first, then other active seats in turn order.
 Each controller chooses its own oldest-to-newest chain order. Append those groups
 in that seat order; newest resolves first, so the last seat's group resolves first.
 No responses interrupt the collection/order-choice batch. Then normal priority.
 Later stabilization events form later batches; stable event and trigger IDs break
 otherwise identical ties for suggested ordering, never replace a player's choice.
 
-This ordering is consequential in multiplayer. It is proposed, not confirmed.
+Steve approved this cross-controller ordering in the Codex review on 2026-11-22.
 Acceptance fixtures must include at least three seats with conflicting triggers.
 
 ## Atomic resolution and stabilization
@@ -126,9 +126,9 @@ eliminated, that controller's newly pending item is removed; paid costs stay spe
 Exact legality of self-lethal health costs is an authored-cost policy still to
 approve; the resolver must not guess whether payment is allowed.
 
-## Multi-draw and zero health inside one item — proposed boundary semantics
+## Multi-draw and zero health inside one item
 
-A draw-N instruction attempts individual draws in order. An unavailable required
+Proposed draw-N default (still needs approval): attempt individual draws in order. An unavailable required
 draw marks a failed-draw cause; drawing the available cards is not rolled back.
 Other independent instructions of the same atomic item finish. Replenishing the
 deck later in that item does not erase the failed draw. Stabilize after the item.
@@ -137,8 +137,8 @@ Health is evaluated at the atomic boundary, consistent with the confirmed rule
 that cleanup follows the current effect. Thus damage and healing within the same
 item can leave a living player if final health is positive; healing by a later
 chain item cannot rescue an already eliminated player. Do not clamp intermediate
-signed health in a way that manufactures health. This is a proposed precise
-interpretation, and requires explicit approval before full-match implementation.
+signed health in a way that manufactures health. Steve explicitly approved this whole-effect player-health checkpoint on
+2026-11-22. It does not permit healing by a later effect after elimination.
 
 Simultaneous combat damage uses one snapshot and resolves all damage before
 checking any creature/player. A defeated blocker retaliates. If all players lose
@@ -153,12 +153,11 @@ valid. Reopen normal response windows while valid pending effects remain, even
 with one survivor. No new empty-chain main action window delays terminal victory.
 This honors the confirmed requirement to finish valid pending work first.
 
-Recommend concede as a separately authorized confirmed command processed at the
+Approved concession rule: a separately authorized confirmed command is processed at the
 next safe atomic boundary, not halfway through another item's instructions.
 Serialize simultaneous concede requests by recorded command order; do not invent
 a simultaneous all-concede draw from arrival timing. A final pending effect may
-still eliminate the sole survivor and produce a draw. This concession ordering
-is an explicit proposal needing approval.
+still eliminate the sole survivor and produce a draw. Steve approved safe-boundary concession and recorded request order on 2026-11-22.
 
 If the active seat is eliminated, finish stabilization and surviving pending
 chain/trigger work. Skip its remaining phases (no skipped End triggers), apply
@@ -217,7 +216,7 @@ and selection ordering is proposed and needs approval.
 | T03 | Same-event triggers for A/B/C append in chosen seat groups; C group resolves first under proposal. |
 | T04 | Simultaneous lethal attacker/blocker both deal damage; neither can react before departure. |
 | T05 | A/B lose together, C survives with pending self-damage -> no premature win; C can later lose -> draw. |
-| T06 | A loses with own heal pending -> heal removed; no revival. B-owned valid pending heal remains B-controlled. |
+| T06 | A loses with own heal pending -> heal removed; no revival. Surviving B-controlled pending heal remains if valid, regardless of source owner. |
 | T07 | A must draw3 with2 cards ->2 draws recorded and failed-draw cause; later deck refill does not rescue. |
 | T08 | One item damages then heals A -> evaluate final HP; separate later heal cannot rescue boundary elimination. |
 | T09 | A owns creature controlled by B; A eliminated -> card departs; B's valid departure trigger survives. |
@@ -233,12 +232,45 @@ and selection ordering is proposed and needs approval.
 
 ## Implementation sequence and remaining approval
 
-First approve priority, trigger order, multi-draw/health atomicity, concession,
-Start/End boundaries and multiplayer combat windows. Then implement pure match
+Priority/reset order, cross-controller trigger order, whole-effect player-health
+checks and safe-boundary concession are approved. Remaining proposals needing
+approval: failed multi-draw behavior, Start/End boundaries, eliminated-seat duration
+anchors and multiplayer combat windows. Self-lethal cost legality is deferred to
+an authored-cost specification; reject unsupported cost definitions. Then implement pure match
 state/command validation, priority/chain and stabilization with exact fixtures;
 only then connect turns/resources, combat and simple hidden-safe policies.
 Assembly and complex effects remain behind coverage gates. Every enabled rule
 needs tests and a versioned manifest entry; full-match mode stays disabled now.
 
-This draft needs an Astra review (or equivalent careful owner review) before
-adopting proposed defaults. It is not a request for a new discovery interview.
+This draft has a focused Sol consistency review and the owner approvals above.
+An Astra review remains recommended before adopting the remaining proposals. It is not a request for a new discovery interview.
+
+
+## Focused review record — 2026-11-22
+
+Review scope: canonical RULES_DRAFT.md against proposed sequencing; no executable
+match engine is claimed. Owner approved the three multiple-choice decisions on
+priority/trigger order, whole-effect health checks and safe-boundary concessions.
+Other recommendations remain proposals, not implied approval from continuing work.
+
+Clarifications found during review:
+
+- Capture trigger candidates at the event/instruction that causes them, with its
+  local pre/post snapshot and source eligibility. Do not make a source that enters
+  later in the same item retroactively witness an earlier event. Defer queueing
+  and priority until the atomic item and stabilization finish. De-duplicate by
+  event/source/ability ID, not by display text.
+- A required end-boundary expiration may itself create triggers. Drain them before
+  advancing the turn; recheck hand size after consequences, without firing End
+  triggers twice. Terminal checks wait for mandatory boundary work.
+- Zero declared attacks is a legal combat choice, not a rules draw. No-op combat
+  still advances via the normal phase procedure and never resets attack usage.
+- Retaliation/damage events are simultaneous, not sequential animation steps.
+- Health checkpoint approval concerns player defeat. No implementation should
+  infer arbitrary negative-HP creature form/assembly behavior from it; those
+  transformation interactions remain behind their separate specification gate.
+- In T06, replace ownership shorthand with controller semantics: a surviving
+  controller's pending item remains even if its source was owned by another seat.
+
+No approved game rules were changed by the experiment extensions. Review does not
+satisfy independent Astra review or replace tests for a future match engine.

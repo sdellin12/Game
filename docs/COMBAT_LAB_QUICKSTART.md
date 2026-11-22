@@ -299,3 +299,18 @@ losses, defender losses)` outcomes with encounter counts and example job IDs.
 Counts are enumerated assignments, not probabilities. Search an ID in the replay
 inspector to inspect an actual outcome. A partial report only describes completed
 jobs; there is no guarantee that its ranges or outcomes cover all choices.
+
+## Optional attacks and mixed boards
+
+Both group commands accept `--attack-mode subsets` to enumerate every attacker
+subset, including none. Default `all` preserves the earlier inputs/checkpoints.
+Use `--condition mixed` (budgets1–2 only) to vary each attacker independently
+between full/1 HP and each defender between full/1 HP, exhausted, or shielded2.
+Duplicate creature states are removed. No individual exhausted+wounded+shielded
+cross-product is claimed. Mixed budget2 with attack subsets has 35,058 encounters;
+use bounded batches/checkpoints instead of a single large export when convenient.
+
+The desktop exposes these options. No-attack comparison rows are included with
+zero outcomes; boards are oriented by the first listed seat rather than claiming
+an active attacker. Existing scenario schemas and checkpoint tables are unchanged.
+See [the first-run walkthrough](DESKTOP_WALKTHROUGH.md) for a 27-encounter example.

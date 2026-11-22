@@ -118,3 +118,19 @@ proposals and 18 acceptance scenarios. Proposed priority/trigger ordering,
 atomicity and concession windows require review/approval before implementation.
 Recommend Astra for that review. No full-match rule code is enabled. The existing
 combat API needs declaration/damage separation before match response integration.
+
+## Timing review approvals and broader combat choices
+Reviewed timing draft2 against canonical rules. Steve approved fixed priority/
+trigger order, whole-effect player-health checks and safe-boundary concessions.
+Remaining sequencing proposals are explicitly marked in FULL_MATCH_TIMING_SPEC.md;
+no executable full-match engine is enabled and no independent Astra review claimed.
+
+Added optional attacker subsets including no attacks, and independent mixed
+creature-state fixtures bounded to budgets1–2. Old default inputs retain the prior
+budget2 digest; incompatible new options reject checkpoint resume. Reports include
+no-attack outcomes, with orientation labels. DESKTOP_WALKTHROUGH.md walks through
+a complete 27-encounter run, joint outcomes and verified replay selection.
+
+Validation for this continuation: 60 Windows tests; full mixed/subset budget2
+export/replay 35,058 encounters; rebuilt package mixed/subset budget1 export/replay
+165 encounters. Baseline compatibility and held-attacker readiness are tested.

@@ -12,9 +12,9 @@ Targets/modes/X/costs selected and locked at confirmation; pay before responses.
 Sacrifice as cost immediate, cannot rescue afterward; counts defeat. Negating effect doesn't undo payment. Exile/bounce/shuffle aren't defeat. Effects may explicitly prevent beforehand or recover afterward.
 
 ## Responses, abilities and triggers
-Reaction card class uses normal resources at response opportunities incl own turn. Newest pending first, reopen response after each resolution. Everyone passes/responds in fixed order; chosen autopass settings allowed, optional pause with no legal card to avoid timing leaks; no timers. Precise priority holder/reset order still needs written implementation spec.
+Reaction card class uses normal resources at response opportunities incl own turn. Newest pending first, reopen response after each resolution. Everyone passes/responds in fixed order; chosen autopass settings allowed, optional pause with no legal card to avoid timing leaks; no timers. Approved priority: active player starts a window; after a new item priority goes to the next active seat after its controller; all-seat consecutive passes resolve one newest item; after resolution priority resets to the active seat (or next surviving seat). New items clear passes. See FULL_MATCH_TIMING_SPEC.md for the approved sequence.
 Abilities manual activation, legal highlights/prompts with preview; no automated spending. Reusable when legally able to pay, unless stated limit/timing. Exhaust-cost creature ability waits like attack unless haste-like permission; non-exhaust abilities can act immediately if legal. Temporary haste grants eligibility only, not ready/extra attack. Source leaving doesn't cancel already-pending ability.
-Triggered effects mandatory unless may; autoqueue mandatory, optional Use/Skip. Suggest own simultaneous trigger order with Confirm/Adjust; suggestion uses authorized information. Across-player simultaneous trigger ordering unresolved.
+Triggered effects mandatory unless may; autoqueue mandatory, optional Use/Skip. Suggest own simultaneous trigger order with Confirm/Adjust; suggestion uses authorized information. Approved cross-controller order: active seat first then surviving seats in turn order, appending each controller's chosen oldest-to-newest group; the last group resolves first.
 Negation selective/expensive, broad negate rare; no automatic numerical price. Paid costs and activation limits spent if negated. Transform/control/combine/separate don't reset spent inherited uses. Per-turn distinct from once between own starts, explicit card wording; exact identity mapping across distinct form abilities needs engine spec.
 Invalid targets fail if none valid, no refund; independent effect portions resolve where possible (custom rule, not wholesale import of Magic). Spell/ability semantics structured, not generated prose.
 Effect-copy rules reserved future starter scope: inherits X without payment, original targets unless explicit retarget, independent of original negation, not card play. Newly created creature-copy tokens distinct.
@@ -26,7 +26,7 @@ Attacker chooses blocker order; automatic smallest lethal raw allocations throug
 Breakthrough: excess raw attack after lethal allocations to all blockers hits defending player. Without it no excess hits player. Attack stays blocked after blockers removed; only Breakthrough carries through even when none remain. Multiplier bonus never becomes extra player damage.
 Challenge: qualified creature chooses enemy creature instead of player, same declaration/combat and normal attack use; no intervening blockers, retaliation simultaneous, no player overflow/Breakthrough and no exhausted-blocker penalty. Reactions before damage. Missing target -> miss, spent attack/exhaustion, no retarget. Challenged creature cannot also block. Multiple challengers combine damage; target retaliates once distributing by its controller's order. Multiple fights/source order needs engine-ready sequence.
 Assistance ordinarily defense for oneself; special cards enable helping another, recipient may decline. Gold benefits bounded, meaningful help; no reward from empty offers/loops.
-Damage zero after prevention does not trigger dealt-damage; attack triggers independent. After current effect/combat atomic resolution, <=0 defeated before new responses; simultaneous defeated creatures deal their damage and witness applicable simultaneous defeat triggers.
+Damage zero after prevention does not trigger dealt-damage; attack triggers independent. Player health is checked after the whole resolving effect: damage followed by healing inside that same effect may leave a surviving player; a later effect cannot revive an eliminated player. After current effect/combat atomic resolution, <=0 defeated before new responses; simultaneous defeated creatures deal their damage and witness applicable simultaneous defeat triggers.
 
 ## Healing/protection/upgrades
 Healing stops max; unused excess no benefit unless explicit. No initial overheal, future expensive effects deferred. Player max30 initially, healing very rare/expensive except dedicated style; creature healing separate.
@@ -60,10 +60,10 @@ All battlefield objects controller owns/controls cleared: ordinary nontoken card
 Their pending actions/ongoing effects removed, paid costs stay spent. Surviving players' pending effects resolve if valid. Eliminated controller ordinary triggers removed, explicit elimination exceptions only. Surviving departure triggers applicable; cleanup is departure not defeat/sacrifice. Actual same-event creature lethal defeats still genuine.
 Own-turn elimination: finish current effect/defeat processing, other valid pending effects, skip remaining phases, cleanup expirations then advance; skipped End phase triggers don't occur.
 Previously-created permanent capacity remains recorded but unusable after permanent elimination. No continuation/refill/recovery due eliminated skipped seat. Temporary until-next-start effects from surviving sources referencing eliminated turns require bounded expiry convention; prior next scheduled seat expiry rule is historical baseline to formalize.
-Spectate public only, emoji yes; no private opponent info. No parent approval needed concede, confirmation prevents mistap. Disconnect is pause/reconnect, not elimination.
+Spectate public only, emoji yes; no private opponent info. No parent approval needed concede, confirmation prevents mistap. Confirmed concessions wait for the current atomic effect to finish, then process at a safe boundary in recorded request order. Disconnect is pause/reconnect, not elimination.
 
 ## Remaining engineering specifications, not more micro-interview
-- Priority order/reset, simultaneous cross-controller triggers and source attribution.
+- Implement approved priority/reset and cross-controller trigger order; precise event/source attribution still needs implementation fixtures.
 - Atomic defeat/terminal checkpoints, multi-draw and simultaneous player/creature defeat.
 - Challenge/group combat interactions and deterministic damage/prevention allocation, tie ordering.
 - Combined upgrade HP/compatibility/order, effect links/cross-owner cleanup.
@@ -73,9 +73,9 @@ Spectate public only, emoji yes; no private opponent info. No parent approval ne
 Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. A combat-only subset now has exact fixtures and finite encounter enumeration; no full-match balance simulation or family testing performed. See COMBAT_LAB_QUICKSTART.md for implemented coverage and explicit experimental assumptions.
 
 
-## Proposed timing specification (not yet adopted)
+## Timing specification: approved portions and remaining proposals
 [FULL_MATCH_TIMING_SPEC.md](FULL_MATCH_TIMING_SPEC.md) proposes concrete priority,
 trigger, atomicity, elimination and combat-window sequencing with acceptance
-fixtures. Its proposed defaults are not confirmed gameplay rules. Review/approval
+fixtures. Priority/reset, cross-controller trigger order, whole-effect player-health checks and safe-boundary concession were approved by Steve in Codex on 2026-11-22. Remaining proposed defaults are not confirmed gameplay rules. Review/approval
 is required before enabling a full-match engine; current combat rules above remain
 unchanged.

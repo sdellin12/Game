@@ -44,3 +44,36 @@ class GroupTests(unittest.TestCase):
                 self.assertEqual((defender['health'], defender['shields']), (1, []))
         with self.assertRaises(CombatError):
             list(group_scenarios(1, 'unknown'))
+
+    def test_optional_attacks_include_hold_all_and_preserve_nonattacker(self):
+        scenarios = list(group_scenarios(2, attack_mode='subsets'))
+        self.assertTrue(any(not s['attacks'] for s in scenarios))
+        selected = next(s for s in scenarios if len(s['state']['creatures']) == 4
+                        and [a['attacker_id'] for a in s['attacks']] == ['A1'])
+        result = run_scenario(selected)['result']
+        held = next(c for c in result['state']['creatures'] if c['instance_id'] == 'A0')
+        self.assertFalse(held['exhausted'])
+        self.assertFalse(held['attack_used'])
+        hold = next(s for s in scenarios if not s['attacks'])
+        self.assertEqual(run_scenario(hold)['result']['state'], hold['state'])
+        ids = [run_scenario(s)['job_id'] for s in scenarios]
+        self.assertEqual(len(ids), len(set(ids)))
+
+    def test_mixed_boards_have_independent_states_and_are_bounded(self):
+        scenarios = list(group_scenarios(1, 'mixed', 'subsets'))
+        for scenario in scenarios:
+            run_scenario(scenario)
+            self.assertFalse(scenario['state']['creatures'][0]['exhausted'])
+        boards = {str(s['state']) for s in scenarios}
+        self.assertGreater(len(boards), 9)
+        ids = [run_scenario(s)['job_id'] for s in scenarios]
+        self.assertEqual(len(ids), len(set(ids)))
+        with self.assertRaises(CombatError):
+            list(group_scenarios(3, 'mixed'))
+        with self.assertRaises(CombatError):
+            list(group_scenarios(1, attack_mode='random'))
+
+    def test_baseline_inputs_keep_previous_checkpoint_digest(self):
+        from crucible_sim.cli import digest
+        self.assertEqual(digest(list(group_scenarios(2))),
+            '6f5487fb96081e28901e2058176cd4ccb0af46f91598fb1c08cb371d976236d0')

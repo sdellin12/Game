@@ -17,9 +17,12 @@ def comparison_summary(records):
         creatures = first['state']['creatures']
         attackers = {a['attacker_id'] for a in first['attacks']}
         sides = {c['controller'] for c in creatures if c['instance_id'] in attackers}
-        if len(sides) != 1:
+        if len(sides) > 1:
             continue  # Multi-controller attacks need a separate presentation.
-        attacking_side = next(iter(sides))
+        if not sides and not first['state']['players']:
+            continue  # Empty combat snapshots have no board orientation.
+        no_attacks = not attackers
+        attacking_side = next(iter(sides)) if sides else first['state']['players'][0]['player_id']
         friendly = [c for c in creatures if c['controller'] == attacking_side]
         opposing = [c for c in creatures if c['controller'] != attacking_side]
         def board(cards):
@@ -31,7 +34,7 @@ def comparison_summary(records):
                 if shield:
                     tags.append(f'shield {shield}')
                 tags.extend(c.get('keywords', []))
-                return f"{c['attack']}/{c['health']}" + (f" ({', '.join(tags)})" if tags else '')
+                return f"{c['instance_id']}: {c['attack']}/{c['health']}" + (f" ({', '.join(tags)})" if tags else '')
             return ' + '.join(label(c) for c in cards)
         def losses(record, cards):
             defeated = set(record['result']['defeated_creatures'])
@@ -46,12 +49,13 @@ def comparison_summary(records):
                 'player_damage': damage, 'attacker_losses': lost_a, 'defender_losses': lost_d,
                 'encounters': 0, 'example_job_id': record['job_id']})
             outcome['encounters'] += 1
-        rows.append({'attacking_board': board(friendly), 'defending_board': board(opposing),
-                     'attacking_cards': len(friendly), 'defending_cards': len(opposing),
+        rows.append({'no_attacks': no_attacks, 'attacker_ids': sorted(attackers),
+                     'attacking_board': ('[no attacks; first seat] ' if no_attacks else '[attacks ' + ','.join(sorted(attackers)) + '] ') + board(friendly), 'defending_board': board(opposing),
+                     'declared_attackers': len(attackers), 'attacking_cards': len(friendly), 'defending_cards': len(opposing),
                      'encounters': len(records), 'player_damage_range': [min(damages), max(damages)],
                      'attacker_losses_range': [min(a_losses), max(a_losses)],
                      'defender_losses_range': [min(d_losses), max(d_losses)],
                      'outcomes': [outcomes[k] for k in sorted(outcomes)],
                      'example_job_id': records[0]['job_id']})
-    return {'interpretation': 'Observed ranges over exported encounters only. Choices are not probabilities; ranges are not jointly attainable guarantees. Partial runs may omit choices. Boards show ATK/current HP; inspect replay inputs for statuses. No match wins or balance ranking.',
+    return {'interpretation': 'Observed ranges over exported encounters only. Choices are not probabilities; ranges are not jointly attainable guarantees. Partial runs may omit choices. No-attack rows orient boards by first listed seat, not a claimed priority holder. Boards show ATK/current HP; inspect replay inputs for statuses. No match wins or balance ranking.',
             'matchups': rows}
