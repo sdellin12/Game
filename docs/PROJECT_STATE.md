@@ -3,25 +3,25 @@ Updated: 2026-11-22
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: private views, command routing and hand-card transactions.
+- Latest implementation: local playable harness, lobby, opening redraw and practice pack.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
-- Engine: managed turns, costs, combat, private projections and pending-card zones.
-- Validation: 179 Windows tests; previous 36,214 combat equivalence cases unchanged.
-- Full-match mode remains disabled pending the integration work below.
+- Launch the local harness: python run_play.py from the Game repository directory.
+- Validation: 203 Windows tests; scripted 2/3/4-seat games completed via projected views.
+- Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Completed both selected slices; see experiments/PRIVATE_VIEWS_HAND_PLAY.md.
-Recommended next: a small local playable harness using these same views/commands.
-Then: lobby/opening hands and a validated content pack; leaders/durations remain gates.
-Versioned implementation coverage: src/crucible_core/coverage.py v2.
+Completed both selected slices; see PLAY_HARNESS.md for launch and evidence.
+Recommended next: a view-only practice opponent for one-person testing.
+Then: leader summons/recovery and duration scheduling before broader content.
+Versioned implementation coverage: src/crucible_core/coverage.py v3.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.
 - Product decisions: REQUIREMENTS.md.
 - Gameplay rules: RULES_DRAFT.md (canonical; avoid duplicate baseline summaries).
 - Timing implementation: FULL_MATCH_TIMING_SPEC.md.
-- Current engine evidence/audit: experiments/PRIVATE_VIEWS_HAND_PLAY.md.
+- Current harness workflow/evidence: PLAY_HARNESS.md.
 - Card design/handoff: CARD_DESIGN.md.
 - Lab operation: COMBAT_LAB_QUICKSTART.md.
 Expand reads only when a concrete dependency requires it.

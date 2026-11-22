@@ -1,0 +1,150 @@
+import unittest
+import os
+import tkinter as tk
+from tkinter import ttk
+from crucible_play.desktop import PlayWindow
+from crucible_play.session import HarnessSession
+from crucible_play.smoke import run_smoke,choose_move
+
+
+def children(widget):
+    return [child for direct in widget.winfo_children() for child in [direct]+children(direct)]
+
+
+class HarnessSmokeTests(unittest.TestCase):
+    def test_view_only_driver_finishes_two_three_and_four_player_games(self):
+        for count in (2,3,4):
+            result=run_smoke(count)
+            self.assertEqual(result['status'],'completed')
+            self.assertEqual(result['result']['kind'],'win')
+            self.assertLess(result['commands'],4000)
+
+    def test_command_limit_is_incomplete_not_a_fabricated_result(self):
+        result=run_smoke(2,limit=1)
+        self.assertEqual(result,{'status':'incomplete','reason':'command limit','commands':1})
+
+    def test_policy_has_no_move_for_spectator_projection(self):
+        self.assertIsNone(choose_move({'you':None}))
+
+
+@unittest.skipUnless(os.name=='nt' or os.environ.get('DISPLAY'), 'Tk widget tests require a desktop display')
+class HarnessWidgetTests(unittest.TestCase):
+    def setUp(self):
+        self.root=tk.Tk();self.root.withdraw()
+        self.session=HarnessSession(seed=b'widget-test-seed-1234567890')
+        self.app=PlayWindow(self.root,self.session)
+        self.root.update_idletasks()
+
+    def tearDown(self):self.root.destroy()
+
+    def text(self):
+        result=[]
+        for child in children(self.root):
+            if isinstance(child,(ttk.Label,ttk.Button)):
+                result.append(str(child.cget('text')))
+            elif isinstance(child,tk.Listbox):result.extend(child.get(0,'end'))
+            elif isinstance(child,tk.Text):result.append(child.get('1.0','end'))
+        return '\n'.join(result)
+
+    def button(self,label):
+        return next(c for c in children(self.root) if isinstance(c,ttk.Button) and c.cget('text')==label)
+
+    def ready_opening(self):
+        for p in self.session.view()['players']:
+            actor=p['player_id']
+            self.session.choose_deck(actor,'core-gold',expected_revision=self.session.view()['revision'])
+            self.session.ready(actor,True,expected_revision=self.session.view()['revision'])
+        self.session.start('P1',expected_revision=self.session.view()['revision'])
+        self.app.render()
+
+    def test_seat_buttons_show_handoff_before_private_widgets(self):
+        self.ready_opening()
+        self.button('View Player 1').invoke()
+        self.assertIn('Pass to P1',self.text())
+        self.assertFalse(any(isinstance(c,tk.Listbox) for c in children(self.root)))
+        self.button('I am P1 - continue').invoke()
+        self.assertTrue(any(isinstance(c,tk.Listbox) for c in children(self.root)))
+        own_names=[c['name'] for c in self.session.view('P1')['you']['hand']]
+        self.button('View Player 2').invoke()
+        self.assertIn('Pass to P2',self.text())
+        for name in own_names:self.assertNotIn(name,self.text())
+        self.assertFalse(any(isinstance(c,tk.Listbox) for c in children(self.root)))
+
+    def test_keep_all_button_uses_real_setup_transaction_then_renders_match(self):
+        self.ready_opening()
+        for actor in ('P1','P2'):
+            self.app.seat(actor);self.app.unlock()
+            self.button('Confirm selected replacements / Keep all if none').invoke()
+        self.root.update_idletasks()
+        self.assertIn('Turn 1',self.text())
+        self.assertIsNotNone(self.session.view().get('turn'))
+        self.assertEqual(len(self.session.view('P1')['you']['hand']),5)
+        self.assertTrue(any(isinstance(c,tk.Canvas) for c in children(self.root)))
+        self.button('Hide private hand / public view').invoke()
+        self.assertFalse(any(isinstance(c,tk.Listbox) for c in children(self.root)))
+
+    def test_rejected_action_keeps_engine_state_and_reports_error(self):
+        self.ready_opening()
+        for actor in ('P1','P2'):self.session.redraw(actor,(),expected_revision=self.session.view()['revision'])
+        actor=next(p['player_id'] for p in self.session.view()['players'] if p['player_id']!=self.session.view()['priority']['holder'])
+        self.app.seat(actor);self.app.unlock();before=self.session.view()
+        self.assertFalse(self.app.send('pass'))
+        self.assertEqual(before,self.session.view())
+        self.assertEqual(self.app.notice.get(),'command unavailable')
+
+    def test_readiness_and_deal_controls_work_through_visible_buttons(self):
+        for actor in ('P1','P2'):
+            self.app.seat(actor);self.app.unlock()
+            self.button('Select Practice Forty + reserve identity').invoke()
+            self.button('Ready').invoke()
+        self.app.seat('P1');self.app.unlock()
+        self.button('Deal opening hands').invoke()
+        self.assertEqual(self.session.view()['phase'],'opening')
+
+    def test_many_attack_choices_scroll_without_forcing_an_oversized_window(self):
+        self.ready_opening()
+        for actor in ('P1','P2'):self.session.redraw(actor,(),expected_revision=self.session.view()['revision'])
+        actor=self.session.view()['turn']['active_player']
+        self.app.seat(actor);self.app.unlock()
+        view=self.session.view(actor)
+        view['turn']['phase']='Combat';view['priority']={'holder':None,'status':'closed','passes':[]}
+        view['battlefield']=[{'instance_id':f'fixture-{i}','definition_key':'unit-01','owner':actor,'controller':actor,
+              'kind':'creature','cost':1,'capacity_bonus':0,'attack':2,'health':1,
+              'creature':{'attack':2,'health':1,'max_health':1,'exhausted':False,'attack_eligible':True,'attack_used':False,'keywords':[]}} for i in range(30)]
+        for child in self.app.body.winfo_children():child.destroy()
+        self.app.render_match(view);self.root.update_idletasks()
+        canvas=next(c for c in children(self.root) if isinstance(c,tk.Canvas))
+        self.assertGreater(canvas.bbox('all')[3],canvas.winfo_reqheight())
+        self.assertLess(self.root.winfo_reqheight(),1000)
+        self.assertTrue(any(isinstance(c,ttk.Scrollbar) for c in children(self.root)))
+
+    def test_card_text_explains_effects_without_internal_target_placeholders(self):
+        self.ready_opening()
+        for actor in ('P1','P2'):self.session.redraw(actor,(),expected_revision=self.session.view()['revision'])
+        view=self.session.view('P1')
+        self.assertEqual(self.app.effect_text({'kind':'damage','target':'$target','amount':3},view),'Deal 3 damage to the chosen target.')
+        self.assertNotIn('$controller',self.app.effect_text({'kind':'draw','target':'$controller','amount':1},view))
+
+    def test_card_confirmation_uses_projected_choice_and_commits_payment(self):
+        from unittest.mock import patch
+        self.ready_opening()
+        for actor in ('P1','P2'):self.session.redraw(actor,(),expected_revision=self.session.view()['revision'])
+        for _ in range(4):
+            actor=self.session.view()['priority']['holder']
+            self.app.seat(actor);self.app.unlock()
+            self.button('Pass / continue phase').invoke()
+        actor=self.session.view()['turn']['active_player']
+        self.app.seat(actor);self.app.unlock()
+        view=self.session.view(actor)
+        self.assertEqual(view['turn']['phase'],'MainBefore')
+        card=next(c for c in view['you']['hand'] if c['kind']=='creature' and c['cost']<=2)
+        with patch.object(tk.Toplevel,'grab_set'):
+            self.app.card_dialog(view,card)
+        self.button('Confirm play and payment').invoke()
+        after=self.session.view(actor)
+        self.assertEqual(after['pending_cards'][0]['instance_id'],card['instance_id'])
+        self.assertNotIn(card['instance_id'],[c['instance_id'] for c in after['you']['hand']])
+        self.assertEqual(next(p['resources']['available'] for p in after['players'] if p['player_id']==actor),2-card['cost'])
+
+
+if __name__=='__main__':unittest.main()

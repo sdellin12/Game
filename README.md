@@ -1,6 +1,16 @@
 # The Crucible
 Original household card battler: imaginative themed decks, private phone/tablet hands and a shared TV battlefield. The combat-only balance lab includes a desktop window, resumable batches and comparison reports. The full game is not built yet.
 
+## Try the local playable harness
+
+```powershell
+py -3 run_play.py
+```
+
+Two to four local hotseat players: choose a practice deck/reserve identity, ready,
+lock opening redraws, then play through the existing engine commands. See the
+[short harness walkthrough and current scope](docs/PLAY_HARNESS.md).
+
 ## Open the desktop lab
 
 Portable Windows build: double-click `dist/CrucibleLab/CrucibleLab.exe` after

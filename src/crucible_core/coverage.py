@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 2,
+    'version': 3,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -16,10 +16,13 @@ MATCH_COVERAGE = {
         'server-seeded-recorded-refill-shuffles', 'hand-pending-battlefield-discard-transactions',
         'single-locked-player-creature-effect-target', 'pending-card-negation-and-cancellation',
         'plain-creature-and-capacity-permanent-card-entry',
+        'local-hotseat-view-command-harness', 'lobby-deck-color-singleton-and-readiness-validation',
+        'private-five-card-opening-and-locked-partial-redraw',
+        'post-redraw-starting-seat-and-count-reveal', 'frozen-engine-content-fingerprints',
+        'validated-forty-card-practice-pack',
     ),
     'excluded': (
         'production-match-save-and-reconnect', 'network-session-authentication',
-        'lobby-opening-hand-redraw-and-complete-content-pack',
         'advanced-zone-moves-exile-bounce-and-hand-transfers', 'multiple-targets-modes-x-discounts',
         'authored-health-sacrifice-costs-and-replacements', 'leaders-and-recovery',
         'transform-combine-and-continuous-stat-modifiers', 'general-duration-scheduler',

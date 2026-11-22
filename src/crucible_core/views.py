@@ -27,7 +27,7 @@ def project_match(state, viewer=None):
                           'effect_key':spec.key,'source_id':spec.source_id,
                           'resolving':effect==priority.resolving,'steps':[_public_step(state,s) for s in spec.steps]})
     view={'revision':state.revision,'turn':{'active_player':state.turn.active_player,'turn_id':state.turn.turn_id,
-          'phase':state.turn.phase,'recharge':state.turn.recharge,'end_requested':state.turn.end_requested},
+          'phase':state.turn.phase,'recharge':state.turn.recharge,'end_requested':state.turn.end_requested or next(p.cards.end_turn_requested for p in state.players if p.cards.player_id==state.turn.active_player)},
           'players':players,'battlefield':[_object(state,o) for o in state.battlefield],
           'priority':None if priority is None else {'holder':priority.holder,'status':priority.status,'passes':list(priority.passes)},
           'chain':chain,'pending_cards':[{**_card(state,c.card_id),'effect_id':c.effect_id,'controller':c.controller} for c in state.pending_cards],'combat':match_combat_view(state,private),
