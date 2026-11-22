@@ -70,4 +70,4 @@ Spectate public only, emoji yes; no private opponent info. No parent approval ne
 - Zero-cost/repeat triggers/rounding loops; explicit card bounds, no arbitrary unmarked runtime rule.
 - Mechanics coverage manifest: unimplemented rules fail validation; partial simulator never reports full rules coverage.
 - Costs beyond initial profiles, ability budgets, vulnerability roster and starter packs remain tests/proposals.
-Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. No numeric simulation or family testing performed.
+Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. A combat-only subset now has exact fixtures and finite encounter enumeration; no full-match balance simulation or family testing performed. See COMBAT_LAB_QUICKSTART.md for implemented coverage and explicit experimental assumptions.
