@@ -20,3 +20,11 @@ Profile/device/session/role; card definition/draft/published variant/character; 
 Immutable mechanical identity separate from artwork, character name and singleton validation. Catalog archive not normal deletion; shared original administration adult-only. Rewards ledger deduplicates event/achievement to prevent reconnect/replay payouts.
 Save each committed action incl pending chain, resume paused. Midnight local active-day backups seven daily/four weekly; live art survives rotation.
 See tester plan for independent simulation data; simulation never writes family achievements or currency.
+
+
+## Shared card information contract (proposed)
+See [CARD_INFORMATION_CONTRACT.md](CARD_INFORMATION_CONTRACT.md) for the proposed
+standard/full-art content matrix, conditional creature/leader/form fields, live
+state overlays and accessibility acceptance examples. It specifies information,
+not a fixed template design. Full art must preserve the same gameplay content.
+No renderer, catalog schema or template asset is changed by this proposal.

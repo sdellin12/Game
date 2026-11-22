@@ -5,10 +5,15 @@ playtests yet. Current rules include paid draw-time refill and Recharge; cost20 
 provisional. See DECK_REFILL_DESIGN.md and FULL_MATCH_TIMING_SPEC.md.
 
 ## Current next step
-Integrate approved timing incrementally: pure turn/required-draw state and refill
-choices under explicit test-cost parameters, then atomic cleanup/elimination.
-Do not infer a final refill price, stacked Recharge debt or bypass interactions.
-The priority core is isolated and has no effect evaluator or saved-match schema.
+Steve requested card information requirements before further implementation.
+Review CARD_INFORMATION_CONTRACT.md: shared standard/full-art face information,
+conditional type fields, separate live overlays and optional decoration. Templates
+will be developed separately. Contract is proposed, not a renderer/schema change.
+
+Queued after that: priority-core edge-case review and pure turn/required-draw/refill
+state with explicit test-cost parameters, then atomic cleanup/elimination. Steve
+requested both review and implementation. Do not infer a final refill price,
+stacked Recharge debt or bypass interactions. Priority core remains isolated.
 
 ## Read
 1. REQUIREMENTS.md — current confirmed product/UX/content.
@@ -175,3 +180,10 @@ with immutable response windows, revision/holder checks, one-item resolution
 handoff, active-first trigger batches and monotonic IDs. Ten focused tests pass;
 full-suite evidence is recorded in experiments/PRIORITY_FOUNDATION.md. No game save
 format changes or new full-match claims. Price and repeat/bypass rules remain open.
+
+
+Current card-template detour: proposed CARD_INFORMATION_CONTRACT.md authored from
+focused canonical requirements. Common name/color/type/access/art/rules regions;
+conditional creature/leader/trait/form content; live state overlays and optional
+catalog/flavor data are separate. No new mechanics, card schemas, renderer or tests
+added. Pending priority review and turn/draw implementation remain queued.
