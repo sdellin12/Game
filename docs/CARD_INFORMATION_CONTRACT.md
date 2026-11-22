@@ -139,3 +139,9 @@ artwork; traits; rules/abilities; optional creature stats; optional leader/form
 panels; optional flavor/footer; separate live-state overlays. This contract is approved; standard/full-art templates can now be worked on
 independently. See [filled examples](CARD_CONTENT_EXAMPLES.md) for the shared
 content handoff. Example card designs/costs are illustrative, not adopted content.
+
+
+## Implemented design assets
+See [CARD_DESIGN.md](CARD_DESIGN.md) for completed v1 standard/full-art SVG
+templates, shared fixture data, previews, verification and portable LLM handoff.
+This information contract remains the required-content baseline.

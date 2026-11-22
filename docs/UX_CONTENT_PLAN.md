@@ -31,3 +31,7 @@ No renderer, catalog schema or template asset is changed by this proposal.
 
 [CARD_CONTENT_EXAMPLES.md](CARD_CONTENT_EXAMPLES.md) supplies illustrative filled
 content for template work; it does not publish new mechanics or balanced cards.
+
+[Card Design v1](CARD_DESIGN.md) now maps the approved information contract to
+editable standard/full-art SVG layouts, paired previews and an offline gallery.
+These design assets are separate from production match-client implementation.

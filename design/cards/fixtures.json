@@ -1,0 +1,305 @@
+{
+  "schema": "design-fixtures-v1",
+  "status": "illustrative-not-catalog-or-balanced",
+  "cards": [
+    {
+      "id": "pup",
+      "name": "Clockwork Pup",
+      "color": "Generic",
+      "type": "Creature",
+      "access_label": "PLAY",
+      "access": "2",
+      "traits": [],
+      "attack": "2",
+      "health": "3",
+      "abilities": [],
+      "flavor": "Small paws. Big courage.",
+      "art": "A friendly wind-up puppy with a brass key."
+    },
+    {
+      "id": "pebble",
+      "name": "Pebble Buddy",
+      "color": "Generic",
+      "type": "Creature",
+      "access_label": "PLAY",
+      "access": "1",
+      "traits": [],
+      "attack": "0",
+      "health": "3",
+      "abilities": [],
+      "flavor": "A steadfast little friend.",
+      "art": "A smiling round stone companion."
+    },
+    {
+      "id": "medic",
+      "name": "Moss-Stitch Medic",
+      "color": "Green",
+      "type": "Creature",
+      "access_label": "PLAY",
+      "access": "3",
+      "traits": [
+        "Construct",
+        "Healer"
+      ],
+      "attack": "2",
+      "health": "5",
+      "abilities": [
+        {
+          "label": "Field Repair",
+          "cost": "1 resource + exhaust",
+          "text": "Heal another creature you control for 2 HP.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        }
+      ],
+      "art": "A crocheted woodland helper with glowing repair thread."
+    },
+    {
+      "id": "action",
+      "name": "Repair Pulse",
+      "color": "Green",
+      "type": "Action",
+      "access_label": "PLAY",
+      "access": "2",
+      "traits": [],
+      "abilities": [
+        {
+          "text": "Heal a creature you control for 3 HP."
+        }
+      ],
+      "flavor": "A little care holds a world together.",
+      "art": "A green pulse reconnecting a cracked shell."
+    },
+    {
+      "id": "reaction",
+      "name": "Brace for Impact",
+      "color": "Gold",
+      "type": "Reaction",
+      "access_label": "PLAY",
+      "access": "2",
+      "traits": [],
+      "abilities": [
+        {
+          "text": "Give a creature you control 3 prevention until this turn ends.",
+          "timing": "Only after attacks are declared and before combat damage."
+        }
+      ],
+      "art": "A golden barrier around a small defender."
+    },
+    {
+      "id": "upgrade",
+      "name": "Reinforced Plating",
+      "color": "Generic",
+      "type": "Upgrade",
+      "access_label": "PLAY",
+      "access": "2",
+      "traits": [],
+      "abilities": [
+        {
+          "text": "Attach to a creature you control. It gains 2 maximum HP and 2 current HP when this attaches."
+        }
+      ],
+      "art": "Soft-edged modular armor being fitted onto a creature."
+    },
+    {
+      "id": "persistent",
+      "name": "Recovery Beacon",
+      "color": "Green",
+      "type": "Persistent",
+      "access_label": "PLAY",
+      "access": "3",
+      "traits": [],
+      "abilities": [
+        {
+          "text": "At the start of your turn, heal a creature you control for 1 HP."
+        }
+      ],
+      "note": "Persistent is a working type label.",
+      "art": "A living lantern in a woodland clearing."
+    },
+    {
+      "id": "leader",
+      "name": "Aster, Corekeeper",
+      "color": "Gold",
+      "type": "Creature • Leader",
+      "access_label": "SUMMON",
+      "access": "4",
+      "traits": [
+        "Guardian"
+      ],
+      "attack": "3",
+      "health": "5",
+      "abilities": [
+        {
+          "label": "RESERVE · Guiding Light",
+          "cost": "1 resource",
+          "text": "Give a creature you control 1 prevention until this turn ends.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        },
+        {
+          "label": "BATTLEFIELD · Shield Line",
+          "cost": "2 resources + exhaust Aster",
+          "text": "Give a creature you control 3 prevention until this turn ends.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        }
+      ],
+      "art": "A warm guardian carrying a luminous Vanguard Core."
+    },
+    {
+      "id": "scout",
+      "name": "Gearfox — Scout",
+      "color": "Silver",
+      "type": "Creature",
+      "access_label": "PLAY",
+      "access": "3",
+      "traits": [
+        "Robot"
+      ],
+      "attack": "3",
+      "health": "4",
+      "abilities": [
+        {
+          "label": "Transform",
+          "cost": "1 resource",
+          "text": "Change into Gearfox — Hauler.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        }
+      ],
+      "art": "A cheerful robotic fox with folded cargo wheels."
+    },
+    {
+      "id": "hauler",
+      "name": "Gearfox — Hauler",
+      "color": "Silver",
+      "type": "Creature • Linked Form",
+      "access_label": "ACCESS",
+      "access": "FORM",
+      "access_detail": "Transform from Gearfox — Scout. Linked face; not another deck card.",
+      "traits": [
+        "Robot",
+        "Vehicle"
+      ],
+      "attack": "1",
+      "health": "7",
+      "abilities": [
+        {
+          "label": "Transform",
+          "cost": "1 resource",
+          "text": "Change into Gearfox — Scout.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        }
+      ],
+      "art": "The same robotic fox transformed into a cargo rover."
+    },
+    {
+      "id": "combined",
+      "name": "Atlas Assembly",
+      "color": "Silver",
+      "type": "Creature • Combined Form",
+      "access_label": "COMBINE",
+      "access": "2",
+      "access_detail": "Bolt Scout + Tread Guard you control. Your Main phase; no pending effects. Outside the 40-card deck.",
+      "traits": [
+        "Robot",
+        "Guardian"
+      ],
+      "attack": "6",
+      "health": "9",
+      "abilities": [
+        {
+          "label": "Breakthrough",
+          "text": "Any attack left after enough is assigned to defeat all blockers hits the defending player."
+        }
+      ],
+      "art": "Two friendly robots joined into one protector."
+    },
+    {
+      "id": "token",
+      "name": "Spark Drone",
+      "color": "Silver",
+      "type": "Creature • Token",
+      "access_label": "ACCESS",
+      "access": "TOKEN",
+      "access_detail": "Created by Deploy Drones. Not played from a deck or hand.",
+      "traits": [
+        "Robot"
+      ],
+      "attack": "1",
+      "health": "1",
+      "abilities": [],
+      "art": "A tiny bright-eyed hovering helper robot."
+    },
+    {
+      "id": "resource",
+      "name": "Stored Spark",
+      "color": "Generic",
+      "type": "Resource Token",
+      "access_label": "ACCESS",
+      "access": "TOKEN",
+      "access_detail": "Created by an effect; not an ordinary deck card.",
+      "traits": [],
+      "resource_value": "1",
+      "abilities": [
+        {
+          "label": "1 stored resource",
+          "text": "Spend this token toward a legal resource payment. Consume it when spent."
+        }
+      ],
+      "art": "One glowing Spark held in a capsule."
+    },
+    {
+      "id": "pup-live",
+      "name": "Clockwork Pup",
+      "color": "Generic",
+      "type": "Creature",
+      "access_label": "PLAY",
+      "access": "2",
+      "traits": [],
+      "attack": "3",
+      "health": "2/5",
+      "abilities": [],
+      "flavor": "",
+      "art": "A friendly wind-up puppy with a brass key.",
+      "statuses": [
+        "EXHAUSTED",
+        "PREVENTION 2 · THIS TURN"
+      ],
+      "attachments": [
+        "Reinforced Plating"
+      ],
+      "base_note": "Base ATK 2 / HP 3 · +1 ATK until End"
+    },
+    {
+      "id": "leader-live",
+      "name": "Aster, Corekeeper",
+      "color": "Gold",
+      "type": "Creature • Leader",
+      "access_label": "SUMMON",
+      "access": "8",
+      "traits": [
+        "Guardian"
+      ],
+      "attack": "3",
+      "health": "5",
+      "abilities": [
+        {
+          "label": "RESERVE · Guiding Light",
+          "cost": "1 resource",
+          "text": "Give a creature you control 1 prevention until this turn ends.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        },
+        {
+          "label": "BATTLEFIELD · Shield Line",
+          "cost": "2 resources + exhaust Aster",
+          "text": "Give a creature you control 3 prevention until this turn ends.",
+          "timing": "Your Main phase; no pending effects. Once per turn."
+        }
+      ],
+      "art": "A warm guardian carrying a luminous Vanguard Core.",
+      "statuses": [
+        "RECOVERING · UNTIL NEXT START",
+        "RESERVE ABILITY UNAVAILABLE"
+      ],
+      "base_note": "Base summon 4 · +4 accumulated increase"
+    }
+  ]
+}

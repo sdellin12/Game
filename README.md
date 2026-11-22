@@ -35,6 +35,7 @@ matrix contains 1,156 exact encounters, not full matches or proven card balance.
 - [Life-for-deck refill proposal](docs/DECK_REFILL_DESIGN.md)
 - [Delivery plan](docs/BUILD_PLAN.md)
 - [UX and artwork contracts](docs/UX_CONTENT_PLAN.md)
+- [Card design and LLM handoff](docs/CARD_DESIGN.md)
 - [Approved card information contract](docs/CARD_INFORMATION_CONTRACT.md)
 - [Filled card content examples for template work](docs/CARD_CONTENT_EXAMPLES.md)
 - [Lore bible](docs/Game_Lore.md)
