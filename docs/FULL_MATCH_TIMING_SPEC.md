@@ -199,13 +199,22 @@ regression fixtures must show identical damage. Add committed attack records,
 blocked-status memory, chosen blocker/Challenge orders, and pre-damage target
 revalidation. Do not create a simulator-only second combat algorithm.
 
-Proposed windows: all attacks committed -> response round -> blockers committed
-per defending controller in fixed order (selections private until that defender
-confirms) -> attacker/Challenge retaliation ordering choices -> final response
-round -> simultaneous damage -> stabilization. Later invalid blockers are removed
-but blocked status persists; missing Challenge targets miss. New blockers cannot
-be silently assigned during final responses. Exact multiplayer blocker disclosure
-and selection ordering is proposed and needs approval.
+Approved blocker disclosure 2026-11-22: each defending controller chooses privately
+and locks its complete blocker assignment, including an explicit no-block choice.
+Reveal all defending assignments together only after every required defender has
+locked. A later defender never sees an earlier defender's choices before locking.
+Then collect attacker/Challenge retaliation order choices and open the final
+reaction window before simultaneous damage/stabilization. No timer is added.
+
+Integration sequence: all attacks committed -> response round -> private blocker
+lock batch -> simultaneous reveal -> damage-order choices -> final response round
+-> simultaneous damage -> stabilization. Later invalid blockers are removed but
+blocked status persists; missing Challenge targets miss. New blockers cannot be
+silently assigned during final responses. Server stores locked choices privately;
+public projections show neutral waiting information without selected blockers.
+An intervening public-state change (e.g. concession cleanup) invalidates the batch
+and requires fresh locks before reveal; disconnect pauses and restores choices.
+This replaces the earlier proposed sequential public blocker confirmations.
 
 ## Acceptance scenarios before enabling full-match mode
 
@@ -235,7 +244,7 @@ and selection ordering is proposed and needs approval.
 Priority/reset order, cross-controller trigger order, whole-effect player-health
 checks, safe-boundary concession, Start/End boundaries and eliminated-seat duration
 anchors are approved. Remaining proposals needing approval: failed multi-draw
-behavior and multiplayer combat windows. Self-lethal cost legality is deferred to
+behavior. Blocker lock/reveal and subsequent ordering/reaction windows are approved. Self-lethal cost legality is deferred to
 an authored-cost specification; reject unsupported cost definitions. Then implement pure match
 state/command validation, priority/chain and stabilization with exact fixtures;
 only then connect turns/resources, combat and simple hidden-safe policies.
@@ -279,3 +288,10 @@ satisfy independent Astra review or replace tests for a future match engine.
 Owner follow-up 2026-11-22: Start/End and eliminated-seat duration boundaries approved.
 Failed-draw handling and multiplayer blocker disclosure remain undecided pending
 requested examples/tradeoff explanation. No approval inferred for either.
+
+
+Owner follow-up 2026-11-22: approved private simultaneous blocker lock/reveal.
+Requested a costly fixed-life discard-to-deck refill mechanic, intended to make
+repeat use require deliberate life-gain support. That mechanic is accepted intent;
+exact availability, timing and cost remain proposals in DECK_REFILL_DESIGN.md.
+No failed-draw forgiveness or automatic reshuffle is inferred from this request.

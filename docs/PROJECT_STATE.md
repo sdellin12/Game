@@ -139,3 +139,10 @@ export/replay 35,058 encounters; rebuilt package mixed/subset budget1 export/rep
 Timing follow-up: Steve approved Start/End and eliminated-seat duration boundaries.
 Failed required draw and multiplayer blocker disclosure await examples and a
 subsequent decision; neither is adopted. Documentation-only update.
+
+
+Owner follow-up: simultaneous private blocker lock/reveal approved. New accepted
+intent: costly fixed-life discard-to-deck refill, with repeat use relying on a
+life-gain plan. Standard action vs card ability vs emergency timing still needs
+selection; 20 life is a test candidate, not an approved/balanced price. Failed-draw
+handling remains unresolved; no rescue/revival inferred. See DECK_REFILL_DESIGN.md.

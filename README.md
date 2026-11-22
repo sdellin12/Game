@@ -32,6 +32,7 @@ matrix contains 1,156 exact encounters, not full matches or proven card balance.
 - [Confirmed requirements](docs/REQUIREMENTS.md)
 - [Rules baseline and implementation gaps](docs/RULES_DRAFT.md)
 - [Proposed full-match timing specification](docs/FULL_MATCH_TIMING_SPEC.md)
+- [Life-for-deck refill proposal](docs/DECK_REFILL_DESIGN.md)
 - [Delivery plan](docs/BUILD_PLAN.md)
 - [UX and artwork contracts](docs/UX_CONTENT_PLAN.md)
 - [Lore bible](docs/Game_Lore.md)

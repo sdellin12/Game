@@ -74,3 +74,11 @@ Future scope: timers, two colors, remote/visitor/TV editing, maturity levels, Pi
 
 ## Balance lab request
 User wants rigorous local computation instead of spending AI tokens per test. Build-plan direction: reusable game rules engine -> headless automated runner -> simple desktop dashboard; mobile report companion later candidate. Desktop preferred PC compute; no runtime LLM dependency. Export CSV/JSON/readable HTML, replay seeds/logs, batch scenarios/full matches as coverage grows. Compare multiple policies (straight attack for youngest, defensive, resource-aware, stronger later); identify policy weakness vs deck weakness. Use summaries/outlier replays for AI analysis, not bulk raw logs. No simulations have run. Current explicit task: sync decisions to GitHub, then expert subagents plan tester architecture/statistics/UX/implementation; not implement yet.
+
+
+## Deck-refill extension requested 2026-11-22
+Add a costly fixed-life trade to reshuffle discard/graveyard into the deck. Repeat
+use should need deliberate life-gain support. Exact timing/availability/cost are
+pending design selection (DECK_REFILL_DESIGN.md). This is an explicit exception
+to the ordinary non-reshuffling discard rule, not a free automatic recycle.
+Simultaneous private blocker locking/reveal is approved for multiplayer defense.

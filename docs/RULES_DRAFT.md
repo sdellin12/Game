@@ -87,3 +87,17 @@ triggers. End resolves triggers/responses, enforces seven cards, then expires
 effects and handles their consequences before advancing. Durations anchored to
 an eliminated seat expire at its next original scheduled boundary without
 executing that seat's turn, refill or recovery. See FULL_MATCH_TIMING_SPEC.md.
+
+
+## Approved blocker disclosure and deck-refill design intent (2026-11-22)
+Multiplayer defenders select/lock complete blocker assignments privately; reveal
+them together after every required defender locks, then choose damage orders and
+open the final reaction window. Explicit no-block choices are part of the lock
+batch. There is no timer and no early disclosure to later defenders.
+
+A costly fixed-life payment to shuffle discard/graveyard cards back into the deck
+is requested. Repeat use should require a deliberately life-generating deck.
+This is accepted design intent, not yet a fully specified executable rule. See
+DECK_REFILL_DESIGN.md for provisional cost/timing and evaluation. No free automatic
+reshuffle or rescue after failed required draw is approved. Player max30 and no
+player revival remain unchanged.
