@@ -1,4 +1,13 @@
 # The Crucible Balance Lab — Expert Design and Implementation Plan
+
+## Implementation update — 2026-11-22
+User authorized moving ahead. First combat-only core and CLI slice now exists,
+with 27 passing tests, 1,156 exported/replayed deterministic encounters and a
+worked Breakthrough example. See [quickstart](COMBAT_LAB_QUICKSTART.md) and
+[validation record](experiments/FIRST_COMBAT_SLICE.md). No full-match bots, GUI,
+checkpoint runner or actual Windows package yet. Historical planning-only
+statements below describe the original plan, not current implementation status.
+
 2026-11-22. Requested specialist planning synthesis; NOT an implemented application or completed balance study. Product requirements and accepted rules remain REQUIREMENTS.md and RULES_DRAFT.md. Technical choices, numeric experiment budgets and sequencing below are recommendations, not new game rules.
 
 ## Decision and purpose
