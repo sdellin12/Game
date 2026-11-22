@@ -57,7 +57,7 @@ Owner choices needed to resolve an item (e.g. optional triggers/order) suspend
 priority advancement. A response cannot preempt a cost payment or an internal
 choice of an already-resolving item. Choices record IDs, not UI positions.
 
-## Start, draw and end boundaries — recommended default
+## Start and End boundaries — approved 2026-11-22
 
 Start is one automatic boundary transaction for the active surviving seat:
 expire next-own-start durations anchored to this boundary; reset applicable usage
@@ -176,7 +176,7 @@ bonuses owned by survivors when their grant explicitly survives its source.
 Cleanup itself is departure, not destruction/sacrifice. A genuinely lethal
 creature in the original event keeps its genuine defeat cause.
 
-Recommend an until-next-start duration references a scheduled original seat
+Approved 2026-11-22: an until-next-start duration references a scheduled original seat
 boundary, not an immortal search for a future active turn. When that eliminated
 seat's next scheduled position is crossed, expire its anchored durations once,
 without executing a turn/refill/recovery for that seat. Per-turn and next-own-start
@@ -233,9 +233,9 @@ and selection ordering is proposed and needs approval.
 ## Implementation sequence and remaining approval
 
 Priority/reset order, cross-controller trigger order, whole-effect player-health
-checks and safe-boundary concession are approved. Remaining proposals needing
-approval: failed multi-draw behavior, Start/End boundaries, eliminated-seat duration
-anchors and multiplayer combat windows. Self-lethal cost legality is deferred to
+checks, safe-boundary concession, Start/End boundaries and eliminated-seat duration
+anchors are approved. Remaining proposals needing approval: failed multi-draw
+behavior and multiplayer combat windows. Self-lethal cost legality is deferred to
 an authored-cost specification; reject unsupported cost definitions. Then implement pure match
 state/command validation, priority/chain and stabilization with exact fixtures;
 only then connect turns/resources, combat and simple hidden-safe policies.
@@ -274,3 +274,8 @@ Clarifications found during review:
 
 No approved game rules were changed by the experiment extensions. Review does not
 satisfy independent Astra review or replace tests for a future match engine.
+
+
+Owner follow-up 2026-11-22: Start/End and eliminated-seat duration boundaries approved.
+Failed-draw handling and multiplayer blocker disclosure remain undecided pending
+requested examples/tradeoff explanation. No approval inferred for either.

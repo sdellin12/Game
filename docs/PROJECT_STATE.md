@@ -134,3 +134,8 @@ a complete 27-encounter run, joint outcomes and verified replay selection.
 Validation for this continuation: 60 Windows tests; full mixed/subset budget2
 export/replay 35,058 encounters; rebuilt package mixed/subset budget1 export/replay
 165 encounters. Baseline compatibility and held-attacker readiness are tested.
+
+
+Timing follow-up: Steve approved Start/End and eliminated-seat duration boundaries.
+Failed required draw and multiplayer blocker disclosure await examples and a
+subsequent decision; neither is adopted. Documentation-only update.

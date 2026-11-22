@@ -79,3 +79,11 @@ trigger, atomicity, elimination and combat-window sequencing with acceptance
 fixtures. Priority/reset, cross-controller trigger order, whole-effect player-health checks and safe-boundary concession were approved by Steve in Codex on 2026-11-22. Remaining proposed defaults are not confirmed gameplay rules. Review/approval
 is required before enabling a full-match engine; current combat rules above remain
 unchanged.
+
+
+Approved boundary sequencing (2026-11-22): Start expires next-start effects, resets
+usage/readies, recovers leaders, grows/refills resources, then handles Start
+triggers. End resolves triggers/responses, enforces seven cards, then expires
+effects and handles their consequences before advancing. Durations anchored to
+an eliminated seat expire at its next original scheduled boundary without
+executing that seat's turn, refill or recovery. See FULL_MATCH_TIMING_SPEC.md.
