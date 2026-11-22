@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "approved-test-candidates-not-balanced",
+  "profiles": [
+    {"id":"c1-aggro","cost":1,"role":"aggressive","attack":2,"health":1},
+    {"id":"c1-balanced","cost":1,"role":"balanced","attack":1,"health":2},
+    {"id":"c1-defense","cost":1,"role":"defensive","attack":0,"health":3},
+    {"id":"c2-aggro","cost":2,"role":"aggressive","attack":3,"health":2},
+    {"id":"c2-balanced","cost":2,"role":"balanced","attack":2,"health":3},
+    {"id":"c2-defense","cost":2,"role":"defensive","attack":1,"health":4},
+    {"id":"c3-aggro","cost":3,"role":"aggressive","attack":4,"health":3},
+    {"id":"c3-balanced","cost":3,"role":"balanced","attack":3,"health":4},
+    {"id":"c3-defense","cost":3,"role":"defensive","attack":2,"health":5}
+  ]
+}
