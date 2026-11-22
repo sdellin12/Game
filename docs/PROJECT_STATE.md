@@ -1,5 +1,5 @@
 # The Crucible — Resume Here
-Updated 2026-11-22. Planning only; no implementation, simulations, hardware benchmarks or family playtests performed.
+Updated 2026-11-22. First combat-only core/CLI implemented. No full-match simulations, desktop GUI, target-PC benchmarks or family playtests yet.
 
 ## Read
 1. REQUIREMENTS.md — current confirmed product/UX/content.
@@ -20,15 +20,17 @@ ANSWERS.md and DISCOVERY.md are historical and superseded; do not reread full in
 - Leader reserve reset/recovery until next own start, cumulative+2 per battlefield removal; negated summon no increase, retries allowed; accumulated increase undiscountable. No leader copy/control/combine.
 - Transform/combine proportional HP roundUP actual whole numbers, no hidden fractions; no entry/departure from assembly; compatibility and disassembly rules in rules doc.
 - Ten color identities, all offer easy-to-pilot decks incl Silver/Gold. Mostly0–1 creature abilities; initial24 creatures/10 actions-reactions/6 persistent.
-- Ability-free candidate ATK/HP: cost1=2/1,1/2,0/3; cost2=3/2,2/3,1/4; cost3=4/3,3/4,2/5. Not tested.
+- Ability-free candidate ATK/HP: cost1=2/1,1/2,0/3; cost2=3/2,2/3,1/4; cost3=4/3,3/4,2/5. Finite combat scenarios enumerated; full balance not established.
 - Theme-first builder, leader choices, guided roles, private draft practice, shared permanent card catalog, independent optional shared deck copies.
 - Permanent earned-only cosmetics/achievements, no real money EVER. All art retained, per-instance public treatments, no in-match changes.
 - Desktop local test lab requested: no per-test AI, CSV/JSON/HTML, reproducible seeds/replays/multiple policy skill levels; mobile report companion later proposal.
 
 ## Current user request
-First sync everything discussed to GitHub, then relevant expert subagents discuss/plan design and implementation of tester. Documentation updates authorized on sdellin12/Game. Implementation not requested yet.
-Core requirements/rules/build/UX/lore consolidated and verified. Four-specialist review completed: engine architecture, experimental statistics, hidden-safe bots/adversarial QA and Windows desktop UX/packaging. Synthesis saved in BALANCE_TESTER_PLAN.md. Recommended next work when implementation is requested: T0/T1 pure combat core, nine approved candidate profiles and independent expected fixtures; CLI runner before desktop UI. No coding or test runs yet.
+User authorized moving ahead with tester implementation. First slice: pure immutable combat state/commands, nine candidate profiles, simultaneous blocking, Challenge/Breakthrough/shields, strict scenario validation and local JSON/CSV/HTML exporter/replay checker. 27 tests passed; 1,156 exact matrix encounters and worked Breakthrough example exported/replayed; two deliberately broken-rule mutants caught. Linux Python3.12 validation, not actual Windows validation. See COMBAT_LAB_QUICKSTART.md and experiments/FIRST_COMBAT_SLICE.md.
+Next stage: equal-budget group enumeration, bounded job runner/checkpoints and desktop shell; full-match mode remains gated on complete turn/response/resource/elimination implementation. Existing plan records later stages. UI/LLM/policy/random-seed infrastructure not falsely claimed by deterministic combat slice.
+Four-specialist plan remains in BALANCE_TESTER_PLAN.md; read its status update before historical planning statements.
 User authorizes sensible tests/candidate numbers without approval for each fixture; ask consequential tradeoffs with selectable options+optional text.
+TCG references can inform costs/wording/archetypes, but keep other games' rules separate and prefer curated official links/card/deck examples over indiscriminate full-database copies. Not required for first slice. No external card corpus imported.
 
 ## Known gates
 Windows PC Ryzen5/GTX1650 (RAM/VRAM unknown), Linux home server previously discussed but deployment not verified. Tester CPU work independent of art/GPU/mobile install.
