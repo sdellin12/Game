@@ -1,3 +1,6 @@
+# Current architecture status — 2026-11-22
+The implementation stack below remains a proposal with historical platform-source findings, not a freshly verified compatibility guarantee. REQUIREMENTS.md and RULES_DRAFT.md supersede older behavioral assumptions. No player revival, no chat/private messaging system, adult PIN and pairing required. Independent local balance lab will reuse the authoritative rules core; its design is in BALANCE_TESTER_PLAN.md after specialist review. No code built yet.
+
 # Platform Feasibility and Proposed Architecture
 Reviewed 2026-11-17. Expert planning recommendation, not approved stack. Requirements: REQUIREMENTS.md.
 
@@ -10,7 +13,7 @@ Reviewed 2026-11-17. Expert planning recommendation, not approved stack. Require
 | Roku TV | Public battlefield/chain/deals | Separate BrightScript/SceneGraph app |
 | Windows PC art worker | Queue jobs, generate via replaceable backend, upload per-card results | Python worker candidate |
 
-A shared wire protocol is realistic; one identical binary/runtime across Roku and Android is not assumed. TV clients must never receive private hand/negotiation payloads merely hidden by UI. Clients submit intentions; server validates and resolves. Profiles are household-trust tap-name selection, not strong authentication.
+A shared wire protocol is realistic; one identical binary/runtime across Roku and Android is not assumed. TV clients must never receive private hand/negotiation payloads merely hidden by UI. Clients submit intentions; server validates and resolves. Current requirements supersede old trust-only assumptions: adult profile PINs, approved/revocable device pairing, active-seat switching controls, and server-authorized private projections are required.
 
 Use versioned JSON commands and state projections, sequence numbers, command IDs and reconnect snapshots. HTTP asset retrieval, WebSocket personal-client updates and HTTP polling Roku adapter are candidates. Snapshot polling avoids assuming particular Roku streaming support. Command deduplication and authoritative validation are necessary even on local Wi-Fi. Do not expose local services publicly for first version.
 
@@ -59,6 +62,6 @@ Versioned card/effect schemas; registered server effect handlers; ruleset profil
 No installation spike, benchmark, executable prototype or deployment performed. Updated user preference: secure iPad web app acceptable under existing no-browser restrictions; weekly native reinstalls acceptable fallback; annual fee not authorized. Main unknown hardware: actual older-iPad OS and current Mac build availability. Both TV platforms remain required for first completed version.
 
 ## Updated iPad direction after review
-User explicitly relaxes native-only for iPads IF web app is secure and does not undermine no-browser restrictions. Weekly native provisioning maintenance also acceptable. Investigate full-screen Web Clip and test exact restrictions before choosing stack. Apple documents managed full-screen Web Clips when Safari hidden/restricted; this does not establish compatibility of ordinary home-screen installs on unmanaged Screen Time devices. Need clarify restriction source, later model/OS. Do not enable Safari generally or enroll in paid management without a concrete user choice.
+User explicitly relaxes native-only for iPads IF web app is secure and does not undermine no-browser restrictions. Weekly native provisioning maintenance also acceptable. Investigate full-screen Web Clip and test exact restrictions before choosing stack. Apple documents managed full-screen Web Clips when Safari hidden/restricted; this does not establish compatibility of ordinary home-screen installs on unmanaged Screen Time devices. Restriction source is confirmed Screen Time; actual model/OS testing remains deferred. Do not enable Safari generally or enroll in paid management without a concrete user choice.
 Source: https://support.apple.com/guide/deployment/depbc7c7808/web
 Proposed app controls: no arbitrary URL input/outbound links, local first-party assets, safe image imports, escaped generated/user text, restrictive content/navigation policy, trusted HTTPS/local session and seat-based server projections. A full-screen window is presentation, not security isolation. Test native fallback and signing/build access if web restriction incompatible. No implementation done.
