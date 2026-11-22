@@ -201,8 +201,17 @@ def export(records: list[dict], output: Path, experiment: str, progress: dict | 
                    "</td><td>" + html.escape(r["result_hash"][:12]) + "</td></tr>" for r in records)
     comparison_rows = "".join("<tr>" + "".join("<td>" + html.escape(str(row[key])) + "</td>" for key in
         ("attacking_board", "defending_board", "encounters", "player_damage_range", "attacker_losses_range", "defender_losses_range")) + "</tr>" for row in comparisons["matchups"])
+    outcome_rows = "".join("<tr><td>" + html.escape(row["attacking_board"] + " vs " + row["defending_board"]) +
+        "</td><td>" + str(o["player_damage"]) + "</td><td>" + str(o["attacker_losses"]) +
+        "</td><td>" + str(o["defender_losses"]) + "</td><td>" + str(o["encounters"]) +
+        "</td><td>" + html.escape(o["example_job_id"]) + "</td></tr>"
+        for row in comparisons["matchups"] for o in row["outcomes"])
     comparison_html = ("<h2>Board comparisons</h2><p>" + html.escape(comparisons["interpretation"]) +
-        "</p><table><tr><th>Attacking ATK/HP</th><th>Defending ATK/HP</th><th>Encounters</th><th>Player damage range</th><th>Attacker losses</th><th>Defender losses</th></tr>" + comparison_rows + "</table>")
+        "</p><table><tr><th>Attacking ATK/HP</th><th>Defending ATK/HP</th><th>Encounters</th><th>Player damage range</th><th>Attacker losses</th><th>Defender losses</th></tr>" + comparison_rows + "</table>"
+        "<details><summary>Joint outcomes and example replay IDs</summary>"
+        "<p>Counts describe enumerated choices, not probabilities. Search an ID in the replay inspector.</p>"
+        "<table><tr><th>Boards</th><th>Player damage</th><th>Attacker losses</th><th>Defender losses</th>"
+        "<th>Encounters</th><th>Example replay ID</th></tr>" + outcome_rows + "</table></details>")
     document = ("<!doctype html><html lang='en'><meta charset='utf-8'>"
                 "<meta name='viewport' content='width=device-width,initial-scale=1'>"
                 "<title>Crucible combat experiment</title><style>"
@@ -245,12 +254,14 @@ def main(argv: list[str] | None = None) -> int:
     matrix.add_argument("--output", type=Path, required=True)
     batch = sub.add_parser("batch", help="resume a bounded matrix batch")
     batch.add_argument("--experiment", choices=("matrix", "groups"), default="matrix")
+    batch.add_argument("--condition", choices=("baseline", "wounded", "exhausted", "shielded"), default="baseline")
     batch.add_argument("--budget", type=int, default=3)
     batch.add_argument("--checkpoint", type=Path, required=True)
     batch.add_argument("--control-file", type=Path, help="optional UTF-8 file containing pause or cancel")
     batch.add_argument("--limit", type=int, default=100)
     batch.add_argument("--output", type=Path, required=True)
     groups = sub.add_parser("groups", help="equal-budget group combat enumeration")
+    groups.add_argument("--condition", choices=("baseline", "wounded", "exhausted", "shielded"), default="baseline")
     groups.add_argument("--budget", type=int, default=3)
     groups.add_argument("--output", type=Path, required=True)
     run = sub.add_parser("run", help="resolve a structured combat scenario")
@@ -269,8 +280,10 @@ def main(argv: list[str] | None = None) -> int:
                 from .batch import run_batch, checkpoint_status
                 if args.experiment == "groups":
                     from .groups import group_scenarios
-                    inputs = list(group_scenarios(args.budget))
+                    inputs = list(group_scenarios(args.budget, args.condition))
                 else:
+                    if args.condition != 'baseline':
+                        raise CombatError('group conditions require --experiment groups')
                     inputs = list(matrix_scenarios())
                 stop_status = None
                 def show_progress(event):
@@ -294,14 +307,14 @@ def main(argv: list[str] | None = None) -> int:
                 progress = checkpoint_status(args.checkpoint)
                 progress.update(requested_combats=len(inputs), pending_combats=len(inputs) - len(records),
                                 run_status=stop_status or ("completed" if len(records) == len(inputs) else "batch_limit"))
-                export(records, args.output, f"resumable {args.experiment}", progress=progress)
+                export(records, args.output, f"resumable {args.experiment}; condition={args.condition}", progress=progress)
                 print(f"Checkpoint contains {len(records)}/{len(inputs)} combats; report: {args.output}")
                 return 2 if progress["failed_jobs_pending_retry"] else (130 if stop_status == "cancelled" else 0)
             if args.command == "groups":
                 from .groups import group_scenarios
-                inputs = group_scenarios(args.budget)
+                inputs = group_scenarios(args.budget, args.condition)
                 records = [run_scenario(s) for s in inputs]
-                export(records, args.output, f"equal-budget groups: {args.budget}")
+                export(records, args.output, f"equal-budget groups: {args.budget}; condition={args.condition}")
                 print(f"Exported {len(records)} exact group combats to {args.output}")
                 return 0
             inputs = matrix_scenarios() if args.command == "matrix" else [

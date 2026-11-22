@@ -40,11 +40,18 @@ def comparison_summary(records):
                        if e['target_kind'] == 'player') for r in records]
         a_losses = [losses(r, friendly) for r in records]
         d_losses = [losses(r, opposing) for r in records]
+        outcomes = {}
+        for record, damage, lost_a, lost_d in zip(records, damages, a_losses, d_losses):
+            outcome = outcomes.setdefault((damage, lost_a, lost_d), {
+                'player_damage': damage, 'attacker_losses': lost_a, 'defender_losses': lost_d,
+                'encounters': 0, 'example_job_id': record['job_id']})
+            outcome['encounters'] += 1
         rows.append({'attacking_board': board(friendly), 'defending_board': board(opposing),
                      'attacking_cards': len(friendly), 'defending_cards': len(opposing),
                      'encounters': len(records), 'player_damage_range': [min(damages), max(damages)],
                      'attacker_losses_range': [min(a_losses), max(a_losses)],
                      'defender_losses_range': [min(d_losses), max(d_losses)],
+                     'outcomes': [outcomes[k] for k in sorted(outcomes)],
                      'example_job_id': records[0]['job_id']})
     return {'interpretation': 'Observed ranges over exported encounters only. Choices are not probabilities; ranges are not jointly attainable guarantees. Partial runs may omit choices. Boards show ATK/current HP; inspect replay inputs for statuses. No match wins or balance ranking.',
             'matchups': rows}

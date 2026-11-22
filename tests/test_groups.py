@@ -21,3 +21,26 @@ class GroupTests(unittest.TestCase):
         records = [run_scenario(s) for s in group_scenarios(1)]
         self.assertEqual(len(records), 18)
         self.assertEqual(len({r['job_id'] for r in records}), 18)
+
+
+    def test_condition_states_and_exact_shielded_trade(self):
+        for condition in ('wounded', 'exhausted', 'shielded'):
+            scenarios = list(group_scenarios(1, condition))
+            self.assertEqual(len(scenarios), 18)
+            self.assertEqual(len({run_scenario(s)['job_id'] for s in scenarios}), 18)
+            for scenario in scenarios:
+                a, b = scenario['state']['creatures']
+                self.assertFalse(a['exhausted'])
+                if condition == 'wounded':
+                    self.assertEqual((a['health'], b['health']), (1, 1))
+                elif condition == 'exhausted':
+                    self.assertTrue(b['exhausted'])
+                else:
+                    self.assertEqual(b['shields'][0]['amount'], 2)
+            if condition == 'shielded':
+                trade = run_scenario(scenarios[1])
+                self.assertEqual(trade['result']['defeated_creatures'], ['A0'])
+                defender = trade['result']['state']['creatures'][0]
+                self.assertEqual((defender['health'], defender['shields']), (1, []))
+        with self.assertRaises(CombatError):
+            list(group_scenarios(1, 'unknown'))

@@ -12,14 +12,18 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 
-def batch_command(checkpoint, output, control, experiment, budget, limit):
+def batch_command(checkpoint, output, control, experiment, budget, limit, condition='baseline'):
+    if condition not in ('baseline', 'wounded', 'exhausted', 'shielded'):
+        raise ValueError('Choose a supported group condition')
+    if experiment == 'matrix' and condition != 'baseline':
+        raise ValueError('Group conditions require the groups experiment')
     if experiment not in ('matrix', 'groups'):
         raise ValueError('Choose matrix or groups')
     if not 1 <= int(budget) <= 3 or int(limit) < 1:
         raise ValueError('Budget must be 1–3 and batch size must be positive')
     prefix = [sys.executable, '--worker'] if getattr(sys, 'frozen', False) else [sys.executable, '-u', '-m', 'crucible_sim.cli']
     return prefix + ['batch',
-            '--experiment', experiment, '--budget', str(budget), '--limit', str(limit),
+            '--experiment', experiment, '--condition', condition, '--budget', str(budget), '--limit', str(limit),
             '--checkpoint', str(checkpoint), '--output', str(output),
             '--control-file', str(control)]
 
@@ -35,6 +39,7 @@ class LabWindow:
         self.root.minsize(780, 500)
         self.experiment = tk.StringVar(value='matrix')
         self.budget = tk.StringVar(value='3')
+        self.condition = tk.StringVar(value='baseline')
         self.limit = tk.StringVar(value='100')
         self.checkpoint = tk.StringVar()
         self.status = tk.StringVar(value='Choose a checkpoint, then Run / Resume.')
@@ -49,17 +54,18 @@ class LabWindow:
             ('Experiment', self.experiment, ('matrix', 'groups')),
             ('Group resource budget', self.budget, ('1', '2', '3')),
             ('New attempts per batch', self.limit, None),
+            ('Group condition', self.condition, ('baseline', 'wounded', 'exhausted', 'shielded')),
         ]):
             ttk.Label(form, text=label).grid(row=row, column=0, sticky='w', pady=4)
             field = ttk.Combobox(form, textvariable=variable, values=values, state='readonly') if values else ttk.Entry(form, textvariable=variable)
             field.grid(row=row, column=1, sticky='ew', padx=10)
             self.fields.append(field)
-        ttk.Label(form, text='Checkpoint').grid(row=3, column=0, sticky='w')
+        ttk.Label(form, text='Checkpoint').grid(row=4, column=0, sticky='w')
         field = ttk.Entry(form, textvariable=self.checkpoint, width=58)
-        field.grid(row=3, column=1, sticky='ew', padx=10)
+        field.grid(row=4, column=1, sticky='ew', padx=10)
         self.fields.append(field)
         self.browse = ttk.Button(form, text='Choose…', command=self.choose)
-        self.browse.grid(row=3, column=2)
+        self.browse.grid(row=4, column=2)
         form.columnconfigure(1, weight=1)
         buttons = ttk.Frame(panel)
         buttons.pack(fill='x', pady=14)
@@ -96,7 +102,7 @@ class LabWindow:
             self.control = Path(self.temp.name) / 'control.txt'
             self.output = checkpoint.parent / 'reports' / uuid.uuid4().hex
             command = batch_command(checkpoint, self.output, self.control,
-                                    self.experiment.get(), int(self.budget.get()), int(self.limit.get()))
+                                    self.experiment.get(), int(self.budget.get()), int(self.limit.get()), self.condition.get())
             self.log_path = Path(self.temp.name) / 'runner.log'
             self.log_file = self.log_path.open('w', encoding='utf-8')
             env = os.environ.copy()

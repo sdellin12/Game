@@ -272,3 +272,30 @@ build and inspect its reports with that same build. Keep old source/build copies
 for old replays. Never edit hashes to force compatibility. Checkpoint schema is
 unchanged. The app is unsigned, with no installer or automatic updates. It was
 tested on this Windows machine, not a clean machine without Python installed.
+
+
+## Group condition presets and joint outcomes
+
+Choose a Group condition in the desktop, or use the CLI:
+
+```powershell
+py -3 run_lab.py groups --budget 2 --condition exhausted --output lab-runs/exhausted-2
+py -3 run_lab.py batch --experiment groups --budget 2 --condition shielded --checkpoint lab-runs/shielded.sqlite --limit 100 --output lab-runs/shielded-part-1
+```
+
+- `baseline`: existing full-health ready groups, no shields (default; unchanged).
+- `wounded`: every creature starts at 1 current HP with original maximum HP.
+- `exhausted`: full health; every defender exhausted, attackers ready.
+- `shielded`: full health and ready; each defender has 2 numeric prevention.
+
+These are deliberately separate sensitivity presets, not all combinations of
+individual statuses. All creatures attack as before; optional attack subsets
+remain outside this enumerator. Conditions require the groups experiment.
+Resume with the same condition, budget and checkpoint; a changed condition
+rejects against the pinned inputs. Existing baseline checkpoints remain readable.
+
+Comparison JSON and expandable HTML now retain joint `(player damage, attacker
+losses, defender losses)` outcomes with encounter counts and example job IDs.
+Counts are enumerated assignments, not probabilities. Search an ID in the replay
+inspector to inspect an actual outcome. A partial report only describes completed
+jobs; there is no guarantee that its ranges or outcomes cover all choices.

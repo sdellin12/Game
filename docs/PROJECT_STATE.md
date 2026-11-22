@@ -37,7 +37,7 @@ Windows PC Ryzen5/GTX1650 (RAM/VRAM unknown), Linux home server previously discu
 Actual iPads under Screen Time require restriction-safe delivery test; web accepted, weekly native fallback. Both Roku/GoogleTV required completed game. No paid art API; unattended ChatGPT Plus worker path unverified.
 No estimates/claims of balanced cards before evidence. Bots see legal information only; full-game coverage cannot be inferred from combat-only simulation.
 
-## Codex continuation — Windows checkpoint runner
+## Codex continuation â€” Windows checkpoint runner
 Existing 27 tests passed on Windows. Added sequential bounded matrix batches,
 atomic SQLite completion checkpoints, replay validation on resume and partial
 reports through the `batch` CLI. See quickstart. Equal-budget creature groups,
@@ -102,5 +102,19 @@ public before/after boards and simultaneous damage details. Added reproducible
 Windows one-folder build + ZIP and frozen-worker dispatch with bundled content.
 Source/packaged engine hashes may differ; use new checkpoints per build, preserve
 older builds for replay. No checkpoint schema migration. Windows tests and build
-smokes are recorded in docs/experiments/PR1_REVIEW.md. PR remains open for merge
-review; full-match mode, clean-machine package testing and signing remain pending.
+smokes are recorded in docs/experiments/PR1_REVIEW.md. PR #1 was merged 2026-11-22; full-match mode, clean-machine package testing and signing remain pending.
+
+
+## Current continuation: expanded coverage and full-match timing draft
+PR #1 merged at 029b0fe; follow-up branch feature/combat-coverage-and-timing.
+Group conditions now include baseline, all-wounded, exhausted defenders and
+shielded defenders. Existing baseline scenarios/checkpoints are preserved.
+Reports include counted joint outcomes and example replay IDs, not win estimates.
+Windows: 53 tests; 558 exported/replayed budget-2 encounters per condition,
+2,232 total. See experiments/GROUP_CONDITIONS.md for evidence.
+
+FULL_MATCH_TIMING_SPEC.md is draft 1, with confirmed constraints separated from
+proposals and 18 acceptance scenarios. Proposed priority/trigger ordering,
+atomicity and concession windows require review/approval before implementation.
+Recommend Astra for that review. No full-match rule code is enabled. The existing
+combat API needs declaration/damage separation before match response integration.

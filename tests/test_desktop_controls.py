@@ -63,3 +63,20 @@ class DesktopControlTests(unittest.TestCase):
                 self.assertIsNone(window.report)
             finally:
                 root.destroy()
+
+    def test_desktop_passes_selected_group_condition(self):
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            root = tk.Tk(); root.withdraw()
+            window = LabWindow(root)
+            try:
+                window.checkpoint.set(str(Path(directory) / 'jobs.sqlite'))
+                window.experiment.set('groups'); window.budget.set('1')
+                window.condition.set('wounded'); window.limit.set('2')
+                window.start(); self.wait(root, window)
+                self.assertTrue(window.report.is_file())
+                record = json.loads((window.report.parent / 'results.jsonl').read_text().splitlines()[0])
+                self.assertTrue(all(c['health'] == 1 for c in record['input']['state']['creatures']))
+                self.assertIn('all creatures at 1 HP', record['input']['name'])
+            finally:
+                root.destroy()
