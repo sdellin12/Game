@@ -33,6 +33,11 @@ Confirmed hand cards become public pending cards alongside their effects. Action
 and Reactions enter their owners' discard after resolution or negation, so a card
 cannot refill itself during its own effect. Creature/persistent cards enter the
 battlefield only on resolution. Cancelled pending cards go to owners' discard.
+Exile is a separate public zone: ordinary exiled cards retain their owners and
+stay outside discard/refill unless an effect explicitly moves them elsewhere.
+Exiled card identities remain public after their owner is eliminated. Exiling
+a creature discards its attachments to their owners; token/leader replacements
+follow the existing token and leader removal rules.
 
 ## Healing/protection/upgrades
 Healing stops max; unused excess no benefit unless explicit. No initial overheal, future expensive effects deferred. Player max30 initially, healing very rare/expensive except dedicated style; creature healing separate.

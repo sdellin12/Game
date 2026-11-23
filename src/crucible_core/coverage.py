@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 7,
+    'version': 8,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -30,10 +30,13 @@ MATCH_COVERAGE = {
         'validated-snapshot-backups-and-atomic-replacement',
         'compatible-private-save-contract-and-explicit-known-v1-converter',
         'battlefield-creature-return-to-owner-hand-and-attachment-cleanup',
+        'combat-aware-view-only-zone-removal-policy-and-tactical-harness',
+        'public-ordinary-card-exile-and-creature-exile-effects',
+        'explicit-v1-v2-to-v3-empty-exile-schema-migration',
     ),
     'excluded': (
         'unreviewed-build-save-migrations-and-network-reconnect', 'network-session-authentication',
-        'zone-moves-exile-deck-discard-recovery-and-hand-transfers', 'multiple-targets-modes-x-discounts',
+        'zone-moves-deck-discard-recovery-exile-recovery-and-hand-transfers', 'multiple-targets-modes-x-discounts',
         'authored-health-sacrifice-costs-and-replacements',
         'custom-leader-cost-formulas-and-both-location-ability-definitions',
         'transform-combine-and-continuous-stat-modifiers', 'continuous-stat-modifier-durations-and-custom-expiry-replacements',

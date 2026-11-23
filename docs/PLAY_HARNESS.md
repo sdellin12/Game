@@ -40,19 +40,21 @@ canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation
 The 40-card versioned practice pack has distinct keys/names, 24 creatures,
-10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v4 includes three functional leaders with
+10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v5 includes three functional leaders with
 separate reserve/battle
 abilities. Inspect/summon your leader from the hand/choices tab; current summon
 cost, location and recovery are public. Ward cards now exercise timed prevention;
 current prevention, anchors and expiry events appear on the public table/history.
-Unravel is an enemy-creature return reaction; its played-card and computer-policy
-paths are exercised by tests. Scope/evidence: experiments/ZONE_MOVES.md.
+Unravel is an enemy-creature return reaction. Banish is an exile Action; exiled
+cards appear in the public table/history. Scope/evidence: experiments/ZONE_MOVES.md.
+The opponent now considers combat threats and pending removal; its bounded tactical
+harness is documented in experiments/OPPONENT_TACTICS.md.
 Canonical mechanics remain in RULES_DRAFT.md.
 Deck validation enforces forty singleton entries, known cards and matching color.
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
-once setup begins. Existing catalog, checkpoint and saved-data formats are untouched.
+once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v3.
 
-Windows Python 3.14.3: 297 tests pass, including save/desktop regressions. Duration evidence is in
+Windows Python 3.14.3: 320 tests pass, including save/desktop regressions. Duration evidence is in
 experiments/DURATIONS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and
@@ -66,8 +68,8 @@ python -m crucible_play.smoke --players 3
 python -m crucible_play.smoke --players 4
 ```
 
-The passive view-only smoke scripts remain available. Current pack-v4 practice
-policy runs completed at 327/1303/1749 commands and 17/61/69 turns for 2/3/4 seats.
+The passive view-only smoke scripts remain available. Current pack-v5 practice
+policy runs completed at 327/1302/1747 commands and 17/61/69 turns for 2/3/4 seats.
 The default driver is a bounded diagnostic; a command limit reports incomplete rather than inventing a result.
 Add
 `--practice` to exercise the actual computer policy for P2 and later seats.
@@ -91,5 +93,5 @@ replacement of the current session. The restored game opens paused, with hands
 hidden and computers stopped; click Resume saved game, choose a human seat and
 acknowledge its handoff to continue. File pickers pause computer stepping.
 
-Old schema-v1 files need explicit conversion to a separate v2 file before Load.
+Old schema-v1/v2 files need explicit conversion to a separate v3 file before Load.
 Format, privacy, build compatibility, conversion command and rollback policy: [SAVE_FORMAT.md](SAVE_FORMAT.md).

@@ -4,7 +4,7 @@ import hashlib
 import json
 from crucible_core.leaders import LeaderAbility, LeaderDefinition
 from crucible_core.cards import CardDefinition
-from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand,
+from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature,
     GrantResources, GrantCapacity, NegateEffect, GrantShield, MatchPlayer, new_match)
 from crucible_core.turns import DrawPlayer, RefillPolicy
 
@@ -50,7 +50,7 @@ def practice_pack():
         ('Unravel','reaction',3,(ReturnCreatureToHand('$target'),),'creature','enemy'),
         ('Quiet Repair','action',4,(HealPlayer('$controller',4),),None,'any'),
         ('Fresh Inspiration','action',2,(DrawCards('$controller',1),),None,'any'),
-        ('Unmake','action',5,(DestroyCreature('$target'),),'creature','enemy'),
+        ('Banish','action',6,(ExileCreature('$target'),),'creature','enemy'),
         ('Brace for Impact','reaction',2,(GrantShield('$target',3),),'creature','friendly'),
         ('Enduring Ward','reaction',3,(GrantShield('$target',2,'next_start','$controller'),),'creature','friendly'),
         ('Interrupt','reaction',3,(NegateEffect('$target'),),'effect','enemy'),
@@ -61,7 +61,7 @@ def practice_pack():
         cards.append(PackCard(name,'Generic',CardDefinition(f'spell-{i+1:02}',kind,cost,steps,target_kind=target,target_relation=relation)))
     for i,name in enumerate(('Workshop Lantern','Root Battery','Memory Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
         cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',3 if i<3 else 5,capacity_bonus=1 if i<3 else 2)))
-    return validate_pack(PracticePack('crucible-practice',4,tuple(cards),(
+    return validate_pack(PracticePack('crucible-practice',5,tuple(cards),(
         ReserveIdentity('core-gold','Aster, Practice Core','Gold',LeaderDefinition('core-gold','Aster, Practice Core','Gold',4,3,5,
             LeaderAbility('core-repair',3,(HealPlayer('$controller',3),)),
             LeaderAbility('guiding-bolt',2,(DamagePlayer('$target',1),),target_kind='player',target_relation='enemy',exhaust_source=True))),

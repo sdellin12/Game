@@ -21,7 +21,42 @@ def targets(view, card):
     if kind=='player':items=[(p['player_id'],p['player_id'],p['health']) for p in view['players'] if not p['eliminated']]
     elif kind=='creature':items=[(o['instance_id'],o['controller'],-o['creature']['attack']) for o in view['battlefield'] if o.get('creature')]
     else:items=[(str(e['effect_id']),e['controller'],-e['effect_id']) for e in view['chain'] if not e['resolving']]
-    return [key for key,owner,_ in sorted(items,key=lambda x:(x[2],x[0])) if relation=='any' or (relation=='enemy' and owner!=actor) or (relation=='friendly' and owner==actor)]
+    options=[key for key,owner,_ in sorted(items,key=lambda x:(x[2],x[0])) if relation=='any' or (relation=='enemy' and owner!=actor) or (relation=='friendly' and owner==actor)]
+    if kind=='creature' and any(s['kind'] in ('return_to_hand','exile') for s in card.get('steps',[])):
+        return _zone_move_targets(view,options,exile=any(s['kind']=='exile' for s in card['steps']))
+    return options
+
+
+def _zone_move_targets(view, options, *, exile=False):
+    """Public-stat tempo heuristics; no hidden zones or speculative combat resolver."""
+    actor=view['you']['player_id'];objects={o['instance_id']:o for o in view['battlefield']}
+    committed={s.get('target') for e in view['chain'] for s in e['steps'] if s['kind'] in ('destroy','return_to_hand','exile')}
+    combat=view.get('combat');scores={}
+    fighting=combat and combat['stage'] in ('attack_responses','final_responses')
+    main=view['turn']['active_player']==actor and view['turn']['phase'] in ('MainBefore','MainAfter') and not view['chain']
+    blockers=dict(combat.get('blockers',())) if fighting else {}
+    for key in options:
+        if key in committed:continue
+        obj=objects[key];c=obj['creature'];score=0
+        if fighting:
+            for attacker,defender,challenge in combat['attacks']:
+                attack_obj=objects.get(attacker)
+                if not attack_obj:continue
+                attack=attack_obj['creature']
+                guards=[objects[b] for b in blockers.get(attacker,()) if b in objects]
+                safe_block=guards and all(not b['creature']['exhausted'] for b in guards) and sum(b['creature']['health']+sum(s['amount'] for s in b['creature']['shields']) for b in guards)>=attack['attack']
+                threatened=defender==actor or (challenge in objects and objects[challenge]['controller']==actor)
+                if key==attacker and threatened and not safe_block and attack['attack']>0:
+                    score=max(score,100+attack['attack'])
+                if attack_obj['controller']==actor and 'breakthrough' in attack['keywords'] and key in blockers.get(attacker,()):
+                    score=max(score,90+c['health'])
+        elif main and (c['attack']>0 or any(o['controller']==actor and o.get('creature') and o['creature']['attack']>0 for o in objects.values())):
+            score=c['attack']+min(obj.get('cost',0),8)*2
+            if obj['kind']=='creature_token' and not exile:score+=30
+            if obj['kind']=='leader' and not exile:score+=20
+            if obj['kind']=='creature' and exile:score+=20
+        if score>0:scores[key]=score
+    return sorted(scores,key=lambda key:(-scores[key],key))
 
 
 def opening_choice(view):
@@ -80,7 +115,8 @@ def choose_move(view):
         payment=exact_payment(view,own_leader['summon_cost'])
         if payment and sum(o['controller']==actor and bool(o.get('creature')) for o in view['battlefield'])<2:
             return 'summon_leader',{'payment':payment}
-    if main or view['chain']:
+    combat_response=view.get('combat') and view['combat']['stage'] in ('attack_responses','final_responses')
+    if main or view['chain'] or combat_response:
         cards=sorted(own['hand'],key=lambda c:(c['kind']!='creature',c['cost'],c['instance_id']))
         for card in cards:
             if not main and card['kind']!='reaction':continue

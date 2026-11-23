@@ -218,5 +218,16 @@ class HarnessWidgetTests(unittest.TestCase):
             self.assertGreater(button.winfo_width(),20)
             self.assertLessEqual(button.winfo_rootx()+button.winfo_width(),self.root.winfo_rootx()+950)
 
+    def test_public_table_displays_exiled_card_and_readable_effect(self):
+        from test_persistence import prepared,board,register
+        from crucible_core.match import ExileCreature
+        s=prepared();actor=s.view()['turn']['active_player'];obj=board(s,{actor:1})[0]
+        register(s,'exile',actor,(ExileCreature(obj.object_id),))
+        self.app.session=s;self.app.render()
+        self.assertIn('EXILE',self.text())
+        text=next(c.get('1.0','end') for c in children(self.root) if isinstance(c,tk.Text) and 'EXILE' in c.get('1.0','end'))
+        self.assertIn(s.card_name(s.view()['exile'][0]['definition_key']),text.split('EXILE')[1])
+        self.assertEqual(self.app.effect_text({'kind':'exile','target':'$target'},s.view()),'Exile the chosen target. Tokens disappear; leaders return to reserve.')
+
 
 if __name__=='__main__':unittest.main()

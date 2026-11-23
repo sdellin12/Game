@@ -54,6 +54,11 @@ class ReturnCreatureToHand:
 
 
 @dataclass(frozen=True)
+class ExileCreature:
+    target: str
+
+
+@dataclass(frozen=True)
 class GrantCapacity:
     target: str
     amount: int
@@ -201,6 +206,7 @@ class MatchState:
     durations: tuple[TimedEffect, ...] = ()
     next_duration_id: int = 1
     rotation_queue: tuple = ()
+    exiled: tuple[str, ...] = ()
 
 
 def _name(value):
@@ -235,7 +241,7 @@ def _steps_valid(steps, seats, objects):
             valid = _name(step.target) and _natural(step.amount) and step.duration in ('turn_end','next_start') and (step.anchor_player is None if step.duration=='turn_end' else step.anchor_player in seats)
         elif type(step) is NegateEffect:
             valid = type(step.effect_id) is int and step.effect_id>0
-        elif type(step) in (DestroyCreature,ReturnCreatureToHand):
+        elif type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature):
             valid = _name(step.target)  # may be absent when an item resolves
         else:
             raise UnsupportedMatchRule('unregistered instruction type')
@@ -330,6 +336,8 @@ def validate_match(state):
                 raise MatchError('invalid registered trigger')
         ids.append(o.object_id)
     ids.extend(c.card_id for c in state.pending_cards)
+    if type(state.exiled) is not tuple or any(not _name(i) for i in state.exiled):raise MatchError('invalid exile zone')
+    ids.extend(state.exiled)
     _validate_durations(state)
     _validate_leaders(state,ids)
     _validate_card_state(state,ids)
@@ -444,7 +452,7 @@ def _capture(state, sources, events):
     return replace(state,triggers=tuple(candidates),next_trigger_id=next_id)
 
 
-def _depart(state, ids, cause, *, genuine=False, hand_ids=()):
+def _depart(state, ids, cause, *, genuine=False, hand_ids=(), exile_ids=()):
     sources=state.battlefield
     events=[]
     for o in sources:
@@ -459,15 +467,19 @@ def _depart(state, ids, cause, *, genuine=False, hand_ids=()):
             state,_=_emit(state,'leader_returned',o.object_id,cause)
         elif o.kind not in ('creature_token','resource_token'):
             owner=_player(state,o.owner)
-            zone='hand' if o.object_id in hand_ids else 'discard'
-            owner=replace(owner,cards=replace(owner.cards,**{zone:getattr(owner.cards,zone)+(o.object_id,)}))
-            state=_set_player(state,owner)
-            if zone=='hand':state,_=_emit(state,'card_returned',o.object_id,cause)
+            if o.object_id in exile_ids:
+                state=replace(state,exiled=state.exiled+(o.object_id,))
+                state,_=_emit(state,'card_exiled',o.object_id,cause)
+            else:
+                zone='hand' if o.object_id in hand_ids else 'discard'
+                owner=replace(owner,cards=replace(owner.cards,**{zone:getattr(owner.cards,zone)+(o.object_id,)}))
+                state=_set_player(state,owner)
+                if zone=='hand':state,_=_emit(state,'card_returned',o.object_id,cause)
     state=_capture(state,sources,events)
     return replace(state,battlefield=tuple(o for o in sources if o.object_id not in ids))
 
 
-def _return_creature_to_hand(state, target):
+def _move_creature(state, target, destination):
     obj=next((o for o in state.battlefield if o.object_id==target and o.creature),None)
     if obj is None:return state
     # Structural attachments leave now, before a later instruction can draw/refill.
@@ -476,7 +488,8 @@ def _return_creature_to_hand(state, target):
         attached={o.object_id for o in state.battlefield if o.attached_to in ids}
         if attached<=ids:break
         ids.update(attached)
-    state=_depart(state,ids,'return_to_hand',hand_ids=(target,))
+    state=_depart(state,ids,destination,hand_ids=(target,) if destination=='return_to_hand' else (),
+                  exile_ids=(target,) if destination=='exile' else ())
     return _trim_durations(state)
 
 
@@ -632,7 +645,9 @@ def _run(state):
                 state=replace(state,priority=replace(state.priority,chain=tuple(e for e in state.priority.chain if e!=item)))
                 state,_=_emit(state,'effect_negated',str(item.effect_id),'negation')
         elif type(step) is ReturnCreatureToHand:
-            state=_return_creature_to_hand(state,step.target)
+            state=_move_creature(state,step.target,'return_to_hand')
+        elif type(step) is ExileCreature:
+            state=_move_creature(state,step.target,'exile')
         else:  # validated DestroyCreature; absent targets do not cancel independent instructions
             obj=next((o for o in state.battlefield if o.object_id==step.target),None)
             if obj and obj.creature:
@@ -930,6 +945,10 @@ def _validate_card_state(state, zone_ids):
         raise MatchError('invalid card record')
     definitions={c.key:c for c in state.card_definitions}
     instances={c.instance_id:c for c in state.card_instances}
+    if any(i not in instances for i in state.exiled):raise MatchError('exile requires registered ordinary card instances')
+    unregistered={o.object_id for o in state.battlefield if o.kind=='creature' and o.object_id not in instances}
+    steps=tuple(s for e in state.effects for s in e.steps)+state.start_cleanup+state.end_cleanup+tuple(s for d in state.durations for s in d.expiration_steps)
+    if any(type(s) is ExileCreature and s.target in unregistered for s in steps):raise UnsupportedMatchRule('exile target needs registered card metadata')
     if len(definitions)!=len(state.card_definitions) or len(instances)!=len(state.card_instances):
         raise MatchError('duplicate card definition/instance')
     for d in definitions.values():
@@ -1057,20 +1076,20 @@ def _validate_card_definition(d):
             has_target=True;continue
         if type(step) is NegateEffect:
             raise UnsupportedMatchRule('negation requires a chosen effect target')
-        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature,ReturnCreatureToHand,GrantShield):
+        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature,ReturnCreatureToHand,ExileCreature,GrantShield):
             raise UnsupportedMatchRule('unsupported card instruction')
         if step.target=='$target':
-            expected='creature' if type(step) in (DestroyCreature,ReturnCreatureToHand,GrantShield) else 'player'
+            expected='creature' if type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature,GrantShield) else 'player'
             if d.target_kind!=expected:raise MatchError('card target mismatch')
             has_target=True
         elif step.target!='$controller':
             raise UnsupportedMatchRule('card targets must bind controller or the chosen target')
-        elif type(step) in (DestroyCreature,ReturnCreatureToHand,GrantShield):
+        elif type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature,GrantShield):
             raise MatchError('controller is not a creature')
         if type(step) is GrantShield:
             if step.duration not in ('turn_end','next_start') or (step.anchor_player is not None if step.duration=='turn_end' else step.anchor_player!='$controller'):
                 raise UnsupportedMatchRule('unsupported authored shield duration')
-        if type(step) not in (DestroyCreature,ReturnCreatureToHand):
+        if type(step) not in (DestroyCreature,ReturnCreatureToHand,ExileCreature):
             amount=step.count if type(step) is DrawCards else step.amount
             if not _natural(amount):raise MatchError('invalid card instruction quantity')
     if d.target_kind is None and d.target_relation!='any':raise MatchError('unused target relation')

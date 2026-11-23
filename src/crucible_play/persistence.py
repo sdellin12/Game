@@ -24,14 +24,14 @@ from crucible_core.lobby import (LobbyState, LobbyPlayer, DeckSelection, Opening
     new_lobby, begin_opening, lock_redraw, validate_deck)
 from crucible_core.match import (MatchState, MatchPlayer, MatchEvent, MatchResult, TriggerSpec,
     TriggerCandidate, Resolution, MatchObject, EffectSpec, ActionSpec, DamagePlayer,
-    HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, GrantCapacity, GrantResources, GrantShield,
+    HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, GrantCapacity, GrantResources, GrantShield,
     NegateEffect, validate_match, _steps_valid)
 from crucible_core.priority import PriorityState, PendingEffect
 from crucible_core.resources import ResourcePool, Payment
 from crucible_core.turns import DrawPlayer, TurnFlow, RefillPolicy, DrawState, _check_choice
 
 FORMAT='crucible-harness-private-save'
-VERSION=2
+VERSION=3
 # Increment when existing instructions/state/shuffle semantics become incompatible.
 COMPATIBILITY_VERSION=1
 MAX_BYTES=16*1024*1024
@@ -40,7 +40,7 @@ _RECORDS={c.__name__:c for c in (PracticePack,PackCard,ReserveIdentity,CardDefin
     Shield,Creature,Player,CombatState,Attack,CombatFlow,BoundaryCount,TimedEffect,LeaderAbility,LeaderDefinition,LeaderState,
     LobbyState,LobbyPlayer,DeckSelection,Opening,MatchState,MatchPlayer,MatchEvent,MatchResult,TriggerSpec,TriggerCandidate,
     Resolution,MatchObject,EffectSpec,ActionSpec,DamagePlayer,HealPlayer,DrawCards,DestroyCreature,GrantCapacity,
-    GrantResources,GrantShield,ReturnCreatureToHand,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
+    GrantResources,GrantShield,ReturnCreatureToHand,ExileCreature,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
 
 
 class SaveError(ValueError):
@@ -138,9 +138,9 @@ def _read_envelope(path):
     doc=json.loads(data.decode('utf-8'),object_pairs_hook=_object,parse_constant=invalid_number)
     if type(doc) is not dict or doc.get('format')!=FORMAT:raise SaveError('Not a Crucible private save')
     version=doc.get('schema_version')
-    if type(version) is not int or version not in (1,VERSION):raise SaveError('Unsupported save version; original file was not changed')
+    if type(version) is not int or version not in (1,2,VERSION):raise SaveError('Unsupported save version; original file was not changed')
     expected={'format','schema_version','runtime_hash','content_hash','payload','checksum'}
-    if version==VERSION:expected.update(('compatibility_version','python_runtime'))
+    if version>=2:expected.update(('compatibility_version','python_runtime'))
     if set(doc)!=expected:raise SaveError('Unknown or missing envelope fields')
     if any(not _hash_value(doc[key]) for key in ('runtime_hash','content_hash','checksum')):raise SaveError('Invalid save fingerprint')
     checksum=doc['checksum'];body={k:v for k,v in doc.items() if k!='checksum'}
@@ -257,7 +257,7 @@ def save_session(session, path):
 
 
 def _session_from_document(doc):
-    if doc['schema_version']!=VERSION:raise SaveError('Version 1 needs explicit conversion: python -m crucible_play.migrate INPUT OUTPUT')
+    if doc['schema_version']!=VERSION:raise SaveError(f"Schema {doc['schema_version']} needs explicit conversion: python -m crucible_play.migrate INPUT OUTPUT")
     if type(doc['compatibility_version']) is not int or doc['compatibility_version']!=COMPATIBILITY_VERSION:
         raise SaveError('Unsupported gameplay compatibility version; retain the original save/build')
     if doc['python_runtime']!=python_runtime():raise SaveError('Save requires its matching Python implementation/major.minor version')

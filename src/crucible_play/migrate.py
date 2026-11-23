@@ -1,11 +1,11 @@
-"""Explicit, non-destructive converter for the published first private-save build."""
+"""Explicit, non-destructive schema-v1/v2 conversion to the current private save."""
 import argparse
 import hashlib
 import json
 from pathlib import Path
 
 from .persistence import (SaveError, SaveResult, VERSION, COMPATIBILITY_VERSION, MAX_BYTES,
-    _read_envelope, _canonical, _session_from_document, _write_atomic)
+    MAX_DEPTH, _read_envelope, _canonical, _session_from_document, _write_atomic)
 
 # 9b0f7f5, CPython 3.14: deployed workspace, Git LF checkout, Git CRLF checkout.
 # Only reviewed source builds belong here. A save cannot nominate its own converter.
@@ -24,16 +24,25 @@ Resolution MatchObject EffectSpec ActionSpec DamagePlayer HealPlayer DrawCards D
 GrantResources GrantShield NegateEffect PriorityState PendingEffect ResourcePool Payment DrawPlayer TurnFlow RefillPolicy DrawState'''.split())
 
 
-def _check_v1_records(value):
+V2_RECORDS=V1_RECORDS|{'ReturnCreatureToHand'}
+
+
+def _upgrade_payload(value, allowed, depth=0):
+    if depth>MAX_DEPTH:raise SaveError('Legacy snapshot nesting is too deep')
     if type(value) is dict:
-        if 'record' in value and value['record'] not in V1_RECORDS:raise SaveError('Record did not exist in the v1 build')
-        for item in value.values():_check_v1_records(item)
-    elif type(value) is list:
-        for item in value:_check_v1_records(item)
+        if 'record' in value and value['record'] not in allowed:raise SaveError('Record did not exist in the legacy schema')
+        result={key:_upgrade_payload(item,allowed,depth+1) for key,item in value.items()}
+        if value.get('record')=='MatchState':
+            fields=result.get('fields')
+            if type(fields) is not dict or 'exiled' in fields:raise SaveError('Invalid legacy MatchState fields')
+            fields['exiled']={'tuple':[]}
+        return result
+    if type(value) is list:return [_upgrade_payload(item,allowed,depth+1) for item in value]
+    return value
 
 
 def migrate_save(source, destination):
-    """Validate v1, add the reviewed gameplay contract, and exclusively publish v2."""
+    """Preserve legacy state, add an empty exile zone, publish a separate current file."""
     try:
         source=Path(source);destination=Path(destination)
         if (not destination.name.endswith('.crucible.json') or not destination.parent.is_dir()
@@ -41,13 +50,19 @@ def migrate_save(source, destination):
             raise SaveError('Choose a different, new .crucible.json output file')
         if destination.exists():raise SaveError('Migration output already exists; nothing was overwritten')
         doc,_=_read_envelope(source)
-        if doc['schema_version']!=1:raise SaveError('Converter accepts only schema-v1 input')
-        rules=V1_BUILDS.get(doc['runtime_hash'])
-        if rules is None:raise SaveError('Unknown v1 build; retain its matching original runtime')
-        _check_v1_records(doc['payload'])
-        converted={**doc,'schema_version':VERSION,'compatibility_version':COMPATIBILITY_VERSION,'python_runtime':'cpython-3.14'}
+        version=doc['schema_version'];rules=None
+        if version==1:
+            rules=V1_BUILDS.get(doc['runtime_hash'])
+            if rules is None:raise SaveError('Unknown v1 build; retain its matching original runtime')
+        elif version==2:
+            if type(doc['compatibility_version']) is not int or doc['compatibility_version']!=COMPATIBILITY_VERSION:
+                raise SaveError('Unsupported legacy gameplay compatibility')
+        else:raise SaveError('Converter accepts only schema-v1/v2 input')
+        converted={**doc,'schema_version':VERSION,'compatibility_version':COMPATIBILITY_VERSION,
+                   'python_runtime':'cpython-3.14' if version==1 else doc['python_runtime'],
+                   'payload':_upgrade_payload(doc['payload'],V1_RECORDS if version==1 else V2_RECORDS)}
         session=_session_from_document(converted)
-        if session._lobby.phase!='lobby' and session._lobby.rules_hash!=rules:
+        if version==1 and session._lobby.phase!='lobby' and session._lobby.rules_hash!=rules:
             raise SaveError('Version-1 source/rules provenance mismatch')
         converted['checksum']=hashlib.sha256(_canonical({k:v for k,v in converted.items() if k!='checksum'})).hexdigest()
         data=json.dumps(converted,sort_keys=True,indent=2,allow_nan=False).encode('utf-8')
@@ -60,7 +75,7 @@ def migrate_save(source, destination):
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(description='Convert a known v1 private save to a new v2 file; preserve the original.')
+    parser=argparse.ArgumentParser(description='Convert a known v1 or compatible v2 private save to a new current-schema file; preserve the original.')
     parser.add_argument('source',type=Path);parser.add_argument('destination',type=Path)
     args=parser.parse_args(argv)
     try:result=migrate_save(args.source,args.destination)

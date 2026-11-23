@@ -242,6 +242,8 @@ class PlayWindow:
             board.insert('end',f"#{effect['effect_id']} {effect['controller']}: {name} | {'; '.join(self.effect_text(step,view) for step in effect['steps'])}\n")
         for p in view['players']:
             if 'discard' in p:board.insert('end',f"\n{p['player_id']} discard: "+', '.join(self.session.card_name(c.get('definition_key','Card')) for c in p['discard'])+'\n')
+        board.insert('end','\nEXILE\n')
+        for card in view.get('exile',[]):board.insert('end',f"{card['owner']} | {self.label(card)} | {card['instance_id'][-6:]}\n")
         board.configure(state='disabled')
         log=tk.Text(history,wrap='word',height=14);log.pack(fill='both',expand=True)
         for event in view['events'][-100:]:
@@ -323,6 +325,7 @@ class PlayWindow:
         if kind=='resources':return f'{who.capitalize()} gain {amount} resources now.'
         if kind=='destroy':return f'Defeat {who}.'
         if kind=='return_to_hand':return f"Return {who} to its owner's hand. Tokens disappear; leaders return to reserve."
+        if kind=='exile':return f'Exile {who}. Tokens disappear; leaders return to reserve.'
         if kind=='negate':return 'Negate the chosen pending effect.' if step['effect_id']=='$target' else f"Negate pending effect #{step['effect_id']}."
         return kind
 

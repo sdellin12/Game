@@ -11,6 +11,14 @@ from crucible_play.persistence import load_session,save_session,SaveError,_canon
 from test_persistence import prepared,cmd
 
 FIXTURE=Path(__file__).parent/'fixtures'/'save_v1_9b0f7f5.json.gz'
+V2_FIXTURE=Path(__file__).parent/'fixtures'/'save_v2_before_exile.json.gz'
+
+
+def legacy_lobby(value):
+    # Independent expected schema delta: only the one authoritative match gains empty exile.
+    value=json.loads(json.dumps(value));match=value['fields']['match']
+    if match is not None:match['fields']['exiled']={'tuple':[]}
+    return _decode(value)
 
 
 def sealed(doc):
@@ -33,12 +41,12 @@ class MigrationTests(unittest.TestCase):
                 migrate_save(self.source,self.output)
                 s=load_session(self.output)
                 self.assertTrue(s.paused);self.assertIsNone(s.view().get('you'))
-                self.assertEqual(s._lobby,_decode(case['save']['payload']['lobby']))
+                self.assertEqual(s._lobby,legacy_lobby(case['save']['payload']['lobby']))
                 self.assertEqual(s.bots,frozenset(case['save']['payload']['bots']))
                 s.resume();s.send(case['actor'],case['packet'])
-                self.assertEqual(s._lobby,_decode(case['expected']))
+                self.assertEqual(s._lobby,legacy_lobby(case['expected']))
                 self.assertEqual(self.source.read_bytes(),original)
-                self.assertEqual(json.loads(self.output.read_text())['schema_version'],2)
+                self.assertEqual(json.loads(self.output.read_text())['schema_version'],3)
 
     def test_v1_load_requires_explicit_conversion(self):
         self.source.write_bytes(sealed(self.cases[0]['save']))
@@ -91,7 +99,7 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(self.output.read_bytes(),b'concurrent save')
         self.assertFalse(list(self.source.parent.glob('*.tmp')))
 
-    def test_v2_same_contract_loads_after_runtime_change_without_redeal(self):
+    def test_current_contract_loads_after_runtime_change_without_redeal(self):
         s=prepared();save_session(s,self.output)
         with patch('crucible_play.persistence.runtime_fingerprint',return_value='1'*64):
             loaded=load_session(self.output)
@@ -99,7 +107,7 @@ class MigrationTests(unittest.TestCase):
             loaded.resume();actor=s.view()['priority']['holder']
             cmd(s,actor,'pass');cmd(loaded,actor,'pass');self.assertEqual(s._lobby,loaded._lobby)
 
-    def test_v2_requires_matching_python_shuffle_runtime(self):
+    def test_current_schema_requires_matching_python_shuffle_runtime(self):
         save_session(prepared(),self.output)
         with patch('crucible_play.persistence.python_runtime',return_value='different-python'):
             with self.assertRaisesRegex(SaveError,'matching Python'):load_session(self.output)
@@ -108,3 +116,51 @@ class MigrationTests(unittest.TestCase):
         self.source.write_bytes(sealed(self.cases[0]['save']))
         with patch('builtins.print') as output:main([str(self.source),str(self.output)])
         self.assertTrue(load_session(self.output).paused);output.assert_called_once()
+
+    def test_archived_v2_cases_convert_only_empty_exile_and_preserve_next_results(self):
+        for case in json.loads(gzip.decompress(V2_FIXTURE.read_bytes())):
+            with self.subTest(case=case['name']):
+                self.source.write_bytes(sealed(case['save']));before=self.source.read_bytes()
+                with self.assertRaisesRegex(SaveError,'explicit conversion'):load_session(self.source)
+                if self.output.exists():self.output.unlink()
+                migrate_save(self.source,self.output);s=load_session(self.output)
+                self.assertTrue(s.paused);self.assertEqual(s._lobby,legacy_lobby(case['save']['payload']['lobby']))
+                self.assertEqual(s._lobby.match.exiled,());self.assertEqual(s.bots,frozenset(case['save']['payload']['bots']))
+                s.resume();s.send(case['actor'],case['packet']);self.assertEqual(s._lobby,legacy_lobby(case['expected']))
+                self.assertEqual(self.source.read_bytes(),before)
+
+    def test_v2_unknown_contract_python_and_premature_exile_never_publish(self):
+        edits=(lambda d:d.update(compatibility_version=999),lambda d:d.update(python_runtime='other-python'),
+               lambda d:d['payload']['lobby']['fields']['match']['fields'].update(exiled={'tuple':[]}),
+               lambda d:d['payload']['lobby'].update(record='ExileCreature'),
+               lambda d:d['payload']['lobby']['fields']['match']['fields'].pop('shuffle_counter'))
+        for edit in edits:
+            doc=json.loads(gzip.decompress(V2_FIXTURE.read_bytes()))[0]['save'];edit(doc)
+            self.source.write_bytes(sealed(doc));before=self.source.read_bytes()
+            with self.assertRaises(SaveError):migrate_save(self.source,self.output)
+            self.assertFalse(self.output.exists());self.assertEqual(self.source.read_bytes(),before)
+
+    def test_v2_compatible_source_hash_change_still_converts(self):
+        doc=json.loads(gzip.decompress(V2_FIXTURE.read_bytes()))[0]['save'];doc['runtime_hash']='0'*64
+        self.source.write_bytes(sealed(doc));migrate_save(self.source,self.output)
+        self.assertEqual(load_session(self.output)._lobby,legacy_lobby(doc['payload']['lobby']))
+
+    def test_v2_lobby_and_partial_opening_convert_without_redealing(self):
+        from crucible_play.session import HarnessSession
+        from test_persistence import ready
+        archived=json.loads(gzip.decompress(V2_FIXTURE.read_bytes()))[0]['save']
+        pack=legacy_lobby(archived['payload']['lobby']).pack
+        for opening in (False,True):
+            s=HarnessSession(seed=b'legacy-opening-seed-1234',pack=pack)
+            if opening:
+                ready(s);s.start('P1',expected_revision=s.view()['revision'])
+                s.redraw('P1',(s.view('P1')['you']['hand'][0]['instance_id'],),expected_revision=s.view()['revision'])
+            if self.output.exists():self.output.unlink()
+            save_session(s,self.source)
+            doc=json.loads(self.source.read_text());doc['schema_version']=2;self.source.write_bytes(sealed(doc))
+            before=self.source.read_bytes();migrate_save(self.source,self.output);loaded=load_session(self.output)
+            self.assertEqual(loaded._lobby,s._lobby);self.assertEqual(self.source.read_bytes(),before)
+            if opening:
+                loaded.resume()
+                for game in (s,loaded):game.redraw('P2',(),expected_revision=game.view()['revision'])
+                self.assertEqual(loaded._lobby,s._lobby)

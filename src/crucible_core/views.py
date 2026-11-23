@@ -29,6 +29,7 @@ def project_match(state, viewer=None):
     view={'revision':state.revision,'turn':{'active_player':state.turn.active_player,'turn_id':state.turn.turn_id,
           'phase':state.turn.phase,'recharge':state.turn.recharge,'end_requested':state.turn.end_requested or next(p.cards.end_turn_requested for p in state.players if p.cards.player_id==state.turn.active_player)},
           'players':players,'battlefield':[_object(state,o) for o in state.battlefield],
+          'exile':[{**_card(state,i),'owner':next(c.owner for c in state.card_instances if c.instance_id==i)} for i in state.exiled],
           'priority':None if priority is None else {'holder':priority.holder,'status':priority.status,'passes':list(priority.passes)},
           'choice_pending':bool(state.pending or state.triggers or state.discard_needed or (state.combat and state.combat.stage in ('blocking','ordering'))),
           'leaders':_leaders(state),
@@ -102,12 +103,12 @@ def _public_events(state):
     # Deliberately omit raw causes, private draw records and unknown future events.
     allowed={'damage','heal','required_draw','combat_damage','combat_miss','elimination','departure','defeat',
              'turn_end','turn_start','action_committed','concede_request','start_refill',
-             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','card_returned','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
+             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','card_returned','card_exiled','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
     events=[]
     for event in state.events:
         if event.kind not in allowed:continue
         row={'event_id':event.event_id,'kind':event.kind,'subject':event.subject}
-        if event.kind in ('card_played','card_returned'):row['card']=_card(state,event.subject)
+        if event.kind in ('card_played','card_returned','card_exiled'):row['card']=_card(state,event.subject)
         if event.kind=='scheduled_boundary' and event.cause in ('Start','End'):row['boundary']=event.cause
         if event.kind=='duration_expired':
             parts=event.cause.rsplit(':',2)
@@ -119,11 +120,12 @@ def _public_events(state):
 
 def _step(step):
     # Effect types are closed/validated by the coordinator; do not recursively dump.
-    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, GrantCapacity, GrantResources, NegateEffect, GrantShield
+    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, GrantCapacity, GrantResources, NegateEffect, GrantShield
     if type(step) is GrantShield:return {'kind':'shield','target':step.target,'amount':step.amount,'duration':step.duration,'anchor_player':step.anchor_player}
     if type(step) is NegateEffect:return {'kind':'negate','effect_id':step.effect_id}
     if type(step) is DestroyCreature:return {'kind':'destroy','target':step.target}
     if type(step) is ReturnCreatureToHand:return {'kind':'return_to_hand','target':step.target}
+    if type(step) is ExileCreature:return {'kind':'exile','target':step.target}
     labels={DamagePlayer:'damage',HealPlayer:'heal',DrawCards:'draw',GrantCapacity:'capacity',GrantResources:'resources'}
     if type(step) not in labels:raise MatchError('unsupported projected instruction')
     return {'kind':labels[type(step)],'target':step.target,'amount':step.count if type(step) is DrawCards else step.amount}
