@@ -31,6 +31,8 @@ def _upgrade_payload(value, allowed, depth=0):
     if depth>MAX_DEPTH:raise SaveError('Legacy snapshot nesting is too deep')
     if type(value) is dict:
         if 'record' in value and value['record'] not in allowed:raise SaveError('Record did not exist in the legacy schema')
+        if value.get('record')=='TriggerSpec' and value.get('fields',{}).get('event') not in ('defeat','departure','turn_start','turn_end'):
+            raise SaveError('Trigger event did not exist in the legacy schema')
         result={key:_upgrade_payload(item,allowed,depth+1) for key,item in value.items()}
         if value.get('record')=='MatchState':
             fields=result.get('fields')

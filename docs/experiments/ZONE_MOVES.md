@@ -1,5 +1,5 @@
 # Zone-move integration
-2026-11-23. Source checkpoint: coverage v9; practice pack v6.
+2026-11-23. Source checkpoint: coverage v10; practice pack v6.
 
 ## Implementation scope
 `ReturnCreatureToHand` and `ExileCreature` are registered instructions and authored

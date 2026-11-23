@@ -69,6 +69,15 @@ snapshots (exile/refill and nested counters) load directly and reproduce their e
 next-command states. Snapshots containing a new record require a reader that knows
 it; older readers fail closed. Retain earlier files/builds for rollback.
 
+## Additive registered observer events
+Registered TriggerSpec records may now observe `card_drawn`/`card_discarded`.
+No stored fields or schemas changed. Materialize these observer events only when
+an eligible registered listener exists, preserving event/request IDs and exact
+legacy next-command states for older matches. Pending observer candidates and
+partial draws/End order choices round-trip through the existing schema-v3 codec.
+Old readers reject the new event enum; v1/v2 converters reject events that did not
+exist in those formats. Retain prior snapshots/builds for rollback as above.
+
 ## Durable writes and rollback
 Regular saving validates/encodes first, writes a same-folder temporary file,
 flushes/fsyncs, and atomically replaces the destination. Before replacement, retain
@@ -93,5 +102,5 @@ injected replacement failure. 14 migration tests cover archived synthetic v1/v2
 next-command results (priority, refill, private blockers, pending Unravel), opening
 locks, source/newline variants, unknown builds/versions, wrong Python, premature
 exile data, occupied/concurrent outputs and failed publication. Desktop tests
-cover paused loads, privacy reset and the public exile table. Return-to-hand and
+cover paused loads, privacy reset and the public exile table. Return-to-hand,
 exile and recovery instructions round-trip in pending cards and refill cursors.

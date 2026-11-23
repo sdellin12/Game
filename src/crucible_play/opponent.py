@@ -1,4 +1,51 @@
 """Deterministic practice policy. Receives one permitted projection, never server state."""
+from crucible_core.combat import CombatState,Player,Creature,Shield,Attack
+from crucible_core.combat_flow import CombatFlow,resolve_committed
+
+
+def _public_combat(view, removed=(), ward=None):
+    """Reuse the damage kernel on revealed data only; never inspect private locks."""
+    creatures=[]
+    for obj in view['battlefield']:
+        if not obj.get('creature') or obj['instance_id'] in removed:continue
+        c=obj['creature'];shields=tuple(Shield(s['shield_id'],s['amount'],s['expiry_rank']) for s in c['shields'])
+        if ward and obj['instance_id']==ward[0]:
+            identity='policy-probe'
+            while any(s.shield_id==identity for s in shields):identity+='-'
+            shields+=(Shield(identity,ward[1]),)
+        creatures.append(Creature(obj['instance_id'],obj['controller'],c['attack'],c['health'],c['max_health'],c['exhausted'],c['attack_eligible'],c['attack_used'],tuple(c['keywords']),shields))
+    combat=view['combat'];blockers=dict(combat['blockers'])
+    attacks=tuple(Attack(i,p,tuple(blockers.get(i,())),bool(blockers.get(i,())),challenge) for i,p,challenge in combat['attacks'])
+    flow=CombatFlow(view['turn']['active_player'],attacks,'final_responses',orders=tuple(combat['orders']))
+    snapshot=CombatState(tuple(Player(p['player_id'],p['health']) for p in view['players'] if not p['eliminated']),tuple(creatures))
+    return resolve_committed(snapshot,flow)
+
+
+def _final_reaction(view):
+    combat=view.get('combat')
+    if not combat or combat['stage']!='final_responses':return None
+    live=_expected_chain(view)
+    if any(s['kind'] not in ('destroy','return_to_hand','exile','negate') for e in live for s in e['steps']):return None
+    removed={s.get('target') for e in live for s in e['steps'] if s['kind'] in ('destroy','return_to_hand','exile')}
+    baseline=_public_combat(view,removed);actor=view['you']['player_id']
+    health={p.player_id:p.health for p in baseline.state.players}
+    own={o['instance_id']:max(1,o['creature']['attack']+o.get('cost',0)) for o in view['battlefield'] if o['controller']==actor and o.get('creature')}
+    choices=[]
+    for card in view['you']['hand']:
+        steps=card.get('steps',[])
+        if card['kind']!='reaction' or len(steps)!=1 or steps[0]['kind'] not in ('return_to_hand','exile','shield'):continue
+        payment=exact_payment(view,card['cost'])
+        if payment is None:continue
+        for target in targets(view,card):
+            if target in removed:continue
+            result=_public_combat(view,removed,ward=(target,steps[0]['amount'])) if steps[0]['kind']=='shield' else _public_combat(view,removed|{target})
+            after={p.player_id:p.health for p in result.state.players}
+            saved=sum(value for identity,value in own.items() if identity in baseline.defeated_creatures and identity not in result.defeated_creatures)
+            score=1000000*int(health[actor]<=0<after[actor])+100*max(0,after[actor]-health[actor])+10*sum(max(0,h-after[p]) for p,h in health.items() if p!=actor)+saved
+            if score>0:choices.append((-score,card['cost'],card['instance_id'],target,payment))
+    if not choices:return None
+    _,_,identity,target,payment=min(choices,key=lambda c:c[:4])
+    return 'play_card',{'card_id':identity,'target':target,'payment':payment}
 
 
 def exact_payment(view, cost):
@@ -127,6 +174,8 @@ def choose_move(view):
     if not priority or priority['holder']!=actor:return None
     active=turn['active_player']==actor
     if active and (turn['recharge'] or turn['end_requested']):return 'pass',{}
+    reaction=_final_reaction(view)
+    if reaction is not None:return reaction
     main=active and turn['phase'] in ('MainBefore','MainAfter') and not view['chain']
     own_leader=next((l for l in view.get('leaders',[]) if l['owner']==actor),None)
     if main and own_leader and own_leader['location']=='reserve' and not own_leader['recovering'] and own_leader['pending_effect_id'] is None:

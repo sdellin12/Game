@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 9,
+    'version': 10,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -35,6 +35,8 @@ MATCH_COVERAGE = {
         'explicit-v1-v2-to-v3-empty-exile-schema-migration',
         'public-chain-nested-negation-aware-removal-decisions',
         'locked-own-discard-card-recovery-to-hand-and-resolution-revalidation',
+        'revealed-combat-kernel-reaction-evaluation-and-exact-resource-choice',
+        'registered-per-card-draw-and-hand-discard-trigger-observers',
     ),
     'excluded': (
         'unreviewed-build-save-migrations-and-network-reconnect', 'network-session-authentication',
@@ -43,7 +45,7 @@ MATCH_COVERAGE = {
         'custom-leader-cost-formulas-and-both-location-ability-definitions',
         'transform-combine-and-continuous-stat-modifiers', 'continuous-stat-modifier-durations-and-custom-expiry-replacements',
         'nested-timed-grants-in-registered-expiration-payloads',
-        'discard-draw-damage-and-attack-trigger-abilities',
+        'authored-draw-discard-trigger-card-templates-and-damage-attack-triggers',
         'repeated-recharge-debt-and-penalty-bypass',
     ),
 }

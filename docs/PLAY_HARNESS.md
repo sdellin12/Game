@@ -49,14 +49,17 @@ Unravel is an enemy-creature return reaction. Banish is an exile Action; exiled
 cards appear in the public table/history. Second Chance returns a selected card
 from your own discard; inspect it and choose the discard target before confirming.
 Scope/evidence: experiments/ZONE_MOVES.md and experiments/DISCARD_RECOVERY.md.
-The opponent now considers combat threats and pending removal; its bounded tactical
+The opponent now compares revealed final-combat reaction outcomes and exact
+payments, alongside combat threats and pending removal; its bounded tactical
 harness is documented in experiments/OPPONENT_TACTICS.md.
+Registered draw/discard observers are engine-supported; authoring them on practice
+card templates is not enabled yet. Evidence: experiments/DRAW_DISCARD_TRIGGERS.md.
 Canonical mechanics remain in RULES_DRAFT.md.
 Deck validation enforces forty singleton entries, known cards and matching color.
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
 once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v3.
 
-Windows Python 3.14.3: 335 tests pass, including save/desktop regressions. Duration evidence is in
+Windows Python 3.14.3: 352 tests pass, including save/desktop regressions. Duration evidence is in
 experiments/DURATIONS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and

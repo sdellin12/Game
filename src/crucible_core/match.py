@@ -109,7 +109,7 @@ class EffectSpec:
 
 @dataclass(frozen=True)
 class TriggerSpec:
-    event: str  # defeat, departure, turn_end
+    event: str  # defeat, departure, turn_start/end, card_drawn/discarded
     effect_key: str
     watch: str = 'self'  # self or any
 
@@ -335,7 +335,7 @@ def validate_match(state):
         if type(o.triggers) is not tuple or len(set(o.triggers)) != len(o.triggers):
             raise MatchError('invalid/duplicate trigger specs')
         for t in o.triggers:
-            if (type(t) is not TriggerSpec or t.event not in ('defeat','departure','turn_end','turn_start')
+            if (type(t) is not TriggerSpec or t.event not in ('defeat','departure','turn_end','turn_start','card_drawn','card_discarded')
                     or t.watch not in ('self','any') or t.effect_key not in definitions
                     or definitions[t.effect_key].controller != o.controller):
                 raise MatchError('invalid registered trigger')
@@ -450,11 +450,21 @@ def _capture(state, sources, events):
     for event in events:
         for source in sources:
             for trigger in source.triggers:
-                own = source.controller==event.subject if event.kind in ('turn_end','turn_start') else source.object_id==event.subject
+                own = source.controller==event.subject if event.kind in ('turn_end','turn_start','card_drawn','card_discarded') else source.object_id==event.subject
                 if trigger.event==event.kind and (trigger.watch=='any' or own):
                     candidates.append(TriggerCandidate(next_id,event.event_id,source.controller,source.object_id,trigger.effect_key))
                     next_id+=1
     return replace(state,triggers=tuple(candidates),next_trigger_id=next_id)
+
+
+def _observe_cards(state, kind, actor, count):
+    # Opt-in observer events preserve old saves' event/request IDs when no listener matches.
+    sources=state.battlefield
+    if not any(t.event==kind and (t.watch=='any' or o.controller==actor) for o in sources for t in o.triggers):return state
+    events=[]
+    for _ in range(count):
+        state,event=_emit(state,kind,actor,'observed_card_move');events.append(event)
+    return _capture(state,sources,events)
 
 
 def _depart(state, ids, cause, *, genuine=False, hand_ids=(), exile_ids=()):
@@ -602,6 +612,7 @@ def resolve_current(state, *, expected_revision):
 def _record_draw(state, draw):
     p=_player(state,draw.player.player_id)
     state=_set_player(state,replace(p,cards=draw.player))
+    state=_observe_cards(state,'card_drawn',draw.player.player_id,max(0,len(draw.player.hand)-len(p.cards.hand)))
     if draw.status=='needs_refill':
         return replace(state,pending=replace(state.pending,draw=draw))
     failures=state.failed_draws
@@ -775,6 +786,7 @@ def choose_end_discards(state, actor, cards, *, expected_revision):
         raise MatchError('invalid end-hand-limit choice')
     player=replace(p,cards=replace(p.cards,hand=tuple(c for c in p.cards.hand if c not in cards),discard=p.cards.discard+cards))
     state=_set_player(state,player)
+    state=_flush_triggers(_observe_cards(state,'card_discarded',actor,len(cards)))
     return _quiescent(replace(state,discard_needed=0,revision=state.revision+1))
 
 

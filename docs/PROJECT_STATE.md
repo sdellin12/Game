@@ -3,18 +3,18 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: nested-chain decisions and own-discard recovery with compatible saves.
+- Latest implementation: multi-attacker reaction choices and registered draw/discard observers.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 335 Windows tests; tactics 14/14, recovery, legacy saves and desktop checks pass.
+- Validation: 352 Windows tests; tactics 21/21, draw/discard observers and save checks pass.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Nested-negation scenarios and discard-to-hand recovery are complete.
-Recommended next: add explicit draw/discard trigger coverage.
-Alternative: evaluate multi-attacker resource tradeoffs before further opponent tuning.
-Versioned implementation coverage: src/crucible_core/coverage.py v9; practice pack v6; save schema v3 / compatibility 1.
+Multi-attacker resource scenarios and registered draw/discard triggers are complete.
+Recommended next: design authored trigger-bearing cards with migration-safe defaults.
+Alternative: stress-test multiplayer trigger chains before authored-card expansion.
+Versioned implementation coverage: src/crucible_core/coverage.py v10; practice pack v6; save schema v3 / compatibility 1.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.

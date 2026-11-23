@@ -1,7 +1,7 @@
 import json
 import unittest
 from dataclasses import replace
-from crucible_play.tactics import evaluate,scenarios,chain_scenarios,command,round_pass
+from crucible_play.tactics import evaluate,scenarios,chain_scenarios,resource_scenarios,command,round_pass
 from crucible_play.opponent import choose_move
 from crucible_core.views import project_match
 
@@ -11,14 +11,14 @@ class TacticsTests(unittest.TestCase):
         report=evaluate()
         for row in report['results']:
             with self.subTest(case=row['scenario']):self.assertTrue(row['passed'],row)
-        self.assertEqual(report['legal'],14)
+        self.assertEqual(report['legal'],21)
 
     def test_tactical_moves_resolve_through_real_engine_without_mutating_input(self):
         for case in scenarios():
             if case.expected_target is None:continue
             before=case.state;view=project_match(before,'A');original=json.dumps(view,sort_keys=True)
             move=choose_move(view);after=command(before,'A',move[0],**move[1]);after=round_pass(after)
-            self.assertFalse(any(o.object_id==case.expected_target for o in after.battlefield))
+            self.assertEqual(any(o.object_id==case.expected_target for o in after.battlefield),not case.removes)
             self.assertEqual(json.dumps(view,sort_keys=True),original)
             self.assertTrue(any(o.object_id==case.expected_target for o in before.battlefield))
 
@@ -42,3 +42,11 @@ class TacticsTests(unittest.TestCase):
         for case in scenarios():
             changed=replace(case.state,battlefield=tuple(reversed(case.state.battlefield)))
             self.assertEqual(choose_move(project_match(case.state,'A')),choose_move(project_match(changed,'A')))
+
+    def test_resource_choices_survive_actual_multi_attacker_combat(self):
+        for case in resource_scenarios():
+            with self.subTest(case=case.name):
+                s=case.state;move=choose_move(project_match(s,'A'));s=command(s,'A',move[0],**move[1]);s=round_pass(s);s=round_pass(s)
+                self.assertGreater(next(p.cards.health for p in s.players if p.cards.player_id=='A'),0)
+                self.assertEqual(next(p.resources.available for p in s.players if p.cards.player_id=='A'),next(p.resources.available for p in case.state.players if p.cards.player_id=='A')-case.ordinary)
+                if case.tokens:self.assertFalse(any(o.object_id=='token-A' for o in s.battlefield));self.assertTrue(any(o.object_id=='token-C' for o in s.battlefield))

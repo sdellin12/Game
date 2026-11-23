@@ -101,7 +101,7 @@ def _own_choice(state, actor):
 
 def _public_events(state):
     # Deliberately omit raw causes, private draw records and unknown future events.
-    allowed={'damage','heal','required_draw','combat_damage','combat_miss','elimination','departure','defeat',
+    allowed={'damage','heal','required_draw','card_drawn','card_discarded','combat_damage','combat_miss','elimination','departure','defeat',
              'turn_end','turn_start','action_committed','concede_request','start_refill',
              'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','card_returned','card_exiled','card_recovered','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
     events=[]
