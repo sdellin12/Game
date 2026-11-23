@@ -22,11 +22,11 @@ class PermanentEvaluationTests(unittest.TestCase):
         result=evaluate_game(2,'bounded-evaluation',1)
         self.assertEqual(result['status'],'incomplete');self.assertEqual(result['commands'],1)
         self.assertIsNone(result['result'])
-        self.assertEqual(result['entries'],{'beacon-01':0,'beacon-02':0})
+        self.assertEqual(result['entries'],{'beacon-01':0,'beacon-02':0,'beacon-03':0})
 
     def test_selected_seed_actually_plays_permanents_and_queues_draw_rewards(self):
         result=evaluate_game(2,'permanent-2')
-        self.assertEqual(result['status'],'completed');self.assertEqual(result['pack_version'],8)
+        self.assertEqual(result['status'],'completed');self.assertEqual(result['pack_version'],9)
         self.assertGreater(result['entries']['beacon-01'],0);self.assertGreater(result['entries']['beacon-02'],0)
         self.assertGreater(result['queued_triggers']['draw'],0)
 

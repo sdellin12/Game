@@ -27,7 +27,8 @@ were observed, so these seeds do not evaluate Salvage Battery's reward value.
 ## Limits and tests
 This is functional coverage of nine deterministic games, not a balance or general
 strength study. All-computer Gold/keep-all setup differs from the default mixed
-human-script smoke run. Targeted hand-pressure scenarios are the next evaluation.
+human-script smoke run. Directed hand-pressure follow-up is now recorded in
+HAND_PRESSURE.md; these results remain the historical pack-v8 baseline.
 Four focused tests cover the cutoff distinction, bounded incomplete reporting,
 actual entries/rewards in one selected seed, and invalid limits. The normal mixed
 practice smoke games still complete at 327/829/1867 commands (2/3/4 seats).

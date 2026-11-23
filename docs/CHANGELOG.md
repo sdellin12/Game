@@ -246,3 +246,6 @@ format changed. Standard/full-art layouts are unchanged; CARD_DESIGN.md and the
 portable design ZIP have updated engine-status notes for another LLM.
 Recommended next: Start/resource maintenance and legal cost transactions, then
 attack/block flow and private projections.
+
+## 2026-11-23 checkpoint before fixed-controller rewards
+Private optional choices and nine-seed permanent evaluation completed; 388 tests, tactics 21/21, pack v8, coverage v12, schema v5/compatibility 1. Follow-up targeted Salvage Battery End-discard pressure and broader fixed-controller rewards.

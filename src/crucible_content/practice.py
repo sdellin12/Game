@@ -59,10 +59,11 @@ def practice_pack():
     )
     for i,(name,kind,cost,steps,target,relation) in enumerate(spells):
         cards.append(PackCard(name,'Generic',CardDefinition(f'spell-{i+1:02}',kind,cost,steps,target_kind=target,target_relation=relation)))
-    for i,name in enumerate(("Scholar's Lantern",'Salvage Battery','Memory Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
+    for i,name in enumerate(("Scholar's Lantern",'Salvage Battery','Archive Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
         triggers=(TriggeredAbility('insight' if i==0 else 'salvage','card_drawn' if i==0 else 'card_discarded',(GrantResources('$controller',1),),optional=i==0),) if i<2 else ()
-        cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',4 if i<2 else 3 if i<3 else 5,capacity_bonus=1 if i<3 else 2,triggered_abilities=triggers)))
-    return validate_pack(PracticePack('crucible-practice',8,tuple(cards),(
+        if i==2:triggers=(TriggeredAbility('archive','card_discarded',(GrantCapacity('$controller',1),),optional=True),)
+        cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',4 if i<2 else 5,capacity_bonus=1 if i<3 else 2,triggered_abilities=triggers)))
+    return validate_pack(PracticePack('crucible-practice',9,tuple(cards),(
         ReserveIdentity('core-gold','Aster, Practice Core','Gold',LeaderDefinition('core-gold','Aster, Practice Core','Gold',4,3,5,
             LeaderAbility('core-repair',3,(HealPlayer('$controller',3),)),
             LeaderAbility('guiding-bolt',2,(DamagePlayer('$target',1),),target_kind='player',target_relation='enemy',exhaust_source=True))),
@@ -99,4 +100,11 @@ def pack_hash(pack):
         if isinstance(value,dict):return {k:normalized(v) for k,v in value.items() if not ((k=='triggered_abilities' and v==()) or (k=='optional' and v is False))}
         if isinstance(value,(tuple,list)):return [normalized(v) for v in value]
         return value
-    return hashlib.sha256(json.dumps(normalized(asdict(pack)),sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    data=asdict(pack)
+    # Old resource-only authored packs retain their original hashes. asdict loses
+    # instruction types, so distinguish the newly admitted, same-shaped rewards.
+    for card,encoded in zip(pack.cards,data['cards']):
+        for ability,encoded_ability in zip(card.definition.triggered_abilities,encoded['definition']['triggered_abilities']):
+            for step,encoded_step in zip(ability.steps,encoded_ability['steps']):
+                if type(step) in (HealPlayer,GrantCapacity):encoded_step['instruction']=type(step).__name__
+    return hashlib.sha256(json.dumps(normalized(data),sort_keys=True,separators=(',',':')).encode()).hexdigest()

@@ -322,6 +322,11 @@ class PlayWindow:
         who=controller or 'you';verb='draw' if ability['event']=='card_drawn' else 'discard'
         if controller:verb+='s'
         event=f'{verb} a card'+(' from your hand' if not controller and ability['event']=='card_discarded' else '')
+        if any(s['kind']!='resources' for s in ability['steps']):
+            steps=[dict(s,target=controller or '$controller') for s in ability['steps']]
+            reward=' '.join(self.effect_text(s,view) for s in steps)
+            choice=f'{who} may apply these rewards: ' if ability.get('optional') else ''
+            return f'When {who} {event}, {choice}{reward}'
         amount=sum(s['amount'] for s in ability['steps'])
         reward=(f'{controller} may gain' if controller else 'you may gain') if ability.get('optional') else (f'{controller} gains' if controller else 'gain')
         reward+=f" {amount} resource"+('s' if amount!=1 else '')

@@ -1143,7 +1143,7 @@ def _validate_card_definition(d):
     keys=[]
     for a in d.triggered_abilities:
         if (not _name(a.key) or a.key in keys or a.event not in ('card_drawn','card_discarded') or a.watch!='self' or type(a.optional) is not bool
-                or type(a.steps) is not tuple or not a.steps or any(type(s) is not GrantResources or s.target!='$controller' or not _natural(s.amount) or s.amount==0 for s in a.steps)):
+                or type(a.steps) is not tuple or not a.steps or any(type(s) not in (GrantResources,HealPlayer,GrantCapacity) or s.target!='$controller' or not _natural(s.amount) or s.amount==0 for s in a.steps)):
             raise UnsupportedMatchRule('unsupported authored trigger')
         keys.append(a.key)
     if (not _name(d.key) or d.kind not in ('creature','permanent','action','reaction') or not _natural(d.cost)

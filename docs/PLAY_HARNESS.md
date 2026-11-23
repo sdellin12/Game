@@ -113,3 +113,7 @@ For a bounded all-computer, multi-seed evaluation, set PYTHONPATH=src and run
 `python -m crucible_play.permanent_eval`. It reports completed/incomplete status,
 actual permanent entries and public queued-trigger items. Evidence and limits:
 experiments/PERMANENT_EVALUATION.md.
+
+For directed End-discard cases, run `python -m crucible_play.hand_pressure`.
+It checks draws/recovery, actual salvage rewards and resource retention across
+turn rotation; fixture details are in experiments/HAND_PRESSURE.md.

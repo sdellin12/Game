@@ -69,6 +69,14 @@ abilities must match their registered sources. Retain effects after departure so
 captured effects remain valid, and reuse definitions on re-entry.
 
 ## Writes, restore and evidence
+Fixed-controller reward extension plan: reuse existing HealPlayer and GrantCapacity
+records without adding fields or changing schema v5 / compatibility 1. Preserve the
+archived native-v5 partial-decision fixture and its exact next-command result.
+Hash newly authored healing/capacity steps with an instruction discriminator;
+retain the existing encoding for resource-only authored rewards and all old packs.
+Old saves load directly; old builds may reject new reward content. Roll back code
+with its original saves/build, never rewrite a new-content save to force downgrade.
+
 Validate/encode, write a same-folder temp, flush/fsync, then atomically replace.
 Regular replacement retains exact previous valid bytes under a unique backup name.
 Reject corrupt/non-save destinations and symlink targets. Conversion publishes

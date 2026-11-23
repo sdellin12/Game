@@ -11,7 +11,7 @@ def evaluate_game(players,seed,limit=4000):
         s.choose_deck(actor,'core-gold',expected_revision=s.view()['revision']);s.ready(actor,True,expected_revision=s.view()['revision'])
     s.start('P1',expected_revision=s.view()['revision'])
     for actor in actors:s.redraw(actor,(),expected_revision=s.view()['revision'])
-    known={};events=set();effects=set();entries={'beacon-01':0,'beacon-02':0};queued={'draw':0,'discard':0}
+    known={};events=set();effects=set();entries={'beacon-01':0,'beacon-02':0,'beacon-03':0};queued={'draw':0,'discard':0}
     for count in range(limit+1):
         view=s.view()
         for card in view['pending_cards']+view['battlefield']:

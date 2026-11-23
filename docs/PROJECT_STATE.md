@@ -3,18 +3,18 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: private optional-trigger choices, permanent seed evaluation and schema-v5 conversion.
+- Latest implementation: hand-pressure evaluator and fixed-controller trigger rewards.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 388 Windows tests pass; tactics 21/21; all 9 seed games complete.
+- Validation: 397 Windows tests; hand-pressure 18/18; tactics 21/21; pack-v9 smoke and all 9 seed games complete.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Optional Use/Skip choices and the nine-game permanent evaluation are complete.
-Recommended next: targeted hand-pressure scenarios for Salvage Battery.
-Alternative: broaden authored trigger reward types with fixed-target rules.
-Versioned implementation coverage: src/crucible_core/coverage.py v12; practice pack v8; save schema v5 / compatibility 1.
+Hand-pressure and controller-only healing/capacity rewards are implemented.
+Recommended next: directed Archive Well choices and natural hand-pressure strategy evaluation.
+Alternative: review recurring-healing costs before adding any healing permanent.
+Versioned implementation coverage: src/crucible_core/coverage.py v13; practice pack v9; save schema v5 / compatibility 1.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.

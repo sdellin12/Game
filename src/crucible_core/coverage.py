@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 12,
+    'version': 13,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -38,6 +38,7 @@ MATCH_COVERAGE = {
         'revealed-combat-kernel-reaction-evaluation-and-exact-resource-choice',
         'registered-per-card-draw-and-hand-discard-trigger-observers',
         'authored-own-draw-discard-permanent-resource-triggers-and-public-text',
+        'fixed-controller-authored-healing-and-permanent-capacity-rewards',
         'source-scoped-retained-trigger-registration-and-reentry-validation',
         'explicit-v1-v2-v3-to-v4-empty-trigger-default-migration',
         'private-turn-ordered-optional-trigger-use-skip-and-paused-resume',

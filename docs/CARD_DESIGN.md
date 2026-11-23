@@ -118,16 +118,24 @@ schema changes. Future renderer integration must map an authorized card view mod
 into these slots and handle ownership/private projections correctly.
 
 ## Authored trigger wording / engine handoff
-The current practice pack adds Scholar's Lantern and Salvage Battery as permanents.
+Practice pack v9 has three authored-trigger permanents.
 Use the existing ordered `abilities` panels in both standard and full-art layouts:
 - Scholar's Lantern: When you draw a card, you may gain 1 resource.
 - Salvage Battery: When you discard a card from your hand, gain 1 resource.
+- Archive Well (cost 5, ongoing capacity +1): When you discard a card from your
+  hand, you may permanently add 1 resource capacity; available at the next refill.
+
+Authoring also supports positive fixed healing rewards for the controller, but
+no recurring-healing card is included in the practice pack. Keep life generation
+cost decisions separate from the engine's supported instructions. Mixed rewards
+are one effect and one Use/Skip decision. Permanent granted capacity survives the
+source leaving play; its printed ongoing capacity bonus does not.
 
 Preserve the actor, event, whether the reward is mandatory or optional, and printed
 restrictions. Use "may" only for definitions marked optional. Do not shorten hand
 discard into any discard entry. Use/Skip is a runtime choice, not a printed cost. Executable definitions live in crucible_core/cards.py and the practice pack;
 `triggered_abilities` is not a new design-fixture field. Layouts and the shared
-information contract are unchanged. Engine scope/evidence: experiments/AUTHORED_TRIGGERS.md.
+information contract are unchanged. Engine scope/evidence: experiments/TRIGGER_REWARDS.md.
 Give another LLM this current document alongside an existing v1 layout ZIP; the
 local ZIP may predate these wording notes. No generated design assets changed here.
 
