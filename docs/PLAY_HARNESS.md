@@ -130,3 +130,8 @@ Opt-in discard/draw deck: `python run_play.py --discard-package`. New games in t
 window retain the selected pack; default launch keeps Practice Forty v9. Headless
 check: `python -m crucible_play.smoke --practice --discard-package --players 3`.
 Timing, save and loop evidence: experiments/DISCARD_CONTINUATION.md.
+
+Seat-rotated deck/policy comparison: `python -m crucible_play.package_eval`.
+This is a separate headless experiment; `aware` is a candidate policy, while live
+computer seats retain the baseline. Reproduction/report commands and limitations:
+experiments/PACKAGE_POLICY.md.

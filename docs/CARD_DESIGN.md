@@ -149,6 +149,9 @@ Resolution contract, deck roles and implementation acceptance criteria:
 DISCARD_DRAW_PACKAGE.md. This provisional package is executable with `python run_play.py --discard-package`;
 default pack-v9 cards remain unchanged. Continuation/loop evidence:
 experiments/DISCARD_CONTINUATION.md.
+Seat-rotated control/package deck results and experimental policy behavior:
+experiments/PACKAGE_POLICY.md and its generated PACKAGE_COMPARISON.md table.
+Card wording, costs and the live opponent stay unchanged by that policy experiment.
 Give those files to another LLM with this document when exploring these cards.
 
 ## Capacity and live state

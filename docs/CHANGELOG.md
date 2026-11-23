@@ -258,3 +258,6 @@ Archive Well's 54 directed cases and 24 strategy/cost games completed; full suit
 
 ## 2026-11-23 checkpoint before private discard implementation
 Three-card discard/draw proposal and 13,200 count-only economy checks completed; full suite 410 tests. Default pack v9, schema v5/compatibility 1 and coverage v13 remained. Next was private discard continuation, explicit schema conversion, and recovery/refill loop audit.
+
+## 2026-11-23 checkpoint before matched package study
+Private discard continuation, opt-in three-card deck, v6 save conversion and recovery/refill audit shipped with 426 tests. Default pack v9 stayed unchanged; coverage v14, schema v6/compatibility 1. Next was seat-rotated deck comparisons and evidence-driven policy improvement.

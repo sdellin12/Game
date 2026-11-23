@@ -3,17 +3,17 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: opt-in discard/draw pack, private continuation, v6 saves and recovery/refill audit.
+- Latest checkpoint: 72-game seat-rotated deck study and experimental package-aware policy.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 426 Windows tests; opt-in smoke completes at 2/3/4 seats; six recovery/refill loop tests.
+- Validation: 437 Windows tests; all 72 matched study games complete; live opponent unchanged.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Private discard and loop audit are complete; source launch: python run_play.py --discard-package.
-Recommended next: seat-rotated package/control deck comparisons with matched policies.
-Then improve package-aware play using observed access, survival and reward delivery.
+Matched deck/policy study complete: experiments/PACKAGE_POLICY.md; source launch still supports --discard-package.
+Candidate adds outlets but loses one package case overall; do not promote it yet.
+Recommended next: isolate policy regressions with ablations, then test fresh held-out seeds.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry
