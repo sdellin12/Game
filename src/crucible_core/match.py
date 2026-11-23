@@ -62,7 +62,7 @@ class GrantResources:
 
 @dataclass(frozen=True)
 class NegateEffect:
-    effect_id: int
+    effect_id: int | str  # $target is permitted only in authored card/ability templates
 
 
 @dataclass(frozen=True)

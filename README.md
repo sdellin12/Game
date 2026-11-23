@@ -8,7 +8,8 @@ py -3 run_play.py
 ```
 
 Play against a computer by default, or choose two to four hotseat seats in a new
-lobby. Choose a practice deck/leader, ready and lock opening redraws. See the
+lobby. Choose a practice deck/leader, ready and lock opening redraws. Save/load
+controls preserve local sessions, including pending choices. See the
 [short harness walkthrough and current scope](docs/PLAY_HARNESS.md).
 
 ## Open the desktop lab

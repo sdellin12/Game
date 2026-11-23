@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 5,
+    'version': 6,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -26,9 +26,11 @@ MATCH_COVERAGE = {
         'location-timing-exhaust-and-per-turn-leader-abilities',
         'original-seat-start-end-boundary-clocks', 'typed-duration-expiration-and-skipped-seat-crossings',
         'timed-creature-prevention-and-expiry-order', 'registered-expiration-consequences-and-terminal-gating',
+        'versioned-private-local-save-load-and-paused-resume',
+        'validated-snapshot-backups-and-atomic-replacement',
     ),
     'excluded': (
-        'production-match-save-and-reconnect', 'network-session-authentication',
+        'cross-build-save-migrations-and-network-reconnect', 'network-session-authentication',
         'advanced-zone-moves-exile-bounce-and-hand-transfers', 'multiple-targets-modes-x-discounts',
         'authored-health-sacrifice-costs-and-replacements',
         'custom-leader-cost-formulas-and-both-location-ability-definitions',

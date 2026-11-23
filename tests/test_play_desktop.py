@@ -175,10 +175,48 @@ class HarnessWidgetTests(unittest.TestCase):
         actor=self.session.view()['turn']['active_player'];self.app.seat(actor);self.app.unlock()
         with patch.object(tk.Toplevel,'grab_set'):
             self.button('Inspect / summon leader').invoke()
-        # The modal contains the resource price, but confirmation still goes to the engine.
-        self.assertIn('leader',self.text().lower())
-        self.assertTrue(any(isinstance(c,ttk.Spinbox) for c in children(self.root)))
+        popup=next(c for c in self.root.winfo_children() if isinstance(c,tk.Toplevel))
+        labels=[str(c.cget('text')) for c in children(popup) if isinstance(c,ttk.Label)]
+        leader=next(l for l in self.session.view(actor)['leaders'] if l['owner']==actor)
+        self.assertTrue(any(label.startswith(f"{leader['name']} | leader | cost {leader['summon_cost']}") for label in labels))
+        self.assertFalse(any('Guiding Bolt' in label for label in labels))
+        self.assertEqual(next(c for c in children(popup) if isinstance(c,ttk.Spinbox)).get(),str(leader['summon_cost']))
         popup=next(c for c in self.root.winfo_children() if isinstance(c,tk.Toplevel));popup.destroy()
+
+    def test_load_installs_paused_hides_hand_and_requires_explicit_resume(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from crucible_play.persistence import save_session
+        candidate=HarnessSession(seed=b'loaded-widget-seed-1234',bots=('P2',))
+        self.app.seat('P1');self.app.unlock()
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'game.crucible.json';save_session(candidate,path)
+            with patch('crucible_play.desktop.filedialog.askopenfilename',return_value=str(path)),patch('crucible_play.desktop.messagebox.askyesno',return_value=True):
+                self.app.load_game()
+        self.assertIsNone(self.app.gate.actor);self.assertIsNone(self.app.gate.pending)
+        self.assertTrue(self.app.session.paused);self.assertIsNone(self.app._bot_timer)
+        self.assertEqual(self.app.session._lobby,candidate._lobby)
+        self.button('Resume saved game').invoke()
+        self.assertFalse(self.app.session.paused);self.assertIsNotNone(self.app._bot_timer)
+
+    def test_invalid_load_and_cancelled_save_preserve_current_session(self):
+        from unittest.mock import patch
+        before=self.session._lobby
+        with patch('crucible_play.desktop.filedialog.askopenfilename',return_value='missing.crucible.json'),patch('crucible_play.desktop.messagebox.askyesno') as confirm:
+            self.app.load_game();confirm.assert_not_called()
+        self.assertIs(self.app.session,self.session);self.assertEqual(self.session._lobby,before)
+        self.assertFalse(self.session.paused)
+        with patch('crucible_play.desktop.filedialog.asksaveasfilename',return_value=''):
+            self.app.save_game()
+        self.assertEqual(self.session._lobby,before);self.assertFalse(self.session.paused)
+
+    def test_header_controls_fit_minimum_window_width(self):
+        self.root.deiconify();self.root.geometry('950x700');self.root.update()
+        for label in ('Save game...','Load game...','Resume saved game','Hide private hand / public view'):
+            button=self.button(label)
+            self.assertGreater(button.winfo_width(),20)
+            self.assertLessEqual(button.winfo_rootx()+button.winfo_width(),self.root.winfo_rootx()+950)
 
 
 if __name__=='__main__':unittest.main()

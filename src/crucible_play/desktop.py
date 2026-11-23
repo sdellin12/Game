@@ -1,7 +1,8 @@
 """Small hotseat desktop client. All rule decisions go through projected views/commands."""
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from .session import HarnessSession, HotseatGate
+from .persistence import save_session, load_session, SaveError
 
 
 class PlayWindow:
@@ -29,6 +30,11 @@ class PlayWindow:
         self.computer_mode=tk.BooleanVar(value=bool(self.session.bots))
         ttk.Checkbutton(bar,text='New lobby: computers in P2-P4',variable=self.computer_mode).pack(side='left',padx=8)
         ttk.Button(bar,text='Hide private hand / public view',command=self.hide).pack(side='right')
+        bar=ttk.Frame(outer);bar.pack(fill='x',pady=(6,0))
+        ttk.Button(bar,text='Save game...',command=self.save_game).pack(side='left',padx=(8,2))
+        ttk.Button(bar,text='Load game...',command=self.load_game).pack(side='left',padx=2)
+        self.resume_button=ttk.Button(bar,text='Resume saved game',command=self.resume_game)
+        self.resume_button.pack(side='left',padx=2)
         self.seatbar=ttk.Frame(outer);self.seatbar.pack(fill='x',pady=8)
         self.notice=tk.StringVar(value='Choose a seat to select a deck and reserve identity.')
         ttk.Label(outer,textvariable=self.notice,wraplength=1030).pack(anchor='w',pady=(0,8))
@@ -42,7 +48,7 @@ class PlayWindow:
             self._bot_timer=None
 
     def _schedule_bots(self):
-        if self.session.bots and self._bot_timer is None and not self._bot_error:
+        if self.session.bots and not self.session.paused and self._bot_timer is None and not self._bot_error:
             self._bot_timer=self.root.after(200,self._pump_bots)
 
     def _pump_bots(self):
@@ -58,7 +64,7 @@ class PlayWindow:
         self._schedule_bots()
 
     def close(self):
-        if self.session.view().get('phase')!='lobby' and not messagebox.askyesno('Close local game','This local game is not saved. Close it?',parent=self.root):return
+        if self.session.view().get('phase')!='lobby' and not messagebox.askyesno('Close local game','Close this local game? Changes since your last save will be lost.',parent=self.root):return
         self.root.destroy()
 
     def new_lobby(self):
@@ -70,6 +76,52 @@ class PlayWindow:
         self.session=HarnessSession(tuple(f'Player {i+1}' for i in range(count)),bots=tuple(f'P{i+1}' for i in range(1,count)) if self.computer_mode.get() else ())
         self._bot_error=False;self._bot_steps=0;self._schedule_bots()
         self.gate.hide();self.notice.set('New lobby. Each seat selects a reserve identity and confirms Ready.');self.render()
+
+    def _suspend_for_file(self):
+        paused=self.session.paused
+        self.session.paused=True
+        if self._bot_timer is not None:
+            self.root.after_cancel(self._bot_timer);self._bot_timer=None
+        self.gate.hide();self.render()
+        return paused
+
+    def save_game(self):
+        paused=self._suspend_for_file()
+        try:
+            path=filedialog.asksaveasfilename(parent=self.root,title='Save privately - includes every hand',
+                initialfile='Crucible game.crucible.json',defaultextension='.crucible.json',
+                filetypes=[('Crucible private save','*.crucible.json')])
+            if not path:return
+            result=save_session(self.session,path)
+            self.notice.set('Private game saved.'+(' Previous snapshot retained as a backup.' if result.backup else ''))
+        except (SaveError,OSError) as exc:self.notice.set(str(exc))
+        finally:
+            self.session.paused=paused;self.render();self._schedule_bots()
+
+    def load_game(self):
+        paused=self._suspend_for_file();old=self.session
+        try:
+            path=filedialog.askopenfilename(parent=self.root,title='Load a private game or retained backup',
+                filetypes=[('Crucible saves/backups','*.crucible.json*')])
+            if not path:return
+            candidate=load_session(path)
+            if not messagebox.askyesno('Load saved game','Replace this local session with the validated save? It opens paused with hands hidden.',parent=self.root):return
+            self.install_loaded(candidate)
+            self.notice.set('Loaded privately and paused. Choose your seat; Resume saved game when ready.')
+        except (SaveError,OSError) as exc:self.notice.set(str(exc))
+        finally:
+            if self.session is old:self.session.paused=paused
+            self.render();self._schedule_bots()
+
+    def install_loaded(self, candidate):
+        self.session=candidate;self.session.paused=True
+        self.gate.hide();self._bot_steps=0;self._bot_error=False
+        self.count.set(len(candidate.view()['players']));self.computer_mode.set(bool(candidate.bots))
+
+    def resume_game(self):
+        self.session.resume();self._bot_error=False;self._bot_steps=0
+        self.notice.set('Saved game resumed. Private hands still require seat confirmation.')
+        self.render();self._schedule_bots()
 
     def hide(self):
         self.gate.hide();self.notice.set('Public view. Private cards are hidden.');self.render()
@@ -100,6 +152,7 @@ class PlayWindow:
         for frame in (self.body,self.seatbar):
             for child in frame.winfo_children():child.destroy()
         view=self.session.view(self.gate.actor)
+        self.resume_button.configure(state='normal' if self.session.paused else 'disabled')
         roster=view.get('setup',view)['players']
         for player in roster:
             ttk.Button(self.seatbar,text=f"Computer {player['player_id']}" if player.get('computer') else f"View {player.get('name',player['player_id'])}",
@@ -199,8 +252,8 @@ class PlayWindow:
         toolbar=ttk.Frame(self.body);toolbar.pack(fill='x')
         ttk.Label(toolbar,text=f"Priority: {priority['holder'] or priority['status']}" if priority else 'Game finished').pack(side='left')
         if view.get('you') and not view['result']:
-            ttk.Button(toolbar,text='Pass / continue phase',command=lambda:self.send('pass'),state='normal' if priority and priority['status']=='priority' and priority['holder']==self.gate.actor and not view['you']['choice'] else 'disabled').pack(side='left',padx=8)
-            ttk.Button(toolbar,text='End turn',command=lambda:self.send('end_turn'),state='normal' if priority and priority['status']=='priority' and priority['holder']==self.gate.actor and turn['active_player']==self.gate.actor and turn['phase'] in ('MainBefore','MainAfter') and not view['chain'] and not view['you']['choice'] else 'disabled').pack(side='left')
+            ttk.Button(toolbar,text='Pass / continue phase',command=lambda:self.send('pass'),state='normal' if not view.get('paused') and priority and priority['status']=='priority' and priority['holder']==self.gate.actor and not view['you']['choice'] else 'disabled').pack(side='left',padx=8)
+            ttk.Button(toolbar,text='End turn',command=lambda:self.send('end_turn'),state='normal' if not view.get('paused') and priority and priority['status']=='priority' and priority['holder']==self.gate.actor and turn['active_player']==self.gate.actor and turn['phase'] in ('MainBefore','MainAfter') and not view['chain'] and not view['you']['choice'] else 'disabled').pack(side='left')
             ttk.Button(toolbar,text='Concede...',command=self.concede).pack(side='right')
         own=view.get('you')
         if not own:ttk.Label(private,text='Private cards are hidden. Choose a seat and acknowledge the handoff.').pack(anchor='w');return
@@ -216,6 +269,7 @@ class PlayWindow:
         else:notebook.select(private_page)
 
     def next_step(self, view):
+        if view.get('paused'):return 'Loaded game is paused. Resume saved game to continue.'
         if view['result']:return 'Game finished. Use New lobby to play again.'
         combat=view.get('combat')
         if combat and combat['stage']=='blocking':return 'Defenders: take your seats and lock blockers privately. They reveal together.'
@@ -278,7 +332,7 @@ class PlayWindow:
         if leader['recovering']:ttk.Label(frame,text='Recovering until your next Start; reserve abilities and summoning are unavailable.').pack(anchor='w')
         if leader['location']=='reserve' and not leader['recovering'] and leader['pending_effect_id'] is None:
             card={**leader,'kind':'leader','cost':leader['summon_cost'],'steps':[]}
-            ttk.Button(frame,text='Inspect / summon leader',command=lambda:self.card_dialog(view,card,'summon_leader')).pack(anchor='w')
+            ttk.Button(frame,text='Inspect / summon leader',command=lambda c=card:self.card_dialog(view,c,'summon_leader')).pack(anchor='w')
         for ability in leader['abilities']:
             label=f"{ability['location'].title()} - {ability['key'].replace('-',' ').title()} ({ability['cost']})"
             card={**ability,'name':label,'kind':'leader ability','ability_key':ability['key']}
@@ -313,7 +367,7 @@ class PlayWindow:
                 if chosen is None:return self.error('No valid target is selected.')
                 args['target']=chosen
             if self.send(command,**args):popup.destroy()
-        ttk.Button(frame,text='Confirm play and payment',command=confirm,state='disabled' if view['result'] else 'normal').pack(anchor='w',pady=12)
+        ttk.Button(frame,text='Confirm play and payment',command=confirm,state='disabled' if view['result'] or view.get('paused') else 'normal').pack(anchor='w',pady=12)
         ttk.Button(frame,text='Cancel',command=popup.destroy).pack(anchor='w')
 
     def attack_panel(self, frame, view):

@@ -10,7 +10,7 @@ py -3 run_play.py
 
 No new runtime package is required. The existing portable Combat Lab executable
 has not been rebuilt with this harness. Closing a started local game asks for
-confirmation because this session has no save/resume yet.
+confirmation before discarding changes since your last save.
 
 ## First game
 1. Leave two seats selected, or choose 3-4 and click New lobby.
@@ -50,7 +50,7 @@ Deck validation enforces forty singleton entries, known cards and matching color
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
 once setup begins. Existing catalog, checkpoint and saved-data formats are untouched.
 
-Windows Python 3.14.3: 253 tests pass. Current duration evidence is in
+Windows Python 3.14.3: 274 tests pass, including save/desktop regressions. Duration evidence is in
 experiments/DURATIONS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and
@@ -72,8 +72,20 @@ Computers use only their permitted views and stop at human choices. The desktop
 driver caps an uninterrupted computer burst at 200 commands and reports a diagnostic
 without creating a draw/winner. A new lobby clears that diagnostic.
 
-Visual review covered the initial lobby. Later computer-use snapshots did not
-reliably target the selected window, so further input stopped. Other screens have
-widget/geometry checks, not a completed visual review. Coverage/gates live in
-crucible_core/coverage.py v5; PROJECT_STATE.md owns the next step. Rollback is a
-source revert; preserve old experiment data. No game-runtime dependencies added.
+Visual review covered paused/resumed gameplay, public battlefield and leaders,
+private handoff/hand controls, and the corrected summon confirmation dialog.
+The review caught a late-bound summon callback; a regression test checks its
+actual leader name and price. Header controls use two rows and fit 950px width.
+Combat choice screens retain widget/geometry coverage.
+Coverage/gates live in crucible_core/coverage.py; PROJECT_STATE.md owns the next
+step. No game-runtime dependencies added.
+
+## Save and resume
+Click Save game to write a private `.crucible.json` snapshot. Saving over an
+existing valid save retains its exact previous bytes as a uniquely named backup.
+Load game also accepts those backups. Validation happens before you confirm
+replacement of the current session. The restored game opens paused, with hands
+hidden and computers stopped; click Resume saved game, choose a human seat and
+acknowledge its handoff to continue. File pickers pause computer stepping.
+
+Format, privacy, build compatibility and rollback policy: [SAVE_FORMAT.md](SAVE_FORMAT.md).

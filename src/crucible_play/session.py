@@ -7,41 +7,56 @@ from crucible_core.views import project_match
 
 class HarnessSession:
     def __init__(self, names=('Player 1','Player 2'), *, seed=None, pack=None, bots=()):
+        from .persistence import runtime_fingerprint
+        self.runtime_hash=runtime_fingerprint();self.paused=False
         self.bots=frozenset(bots)
         if not self.bots<=set(f'P{i+1}' for i in range(len(names))):raise ValueError('Unknown computer seat')
         self._lobby=new_lobby(tuple((f'P{i+1}',name) for i,name in enumerate(names)),pack or practice_pack(),seed=seed)
 
     def view(self, actor=None):
         lobby=project_lobby(self._lobby,actor)
+        lobby['paused']=self.paused
         for player in lobby['players']:player['computer']=player['player_id'] in self.bots
         if self._lobby.phase!='match':return lobby
         view=project_match(self._lobby.match,actor)
-        view['setup']=lobby
+        view['setup']=lobby;view['paused']=self.paused
         return view
 
     def choose_deck(self, actor, leader_key, *, expected_revision):
+        self._require_running()
         leader=next((l for l in self._lobby.pack.leaders if l.key==leader_key),None)
         if leader is None:raise ValueError('Choose a reserve identity')
         deck=DeckSelection('Practice Forty',leader.color,leader.key,tuple(c.definition.key for c in self._lobby.pack.cards[:40]))
         self._lobby=select_deck(self._lobby,actor,deck,expected_revision=expected_revision)
 
     def ready(self, actor, ready, *, expected_revision):
+        self._require_running()
         self._lobby=set_ready(self._lobby,actor,ready,expected_revision=expected_revision)
 
     def start(self, actor, *, expected_revision):
+        self._require_running()
         self._lobby=begin_opening(self._lobby,actor,expected_revision=expected_revision)
 
     def redraw(self, actor, rejected, *, expected_revision):
+        self._require_running()
         self._lobby=lock_redraw(self._lobby,actor,tuple(rejected),expected_revision=expected_revision)
 
     def send(self, actor, packet):
+        self._require_running()
         if self._lobby.phase!='match':raise ValueError('Finish opening choices first')
         state=route_command(self._lobby.match,actor,packet)
         from dataclasses import replace
         self._lobby=replace(self._lobby,match=state)
 
+    def _require_running(self):
+        if self.paused:raise ValueError('Saved game is paused. Resume to continue.')
+
+    def resume(self):
+        self.paused=False
+
     def step_opponent(self):
         """At most one authoritative action; never passes or chooses for a human."""
+        if self.paused:return False
         from .opponent import choose_move, opening_choice
         public=self.view()
         for actor in sorted(self.bots):
