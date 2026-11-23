@@ -178,8 +178,10 @@ class PlayWindow:
         board.insert('end','\nBATTLEFIELD\n')
         for o in view['battlefield']:
             c=o.get('creature')
-            details=f"{c['attack']} ATK | {c['health']}/{c['max_health']} HP | {'exhausted' if c['exhausted'] else 'ready'} | {'may attack' if c['attack_eligible'] and not c['attack_used'] else 'attack waiting/used'}" if c else f"+{o['capacity_bonus']} capacity"
+            details=f"{c['attack']} ATK | {c['health']}/{c['max_health']} HP | prevention {sum(s['amount'] for s in c['shields'])} | {'exhausted' if c['exhausted'] else 'ready'} | {'may attack' if c['attack_eligible'] and not c['attack_used'] else 'attack waiting/used'}" if c else f"+{o['capacity_bonus']} capacity"
             board.insert('end',f"{o['controller']} | {self.label(o)} | {details} | {o['instance_id'][-6:]}\n")
+        for duration in view.get('durations',[]):
+            board.insert('end',f"Duration {duration['duration_id']}: expires at {duration['anchor_player']} {duration['boundary']} #{duration['occurrence']}\n")
         board.insert('end','\nPENDING\n')
         pending={c['effect_id']:c for c in view['pending_cards']}
         for effect in view['chain']:
@@ -191,7 +193,8 @@ class PlayWindow:
         log=tk.Text(history,wrap='word',height=14);log.pack(fill='both',expand=True)
         for event in view['events'][-100:]:
             who=self.session.card_name(event['card'].get('definition_key','Card')) if 'card' in event else self.public_name(view,event['subject'])
-            log.insert('end',f"{event['event_id']}: {event['kind'].replace('_',' ')} - {who}\n")
+            detail=f" ({event['boundary']})" if 'boundary' in event else f" at {event['expiration']['anchor_player']} {event['expiration']['boundary']}" if 'expiration' in event else ''
+            log.insert('end',f"{event['event_id']}: {event['kind'].replace('_',' ')} - {who}{detail}\n")
         log.configure(state='disabled')
         toolbar=ttk.Frame(self.body);toolbar.pack(fill='x')
         ttk.Label(toolbar,text=f"Priority: {priority['holder'] or priority['status']}" if priority else 'Game finished').pack(side='left')
@@ -258,6 +261,7 @@ class PlayWindow:
         target=step.get('target');amount=step.get('amount',0)
         who='you' if target=='$controller' else 'the chosen target' if target=='$target' else self.public_name(view,target) if target else 'the previous target'
         kind=step['kind']
+        if kind=='shield':return f"Give {who} {amount} prevention until "+('this turn ends.' if step['duration']=='turn_end' else 'your next Start.')
         if kind=='damage':return f'Deal {amount} damage to {who}.'
         if kind=='heal':return f'Restore {amount} life to {who}.'
         if kind=='draw':return f'{who.capitalize()} draw {amount} card(s).'

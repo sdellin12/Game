@@ -3,25 +3,25 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: view-only practice opponent and leader summons/recovery.
+- Latest implementation: duration anchors, automatic expiry and timed prevention cards.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 236 Windows tests; 2/3/4-seat practice games complete via permitted views.
+- Validation: 253 Windows tests; duration cases include skipped-seat expiry and terminal draws.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Completed both selected slices; see experiments/OPPONENT_LEADERS.md.
-Recommended next: duration anchors and automatic effect expiration.
-Then: save/resume with a versioned schema and migration/rollback plan.
-Versioned implementation coverage: src/crucible_core/coverage.py v4; practice pack v2.
+Opponent/leader work is published; duration integration is complete.
+Recommended next: save/resume with a versioned schema and migration/rollback plan.
+Then: broaden ability coverage and complete a visual gameplay review.
+Versioned implementation coverage: src/crucible_core/coverage.py v5; practice pack v3.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.
 - Product decisions: REQUIREMENTS.md.
 - Gameplay rules: RULES_DRAFT.md (canonical; avoid duplicate baseline summaries).
 - Timing implementation: FULL_MATCH_TIMING_SPEC.md.
-- Harness usage: PLAY_HARNESS.md; current evidence: experiments/OPPONENT_LEADERS.md.
+- Harness usage: PLAY_HARNESS.md; current evidence: experiments/DURATIONS.md.
 - Card design/handoff: CARD_DESIGN.md.
 - Lab operation: COMBAT_LAB_QUICKSTART.md.
 Expand reads only when a concrete dependency requires it.

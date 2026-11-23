@@ -40,16 +40,18 @@ canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation
 The 40-card versioned practice pack has distinct keys/names, 24 creatures,
-10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v2 includes three functional leaders with
+10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v3 includes three functional leaders with
 separate reserve/battle
 abilities. Inspect/summon your leader from the hand/choices tab; current summon
-cost, location and recovery are public. Canonical leader rules are in RULES_DRAFT.md.
+cost, location and recovery are public. Ward cards now exercise timed prevention;
+current prevention, anchors and expiry events appear on the public table/history.
+Canonical mechanics remain in RULES_DRAFT.md.
 Deck validation enforces forty singleton entries, known cards and matching color.
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
 once setup begins. Existing catalog, checkpoint and saved-data formats are untouched.
 
-Windows Python 3.14.3: 236 tests pass. Current opponent/leader evidence is in
-experiments/OPPONENT_LEADERS.md; original setup/widget coverage is retained.
+Windows Python 3.14.3: 253 tests pass. Current duration evidence is in
+experiments/DURATIONS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and
 scroll geometry with 30 attack choices. A projection fix makes depletion-related
@@ -73,5 +75,5 @@ without creating a draw/winner. A new lobby clears that diagnostic.
 Visual review covered the initial lobby. Later computer-use snapshots did not
 reliably target the selected window, so further input stopped. Other screens have
 widget/geometry checks, not a completed visual review. Coverage/gates live in
-crucible_core/coverage.py v4; PROJECT_STATE.md owns the next step. Rollback is a
+crucible_core/coverage.py v5; PROJECT_STATE.md owns the next step. Rollback is a
 source revert; preserve old experiment data. No game-runtime dependencies added.

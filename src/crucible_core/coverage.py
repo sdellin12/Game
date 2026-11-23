@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 4,
+    'version': 5,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -24,13 +24,16 @@ MATCH_COVERAGE = {
         'outside-deck-leader-summon-negation-and-reserve-return',
         'cumulative-leader-removal-cost-and-own-start-recovery',
         'location-timing-exhaust-and-per-turn-leader-abilities',
+        'original-seat-start-end-boundary-clocks', 'typed-duration-expiration-and-skipped-seat-crossings',
+        'timed-creature-prevention-and-expiry-order', 'registered-expiration-consequences-and-terminal-gating',
     ),
     'excluded': (
         'production-match-save-and-reconnect', 'network-session-authentication',
         'advanced-zone-moves-exile-bounce-and-hand-transfers', 'multiple-targets-modes-x-discounts',
         'authored-health-sacrifice-costs-and-replacements',
         'custom-leader-cost-formulas-and-both-location-ability-definitions',
-        'transform-combine-and-continuous-stat-modifiers', 'general-duration-scheduler',
+        'transform-combine-and-continuous-stat-modifiers', 'continuous-stat-modifier-durations-and-custom-expiry-replacements',
+        'nested-timed-grants-in-registered-expiration-payloads',
         'discard-draw-damage-and-attack-trigger-abilities',
         'repeated-recharge-debt-and-penalty-bypass',
     ),

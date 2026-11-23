@@ -110,7 +110,7 @@ class HarnessWidgetTests(unittest.TestCase):
         view['turn']['phase']='Combat';view['priority']={'holder':None,'status':'closed','passes':[]}
         view['battlefield']=[{'instance_id':f'fixture-{i}','definition_key':'unit-01','owner':actor,'controller':actor,
               'kind':'creature','cost':1,'capacity_bonus':0,'attack':2,'health':1,
-              'creature':{'attack':2,'health':1,'max_health':1,'exhausted':False,'attack_eligible':True,'attack_used':False,'keywords':[]}} for i in range(30)]
+              'creature':{'attack':2,'health':1,'max_health':1,'exhausted':False,'attack_eligible':True,'attack_used':False,'keywords':[],'shields':[]}} for i in range(30)]
         for child in self.app.body.winfo_children():child.destroy()
         self.app.render_match(view);self.root.update_idletasks()
         canvas=next(c for c in children(self.root) if isinstance(c,tk.Canvas))
@@ -157,7 +157,13 @@ class HarnessWidgetTests(unittest.TestCase):
     def test_bot_timer_readies_computer_but_stops_before_human_setup(self):
         self.app.session=HarnessSession(seed=b'computer-widget-seed-1234',bots=('P2',))
         self.app._schedule_bots()
-        self.root.after(650,self.root.quit);self.root.mainloop()
+        import time
+        deadline=time.monotonic()+8
+        def until_ready():
+            ready=self.app.session.view()['players'][1]['ready']
+            if ready or time.monotonic()>=deadline:self.root.quit()
+            else:self.root.after(25,until_ready)
+        self.root.after(25,until_ready);self.root.mainloop()
         roster=self.app.session.view()['players']
         self.assertFalse(roster[0]['ready']);self.assertTrue(roster[1]['ready'])
         self.assertIsNone(self.app.gate.actor)

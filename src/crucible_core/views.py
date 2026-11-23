@@ -32,6 +32,8 @@ def project_match(state, viewer=None):
           'priority':None if priority is None else {'holder':priority.holder,'status':priority.status,'passes':list(priority.passes)},
           'choice_pending':bool(state.pending or state.triggers or state.discard_needed or (state.combat and state.combat.stage in ('blocking','ordering'))),
           'leaders':_leaders(state),
+          'durations':[{'duration_id':d.duration_id,'controller':d.controller,'target_id':d.target_id,'shield_id':d.shield_id,'anchor_player':d.anchor_player,'boundary':d.boundary,'occurrence':d.occurrence,'expiration_steps':[_public_step(state,s) for s in d.expiration_steps]} for d in state.durations],
+          'boundary_counts':[{'player_id':b.player_id,'starts':b.starts,'ends':b.ends} for b in state.boundary_counts],
           'chain':chain,'pending_cards':[{**_card(state,c.card_id),'effect_id':c.effect_id,'controller':c.controller} for c in state.pending_cards],'combat':match_combat_view(state,private),
           'result':None if state.result is None else {'kind':state.result.kind,'winner':state.result.winner},
           'events':_public_events(state)}
@@ -100,19 +102,25 @@ def _public_events(state):
     # Deliberately omit raw causes, private draw records and unknown future events.
     allowed={'damage','heal','required_draw','combat_damage','combat_miss','elimination','departure','defeat',
              'turn_end','turn_start','action_committed','concede_request','start_refill',
-             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed'}
+             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
     events=[]
     for event in state.events:
         if event.kind not in allowed:continue
         row={'event_id':event.event_id,'kind':event.kind,'subject':event.subject}
         if event.kind=='card_played':row['card']=_card(state,event.subject)
+        if event.kind=='scheduled_boundary' and event.cause in ('Start','End'):row['boundary']=event.cause
+        if event.kind=='duration_expired':
+            parts=event.cause.rsplit(':',2)
+            if len(parts)==3 and parts[0] in state.seat_order and parts[1] in ('Start','End') and parts[2].isdecimal():
+                row['expiration']={'anchor_player':parts[0],'boundary':parts[1],'occurrence':int(parts[2])}
         events.append(row)
     return events
 
 
 def _step(step):
     # Effect types are closed/validated by the coordinator; do not recursively dump.
-    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, GrantCapacity, GrantResources, NegateEffect
+    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, GrantCapacity, GrantResources, NegateEffect, GrantShield
+    if type(step) is GrantShield:return {'kind':'shield','target':step.target,'amount':step.amount,'duration':step.duration,'anchor_player':step.anchor_player}
     if type(step) is NegateEffect:return {'kind':'negate','effect_id':step.effect_id}
     if type(step) is DestroyCreature:return {'kind':'destroy','target':step.target}
     labels={DamagePlayer:'damage',HealPlayer:'heal',DrawCards:'draw',GrantCapacity:'capacity',GrantResources:'resources'}

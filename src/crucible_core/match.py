@@ -4,9 +4,10 @@ Server-internal state only; views.py builds permitted client projections.
 Effects are registered immutable instructions, never arbitrary prose/callbacks.
 """
 from dataclasses import dataclass, replace
-from .combat import Creature, CombatState, Player, resolve_combat, validate_state
+from .combat import Shield, Creature, CombatState, Player, resolve_combat, validate_state
 from .combat_flow import (CombatFlow, commit_attacks, begin_blocking, lock_blockers,
                           required_orders, choose_order, resolve_committed, combat_view, validate_flow)
+from .durations import BoundaryCount, TimedEffect, initial_counts, expiry_rank
 from .leaders import LeaderAbility, LeaderDefinition, LeaderState
 from .cards import CardDefinition, CardInstance, PendingCard
 from .resources import ResourcePool, Payment, validate_pool, start_resources, pay_resources
@@ -62,6 +63,14 @@ class GrantResources:
 @dataclass(frozen=True)
 class NegateEffect:
     effect_id: int
+
+
+@dataclass(frozen=True)
+class GrantShield:
+    target: str
+    amount: int
+    duration: str = 'turn_end'
+    anchor_player: str | None = None
 
 
 @dataclass(frozen=True)
@@ -136,6 +145,7 @@ class Resolution:
     draw: DrawState | None = None
     cleanup: bool = False
     effect_id: int | None = None
+    controller: str | None = None
 
 
 @dataclass(frozen=True)
@@ -182,6 +192,10 @@ class MatchState:
     shuffle_counter: int = 0
     leader_definitions: tuple[LeaderDefinition, ...] = ()
     leaders: tuple[LeaderState, ...] = ()
+    boundary_counts: tuple[BoundaryCount, ...] = ()
+    durations: tuple[TimedEffect, ...] = ()
+    next_duration_id: int = 1
+    rotation_queue: tuple = ()
 
 
 def _name(value):
@@ -212,6 +226,8 @@ def _steps_valid(steps, seats, objects):
             valid = step.target in seats and _natural(step.amount)
         elif type(step) is DrawCards:
             valid = step.target in seats and _natural(step.count)
+        elif type(step) is GrantShield:
+            valid = _name(step.target) and _natural(step.amount) and step.duration in ('turn_end','next_start') and (step.anchor_player is None if step.duration=='turn_end' else step.anchor_player in seats)
         elif type(step) is NegateEffect:
             valid = type(step.effect_id) is int and step.effect_id>0
         elif type(step) is DestroyCreature:
@@ -309,6 +325,7 @@ def validate_match(state):
                 raise MatchError('invalid registered trigger')
         ids.append(o.object_id)
     ids.extend(c.card_id for c in state.pending_cards)
+    _validate_durations(state)
     _validate_leaders(state,ids)
     _validate_card_state(state,ids)
     if (state.shuffle_seed is not None and (type(state.shuffle_seed) is not bytes or len(state.shuffle_seed)<16)) or not _natural(state.shuffle_counter):
@@ -334,19 +351,26 @@ def validate_match(state):
 
 
 def new_match(players, battlefield, effects, policy, *, active_player, phase='MainBefore', end_cleanup=(),
-              actions=(), managed_turns=False, start_cleanup=(), card_definitions=(), card_instances=(), shuffle_seed=None, leader_definitions=(), leaders=()):
+              actions=(), managed_turns=False, start_cleanup=(), card_definitions=(), card_instances=(), shuffle_seed=None, leader_definitions=(), leaders=(), durations=()):
     """Fixture/coordinator factory; no deck/lobby setup or full-match mode implied."""
+    if type(durations) is not tuple or any(type(d) is not TimedEffect for d in durations):raise MatchError('typed durations required')
     seats=tuple(p.cards.player_id for p in players)
     state=MatchState(seats,players,battlefield,effects,policy,TurnFlow(active_player,1,phase=phase),
                      PriorityState(seats,active_player,active_player),end_cleanup=end_cleanup,actions=actions,managed_turns=managed_turns,
                      starting_player=active_player,start_cleanup=start_cleanup,card_definitions=card_definitions,
-                     card_instances=card_instances,shuffle_seed=shuffle_seed,leader_definitions=leader_definitions,leaders=leaders)
+                     card_instances=card_instances,shuffle_seed=shuffle_seed,leader_definitions=leader_definitions,leaders=leaders,
+                     boundary_counts=initial_counts(seats,active_player,phase),durations=durations,
+                     next_duration_id=max((d.duration_id for d in durations),default=0)+1)
     validate_match(state)
     if any(p.eliminated or p.cards.health <= 0 for p in players):
         raise MatchError('initial players must be alive')
     if managed_turns and phase!='Start':
         raise MatchError('managed matches begin at Start')
-    return _begin_start(state) if managed_turns else state
+    if managed_turns:return _begin_start(state)
+    if phase=='Start':
+        state,steps=_enter_boundary(state,active_player,'Start')
+        if steps:return _run(replace(state,pending=Resolution(steps,controller=active_player)))
+    return state
 
 
 def _check(state, revision):
@@ -452,6 +476,8 @@ def _priority_after_cleanup(state):
 
 
 def _stabilize(state, *, reset_priority=True):
+    state,overdue=_expire_durations(state)
+    if overdue:raise UnsupportedMatchRule('overdue expiration payload must be processed by its boundary')
     if reset_priority and state.combat is not None and state.combat.stage in ('blocking','ordering'):
         state=replace(state,combat=replace(state.combat,stage='attack_responses',locks=(),orders=()))
     # Genuine defeats are recorded before elimination ownership cleanup.
@@ -481,6 +507,7 @@ def _stabilize(state, *, reset_priority=True):
         state=_depart(state,removed,'elimination_or_attachment_cleanup')
     state=replace(state,failed_draws=(),destroyed=(),concedes=state.concedes[1:],
                   discard_needed=0 if _player(state,state.turn.active_player).eliminated else state.discard_needed)
+    state=_trim_durations(state)
     for card in state.pending_cards:
         if _player(state,card.controller).eliminated:
             state=_discard_pending_card(state,card,'card_cancelled')
@@ -531,7 +558,7 @@ def resolve_current(state, *, expected_revision):
     if _blocked(state) or state.priority is None or state.priority.status!='resolving':
         raise MatchError('no newly resolving effect')
     effect=next(e for e in state.effects if e.key==state.priority.resolving.effect_key)
-    return _run(replace(state,pending=Resolution(effect.steps,effect_id=state.priority.resolving.effect_id),revision=state.revision+1))
+    return _run(replace(state,pending=Resolution(effect.steps,effect_id=state.priority.resolving.effect_id,controller=effect.controller),revision=state.revision+1))
 
 
 def _record_draw(state, draw):
@@ -574,6 +601,8 @@ def _run(state):
             health=p.cards.health-step.amount if type(step) is DamagePlayer else min(p.max_health,p.cards.health+step.amount)
             state=_set_player(state,replace(p,cards=replace(p.cards,health=health)))
             state,_=_emit(state,'damage' if type(step) is DamagePlayer else 'heal',step.target,str(step.amount))
+        elif type(step) is GrantShield:
+            state=_grant_shield(state,step,state.pending.controller or state.turn.active_player)
         elif type(step) is NegateEffect:
             item=next((e for e in state.priority.chain if e.effect_id==step.effect_id),None) if state.priority else None
             if item is not None:
@@ -639,6 +668,7 @@ def _quiescent(state):
     # Terminal checks have no extra empty-chain reaction window.
     if len(_living(state))>1 and state.priority and state.priority.status!='closed':
         return _quiescent(_stabilize(state)) if state.concedes else state
+    if state.rotation_queue:return _advance_rotation(state)
     committed_combat=state.combat is not None and state.combat.stage!='done' and not active.eliminated
     ending=active.eliminated or (not committed_combat and (active.cards.end_turn_requested or state.turn.end_requested or state.turn.phase in ('End','Finished')))
     if ending and state.end_stage=='none':
@@ -654,8 +684,10 @@ def _quiescent(state):
         if excess:
             return state
         state=replace(state,end_stage='cleanup')
-        if state.end_cleanup:
-            return _run(replace(state,pending=Resolution(state.end_cleanup,cleanup=True)))
+        state,expired=_enter_boundary(state,state.turn.active_player,'End')
+        steps=expired+state.end_cleanup
+        if steps:
+            return _run(replace(state,pending=Resolution(steps,cleanup=True,controller=state.turn.active_player)))
         state=replace(state,end_stage='done',turn=replace(state.turn,phase='Finished',revision=state.turn.revision+1))
     if ending and state.end_stage=='done' and not active.eliminated:
         excess=max(0,len(active.cards.hand)-7)
@@ -667,16 +699,7 @@ def _quiescent(state):
     if state.concedes:
         return _quiescent(_stabilize(state))
     if ending and state.end_stage=='done':
-        index=state.seat_order.index(state.turn.active_player)
-        next_player=next(p for p in state.seat_order[index+1:]+state.seat_order[:index+1] if p in alive)
-        p=_player(state,next_player)
-        cards,turn=open_turn(p.cards,turn_id=state.turn.turn_id+1)
-        state=_set_player(state,replace(p,cards=cards))
-        state=replace(state,turn=turn,end_stage='none',end_cleanup=(),combat=None,
-                      start_stage='pending',start_cleanup=(),action_uses=())
-        state=_priority_after_cleanup(state)
-        if state.managed_turns:
-            return _begin_start(state)
+        return _advance_rotation(replace(state,rotation_queue=_rotation_path(state,state.turn.active_player)))
     if state.combat is not None and not ending:
         if state.combat.stage=='attack_responses':
             flow=begin_blocking(_combat_snapshot(state),state.combat)
@@ -830,8 +853,10 @@ def _begin_start(state):
     if state.start_stage!='pending' or state.turn.phase!='Start':
         raise MatchError('Start maintenance already applied')
     state=replace(state,start_stage='cleanup')
-    if state.start_cleanup:
-        return _run(replace(state,pending=Resolution(state.start_cleanup)))
+    state,expired=_enter_boundary(state,state.turn.active_player,'Start')
+    steps=expired+state.start_cleanup
+    if steps:
+        return _run(replace(state,pending=Resolution(steps,controller=state.turn.active_player)))
     return _finish_start(state)
 
 
@@ -927,7 +952,8 @@ def _bound_card_steps(state, actor, definition, target):
         if type(step) is NegateEffect:
             steps.append(NegateEffect(int(target)))
         else:
-            steps.append(replace(step,target=actor if step.target=='$controller' else target))
+            steps.append(replace(step,target=actor if step.target=='$controller' else target,
+                                 **({'anchor_player':actor} if type(step) is GrantShield and step.anchor_player=='$controller' else {})))
     return tuple(steps)
 
 
@@ -1009,16 +1035,19 @@ def _validate_card_definition(d):
             has_target=True;continue
         if type(step) is NegateEffect:
             raise UnsupportedMatchRule('negation requires a chosen effect target')
-        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature):
+        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature,GrantShield):
             raise UnsupportedMatchRule('unsupported card instruction')
         if step.target=='$target':
-            expected='creature' if type(step) is DestroyCreature else 'player'
+            expected='creature' if type(step) in (DestroyCreature,GrantShield) else 'player'
             if d.target_kind!=expected:raise MatchError('card target mismatch')
             has_target=True
         elif step.target!='$controller':
             raise UnsupportedMatchRule('card targets must bind controller or the chosen target')
-        elif type(step) is DestroyCreature:
+        elif type(step) in (DestroyCreature,GrantShield):
             raise MatchError('controller is not a creature')
+        if type(step) is GrantShield:
+            if step.duration not in ('turn_end','next_start') or (step.anchor_player is not None if step.duration=='turn_end' else step.anchor_player!='$controller'):
+                raise UnsupportedMatchRule('unsupported authored shield duration')
         if type(step) is not DestroyCreature:
             amount=step.count if type(step) is DrawCards else step.amount
             if not _natural(amount):raise MatchError('invalid card instruction quantity')
@@ -1158,3 +1187,116 @@ def _finish_leader_summon(state, effect_id):
     state=_set_leader(state,replace(leader,location='battlefield',pending_effect_id=None))
     state,_=_emit(state,'leader_summoned',leader.instance_id,definition.key)
     return state
+
+def _boundary_value(state, player, boundary):
+    record=next(b for b in state.boundary_counts if b.player_id==player)
+    return record.starts if boundary=='Start' else record.ends
+
+
+def _validate_durations(state):
+    if type(state.boundary_counts) is not tuple or any(type(b) is not BoundaryCount for b in state.boundary_counts) or tuple(b.player_id for b in state.boundary_counts)!=state.seat_order:
+        raise MatchError('invalid original-seat boundary clocks')
+    if any(not _natural(b.starts) or not _natural(b.ends) or not b.ends<=b.starts<=b.ends+1 for b in state.boundary_counts):
+        raise MatchError('invalid boundary counts')
+    if type(state.durations) is not tuple or not _natural(state.next_duration_id) or state.next_duration_id<1:
+        raise MatchError('invalid duration registry')
+    ids=[]
+    for d in state.durations:
+        if (type(d) is not TimedEffect or type(d.duration_id) is not int or not 0<d.duration_id<state.next_duration_id
+                or d.controller not in state.seat_order or d.anchor_player not in state.seat_order or d.boundary not in ('Start','End')
+                or type(d.occurrence) is not int or d.occurrence<1 or type(d.expiration_steps) is not tuple):
+            raise MatchError('invalid typed duration')
+        if d.occurrence<=_boundary_value(state,d.anchor_player,d.boundary) and state.pending is None:
+            raise MatchError('overdue duration requires an in-progress atomic effect')
+        _steps_valid(d.expiration_steps,state.seat_order,())
+        if any(type(s) is GrantShield for s in d.expiration_steps):raise UnsupportedMatchRule('nested timed grants in registered expiration payloads need separate coverage')
+        if d.shield_id is not None:
+            obj=next((o for o in state.battlefield if o.object_id==d.target_id and o.creature),None)
+            if obj is None or not any(s.shield_id==d.shield_id and s.expiry_rank==expiry_rank(state.seat_order,d) for s in obj.creature.shields):
+                raise MatchError('timed prevention must reference its current shield')
+        elif d.target_id is not None:raise MatchError('duration target requires a shield reference')
+        ids.append(d.duration_id)
+    if len(ids)!=len(set(ids)):raise MatchError('duplicate duration ID')
+    if type(state.rotation_queue) is not tuple or any(type(q) is not tuple or len(q)!=2 or q[0] not in state.seat_order or q[1] not in ('Start','End','Turn') for q in state.rotation_queue):
+        raise MatchError('invalid skipped-seat boundary queue')
+
+
+def _remove_duration_records(state, records):
+    ids={d.duration_id for d in records};shields={(d.target_id,d.shield_id) for d in records if d.shield_id is not None}
+    battlefield=tuple(replace(o,creature=replace(o.creature,shields=tuple(s for s in o.creature.shields if (o.object_id,s.shield_id) not in shields))) if o.creature else o for o in state.battlefield)
+    return replace(state,durations=tuple(d for d in state.durations if d.duration_id not in ids),battlefield=battlefield)
+
+
+def _expire_durations(state):
+    due=tuple(d for d in state.durations if _boundary_value(state,d.anchor_player,d.boundary)>=d.occurrence)
+    if not due:return state,()
+    state=_remove_duration_records(state,due)
+    for d in due:state,_=_emit(state,'duration_expired',str(d.duration_id),f'{d.anchor_player}:{d.boundary}:{d.occurrence}')
+    return state,tuple(step for d in due for step in d.expiration_steps)
+
+
+def _enter_boundary(state, player, boundary):
+    field='starts' if boundary=='Start' else 'ends'
+    counts=tuple(replace(b,**{field:getattr(b,field)+1}) if b.player_id==player else b for b in state.boundary_counts)
+    state=replace(state,boundary_counts=counts)
+    state,_=_emit(state,'scheduled_boundary',player,boundary)
+    return _expire_durations(state)
+
+
+def _trim_durations(state):
+    alive=_living(state)
+    removed=[]
+    for d in state.durations:
+        obj=next((o for o in state.battlefield if o.object_id==d.target_id and o.creature),None)
+        if d.controller not in alive or (d.shield_id is not None and (obj is None or not any(s.shield_id==d.shield_id for s in obj.creature.shields))):removed.append(d)
+    return _remove_duration_records(state,removed)
+
+
+def _grant_shield(state, step, controller):
+    obj=next((o for o in state.battlefield if o.object_id==step.target and o.creature),None)
+    if obj is None or controller not in _living(state) or not step.amount:return state
+    anchor=state.turn.active_player if step.duration=='turn_end' else step.anchor_player
+    boundary='End' if step.duration=='turn_end' else 'Start'
+    occurrence=_boundary_value(state,anchor,boundary)+(0 if boundary=='End' and state.end_stage in ('cleanup','done') else 1)
+    duration_id=state.next_duration_id
+    existing={s.shield_id for o in state.battlefield if o.creature for s in o.creature.shields}
+    while f'timed:{duration_id}' in existing:duration_id+=1
+    shield_id=f'timed:{duration_id}'
+    duration=TimedEffect(duration_id,controller,anchor,boundary,occurrence,obj.object_id,shield_id)
+    shield=Shield(shield_id,step.amount,expiry_rank(state.seat_order,duration))
+    state=replace(state,durations=state.durations+(duration,),next_duration_id=duration_id+1,
+                  battlefield=tuple(replace(o,creature=replace(o.creature,shields=o.creature.shields+(shield,))) if o.object_id==obj.object_id else o for o in state.battlefield))
+    state,_=_emit(state,'prevention_granted',obj.object_id,str(step.amount))
+    return state
+
+
+def _rotation_path(state, after):
+    index=state.seat_order.index(after);queue=[]
+    for seat in state.seat_order[index+1:]+state.seat_order[:index+1]:
+        if seat in _living(state):return tuple(queue)+((seat,'Turn'),)
+        queue.extend(((seat,'Start'),(seat,'End')))
+    return tuple(queue)
+
+
+def _advance_rotation(state):
+    while state.rotation_queue:
+        seat,kind=state.rotation_queue[0]
+        state=replace(state,rotation_queue=state.rotation_queue[1:])
+        if kind=='Turn':
+            alive=_living(state)
+            if len(alive)<=1:
+                return replace(state,result=MatchResult('draw') if not alive else MatchResult('win',alive[0]),priority=None,rotation_queue=())
+            if seat not in alive:
+                state=replace(state,rotation_queue=((seat,'Start'),(seat,'End'))+_rotation_path(state,seat));continue
+            p=_player(state,seat);cards,turn=open_turn(p.cards,turn_id=state.turn.turn_id+1)
+            state=_set_player(state,replace(p,cards=cards))
+            state=replace(state,turn=turn,end_stage='none',end_cleanup=(),combat=None,start_stage='pending',start_cleanup=(),action_uses=())
+            state=_priority_after_cleanup(state)
+            if state.managed_turns:return _begin_start(state)
+            state,steps=_enter_boundary(state,seat,'Start')
+            return _run(replace(state,pending=Resolution(steps,controller=seat))) if steps else state
+        # This is a scheduled dead seat boundary, not a turn for that player.
+        if state.turn.phase=='Finished':state=replace(state,turn=replace(state.turn,phase='End',revision=state.turn.revision+1))
+        state,steps=_enter_boundary(state,seat,kind)
+        if steps:return _run(replace(state,pending=Resolution(steps,controller=state.turn.active_player)))
+    return _quiescent(state)

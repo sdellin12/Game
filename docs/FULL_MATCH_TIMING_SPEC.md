@@ -334,6 +334,6 @@ tests, trust boundaries and migration limits. No final refill price is adopted.
 
 ## Current implementation status
 See PROJECT_STATE.md for the compact checkpoint and
-experiments/PRIVATE_VIEWS_HAND_PLAY.md for current command/view/card evidence.
+experiments/DURATIONS.md for current boundary-expiration evidence.
 Versioned coordinator coverage is in src/crucible_core/coverage.py; the lab keeps
 its separate combat-only report coverage.
