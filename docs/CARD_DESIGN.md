@@ -142,6 +142,13 @@ information contract are unchanged. Engine scope/evidence: experiments/TRIGGER_R
 Give another LLM this current document alongside an existing v1 layout ZIP; the
 local ZIP may predate these wording notes. No generated design assets changed here.
 
+## Proposed discard/draw package
+Design-only card data: `design/packages/discard_draw.json`. Exact card wording,
+costs and a generated comparison table: experiments/DISCARD_PACKAGE_ECONOMY.md.
+Resolution contract, deck roles and implementation acceptance criteria:
+DISCARD_DRAW_PACKAGE.md. This package has not replaced live pack-v9 cards.
+Give those files to another LLM with this document when exploring these cards.
+
 ## Capacity and live state
 
 Body 23 units, metadata 20, traits 17, title 36 or 30 for two-line names, stats 34.

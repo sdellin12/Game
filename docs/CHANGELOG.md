@@ -252,3 +252,6 @@ Private optional choices and nine-seed permanent evaluation completed; 388 tests
 
 ## 2026-11-23 checkpoint before Archive strategy study
 Fixed-controller healing/capacity authoring and pack-v9 Archive Well shipped with 397 tests, 18 Battery cases, tactics 21/21 and nine completed seed games. Schema v5/compatibility 1 and coverage v13 retained. Directed Archive choices and natural strategy/cost evaluation were the follow-up.
+
+## 2026-11-23 checkpoint before discard package design
+Archive Well's 54 directed cases and 24 strategy/cost games completed; full suite 403 tests. Holding produced rewards in one duel but no P1 wins; keep Battery/Well costs 4/5. Coverage v13, pack v9 and schema v5/compatibility 1 unchanged. Next work was a deliberate discard outlet with supporting draws.

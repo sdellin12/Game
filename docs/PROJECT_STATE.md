@@ -3,17 +3,17 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: Archive Well choice matrix and paired discard strategy/cost evaluation.
+- Latest checkpoint: three-card discard/draw design proposal and count-only economy harness.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 403 Windows tests; Battery 18/18; Archive 54/54; all 24 strategy/cost games complete.
+- Validation: 410 Windows tests; 13,200 proposal economy checks; Battery 18/18; Archive 54/54.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Archive choices and discard strategy/cost study are complete; printed costs stay 4/5.
-Recommended next: design a deliberate discard outlet and evaluate a supporting package.
-Alternative: seat-rotated strategy comparisons with stronger defensive requirements.
+Discard outlet/draw package design is complete; canonical proposal: DISCARD_DRAW_PACKAGE.md.
+Recommended next: implement private discard continuation with explicit save-schema planning.
+Then stress recovery/refill loops and run seat-rotated package/control deck comparisons.
 Versioned implementation coverage: src/crucible_core/coverage.py v13; practice pack v9; save schema v5 / compatibility 1.
 
 ## Read only the relevant entry
@@ -23,6 +23,7 @@ Start here, then read one spec/source directly relevant to the current task.
 - Timing implementation: FULL_MATCH_TIMING_SPEC.md.
 - Harness usage: PLAY_HARNESS.md; persistence policy/evidence: SAVE_FORMAT.md.
 - Card design/handoff: CARD_DESIGN.md.
+- Proposed discard package: DISCARD_DRAW_PACKAGE.md; data: design/packages/discard_draw.json.
 - Lab operation: COMBAT_LAB_QUICKSTART.md.
 Expand reads only when a concrete dependency requires it.
 Do not read ANSWERS.md, DISCOVERY.md or design/cards/output/* unless asked.

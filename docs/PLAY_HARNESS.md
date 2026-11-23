@@ -120,3 +120,8 @@ next own Start refill; fixture details are in experiments/HAND_PRESSURE.md.
 For paired baseline/holding-policy games, run `python -m crucible_play.discard_eval
 --players 2 3 4`. Add `--source-discount 1` for isolated cost sensitivity.
 Study method/results: experiments/DISCARD_STRATEGY.md.
+
+Design-only package economics: `python -m crucible_play.package_economy`.
+Regenerate its readable report with `--format markdown` into
+docs/experiments/DISCARD_PACKAGE_ECONOMY.md. It reads the proposal JSON, not the
+live practice deck. Scope and next engine work: DISCARD_DRAW_PACKAGE.md.

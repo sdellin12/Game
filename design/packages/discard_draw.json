@@ -1,0 +1,43 @@
+{
+  "package_id": "discard-draw-proposal",
+  "version": 1,
+  "status": "design-proposal",
+  "cards": [
+    {
+      "key": "proposal-scrapyard-insight",
+      "name": "Scrapyard Insight",
+      "kind": "action",
+      "color": "Generic",
+      "cost": 2,
+      "discard_before_draw": 1,
+      "draw": 2,
+      "conditional_on_discard": true,
+      "rules_text": "Discard a card from your hand. If you do, draw two cards.",
+      "role": "Deliberate discard outlet and card selection; card-neutral before End cleanup."
+    },
+    {
+      "key": "proposal-surveyors-notes",
+      "name": "Surveyor's Notes",
+      "kind": "action",
+      "color": "Generic",
+      "cost": 3,
+      "discard_before_draw": 0,
+      "draw": 2,
+      "conditional_on_discard": false,
+      "rules_text": "Draw two cards.",
+      "role": "Build a hand without requiring a discard engine."
+    },
+    {
+      "key": "proposal-deep-archive",
+      "name": "Deep Archive",
+      "kind": "action",
+      "color": "Generic",
+      "cost": 5,
+      "discard_before_draw": 0,
+      "draw": 3,
+      "conditional_on_discard": false,
+      "rules_text": "Draw three cards.",
+      "role": "Larger hand refill with a higher upfront resource and deck-exhaustion burden."
+    }
+  ]
+}
