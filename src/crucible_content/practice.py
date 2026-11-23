@@ -3,7 +3,7 @@ from dataclasses import dataclass, asdict
 import hashlib
 import json
 from crucible_core.leaders import LeaderAbility, LeaderDefinition
-from crucible_core.cards import CardDefinition
+from crucible_core.cards import CardDefinition,TriggeredAbility
 from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard,
     GrantResources, GrantCapacity, NegateEffect, GrantShield, MatchPlayer, new_match)
 from crucible_core.turns import DrawPlayer, RefillPolicy
@@ -59,9 +59,10 @@ def practice_pack():
     )
     for i,(name,kind,cost,steps,target,relation) in enumerate(spells):
         cards.append(PackCard(name,'Generic',CardDefinition(f'spell-{i+1:02}',kind,cost,steps,target_kind=target,target_relation=relation)))
-    for i,name in enumerate(('Workshop Lantern','Root Battery','Memory Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
-        cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',3 if i<3 else 5,capacity_bonus=1 if i<3 else 2)))
-    return validate_pack(PracticePack('crucible-practice',6,tuple(cards),(
+    for i,name in enumerate(("Scholar's Lantern",'Salvage Battery','Memory Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
+        triggers=(TriggeredAbility('insight' if i==0 else 'salvage','card_drawn' if i==0 else 'card_discarded',(GrantResources('$controller',1),)),) if i<2 else ()
+        cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',4 if i<2 else 3 if i<3 else 5,capacity_bonus=1 if i<3 else 2,triggered_abilities=triggers)))
+    return validate_pack(PracticePack('crucible-practice',7,tuple(cards),(
         ReserveIdentity('core-gold','Aster, Practice Core','Gold',LeaderDefinition('core-gold','Aster, Practice Core','Gold',4,3,5,
             LeaderAbility('core-repair',3,(HealPlayer('$controller',3),)),
             LeaderAbility('guiding-bolt',2,(DamagePlayer('$target',1),),target_kind='player',target_relation='enemy',exhaust_source=True))),
@@ -94,4 +95,8 @@ def validate_pack(pack):
 
 
 def pack_hash(pack):
-    return hashlib.sha256(json.dumps(asdict(pack),sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    def normalized(value):
+        if isinstance(value,dict):return {k:normalized(v) for k,v in value.items() if not (k=='triggered_abilities' and v==())}
+        if isinstance(value,(tuple,list)):return [normalized(v) for v in value]
+        return value
+    return hashlib.sha256(json.dumps(normalized(asdict(pack)),sort_keys=True,separators=(',',':')).encode()).hexdigest()

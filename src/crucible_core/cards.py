@@ -3,6 +3,14 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
+class TriggeredAbility:
+    key: str
+    event: str
+    steps: tuple
+    watch: str = 'self'
+
+
+@dataclass(frozen=True)
 class CardDefinition:
     key: str
     kind: str  # creature, permanent, action, reaction
@@ -14,6 +22,7 @@ class CardDefinition:
     capacity_bonus: int = 0
     target_kind: str | None = None  # player, creature, effect, discard
     target_relation: str = 'any'  # any, friendly, enemy
+    triggered_abilities: tuple[TriggeredAbility, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 # The Crucible — Card Design v1
 
-Updated 2026-11-22. Standard and full-art template v1 complete as editable SVG
+Updated 2026-11-23. Standard and full-art template v1 complete as editable SVG
 layouts with an offline gallery and 15 shared content examples. The information
 contract is owner-approved. These are design assets, not a game renderer/client,
 printed production files or balance-tested card definitions. Character artwork
@@ -116,6 +116,20 @@ unsafe output IDs reject. No effect text is evaluated as code.
 Design-fixtures-v1 is ONLY a design format. No existing saved game/catalog/report
 schema changes. Future renderer integration must map an authorized card view model
 into these slots and handle ownership/private projections correctly.
+
+## Authored trigger wording / engine handoff
+The current practice pack adds Scholar's Lantern and Salvage Battery as permanents.
+Use the existing ordered `abilities` panels in both standard and full-art layouts:
+- When you draw a card, gain 1 resource.
+- When you discard a card from your hand, gain 1 resource.
+
+Preserve the actor, event, mandatory reward and any printed restrictions. Do not
+change these to optional "may" abilities or shorten hand discard into any discard
+entry. Executable definitions live in crucible_core/cards.py and the practice pack;
+`triggered_abilities` is not a new design-fixture field. Layouts and the shared
+information contract are unchanged. Engine scope/evidence: experiments/AUTHORED_TRIGGERS.md.
+Give another LLM this current document alongside an existing v1 layout ZIP; the
+local ZIP may predate these wording notes. No generated design assets changed here.
 
 ## Capacity and live state
 

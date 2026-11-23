@@ -16,4 +16,10 @@ Do not regenerate these from the schema-v3 runtime.
 commands before adding the recovery instruction: exile plus interrupted refill, and
 an Unravel chain with nested counters. Generated from the 1864642 state/engine with
 the subsequent view-only nested-chain policy fix. No state layout changed. These
-fixtures load directly in the newer v3 runtime; do not regenerate them from it.
+fixtures originally checked direct native-v3 compatibility. V4 now requires explicit
+conversion with empty trigger defaults. Do not regenerate these archived inputs.
+
+`save_v3_before_authored_triggers.json.gz` is a synthetic d36da74 observer/refill
+snapshot with two captured triggers, frozen content hash and the original next
+command/result, archived before the CardDefinition field change. Conversion adds
+empty authored-trigger defaults while preserving that hash/cursor/candidate set.

@@ -233,12 +233,14 @@ class PlayWindow:
             c=o.get('creature')
             details=f"{c['attack']} ATK | {c['health']}/{c['max_health']} HP | prevention {sum(s['amount'] for s in c['shields'])} | {'exhausted' if c['exhausted'] else 'ready'} | {'may attack' if c['attack_eligible'] and not c['attack_used'] else 'attack waiting/used'}" if c else f"+{o['capacity_bonus']} capacity"
             board.insert('end',f"{o['controller']} | {self.label(o)} | {details} | {o['instance_id'][-6:]}\n")
+            for ability in o.get('triggered_abilities',[]):board.insert('end','  '+self.trigger_text(ability,view,o['controller'])+'\n')
         for duration in view.get('durations',[]):
             board.insert('end',f"Duration {duration['duration_id']}: expires at {duration['anchor_player']} {duration['boundary']} #{duration['occurrence']}\n")
         board.insert('end','\nPENDING\n')
         pending={c['effect_id']:c for c in view['pending_cards']}
         for effect in view['chain']:
             name=self.label(pending[effect['effect_id']]) if effect['effect_id'] in pending else effect.get('label',effect['effect_key'])
+            if name in ('Draw trigger','Discard trigger'):name=self.public_name(view,effect['source_id'])+': '+name
             board.insert('end',f"#{effect['effect_id']} {effect['controller']}: {name} | {'; '.join(self.effect_text(step,view) for step in effect['steps'])}\n")
         for p in view['players']:
             if 'discard' in p:board.insert('end',f"\n{p['player_id']} discard: "+', '.join(self.session.card_name(c.get('definition_key','Card')) for c in p['discard'])+'\n')
@@ -314,6 +316,14 @@ class PlayWindow:
         if reveal:return self.session.card_name(reveal.get('definition_key',identity))
         return identity
 
+    def trigger_text(self, ability, view, controller=None):
+        who=controller or 'you';verb='draw' if ability['event']=='card_drawn' else 'discard'
+        if controller:verb+='s'
+        event=f'{verb} a card'+(' from your hand' if not controller and ability['event']=='card_discarded' else '')
+        amount=sum(s['amount'] for s in ability['steps'])
+        reward=(f'{controller} gains' if controller else 'gain')+f" {amount} resource"+('s' if amount!=1 else '')
+        return f'When {who} {event}, {reward}.'
+
     def effect_text(self, step, view):
         target=step.get('target');amount=step.get('amount',0)
         who='you' if target=='$controller' else 'the chosen target' if target=='$target' else self.public_name(view,target) if target else 'the previous target'
@@ -351,6 +361,7 @@ class PlayWindow:
         if card['kind']=='creature':ttk.Label(frame,text='Enters ready. Can block immediately; waits until your next Start to attack.',wraplength=520).pack(anchor='w',pady=5)
         if card['kind']=='permanent':ttk.Label(frame,text=f"Adds {card['capacity_bonus']} capacity while in play; available on your next refill.",wraplength=520).pack(anchor='w',pady=5)
         for step in card.get('steps',[]):ttk.Label(frame,text=self.effect_text(step,view),wraplength=520).pack(anchor='w',pady=3)
+        for ability in card.get('triggered_abilities',[]):ttk.Label(frame,text=self.trigger_text(ability,view),wraplength=520).pack(anchor='w',pady=3)
         ttk.Label(frame,text='Ordinary resources to pay').pack(anchor='w',pady=(10,0))
         amount=tk.IntVar(value=card['cost']);ttk.Spinbox(frame,from_=0,to=99,textvariable=amount,width=6).pack(anchor='w')
         tokens=[]

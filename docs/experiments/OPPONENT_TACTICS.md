@@ -42,7 +42,7 @@ removal because a leader returns to reserve instead of staying exiled. A separat
 real-state regression checks that distinction.
 
 ## Progress and limits
-Final pack-v6 2/3/4-seat practice runs completed in 327/1488/1569 commands and
+Final pack-v7 2/3/4-seat practice runs completed in 327/1488/1568 commands and
 17/73/61 turns. The existing three-seat under-1500-command regression still passes.
 Scenario scores measure these twenty-one decisions, not general strength or game balance.
 Evaluation does not search future responses or hidden cards. Final-response

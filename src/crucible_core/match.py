@@ -9,7 +9,7 @@ from .combat_flow import (CombatFlow, commit_attacks, begin_blocking, lock_block
                           required_orders, choose_order, resolve_committed, combat_view, validate_flow)
 from .durations import BoundaryCount, TimedEffect, initial_counts, expiry_rank
 from .leaders import LeaderAbility, LeaderDefinition, LeaderState
-from .cards import CardDefinition, CardInstance, PendingCard
+from .cards import CardDefinition, CardInstance, PendingCard, TriggeredAbility
 from .resources import ResourcePool, Payment, validate_pool, start_resources, pay_resources
 from .priority import PriorityState, PendingEffect, add_effect, pass_priority, validate_priority
 from .turns import (DrawPlayer, TurnFlow, RefillPolicy, DrawState, begin_required_draw,
@@ -988,12 +988,16 @@ def _validate_card_state(state, zone_ids):
         obj=next((o for o in state.battlefield if o.object_id==c.instance_id),None)
         if obj and (obj.owner!=c.owner or obj.kind!=definitions[c.definition_key].kind):
             raise MatchError('battlefield card identity mismatch')
+        if obj and definitions[c.definition_key].triggered_abilities:
+            effects,triggers=_authored_trigger_parts(state,c,definitions[c.definition_key],obj.controller)
+            if any(e not in state.effects for e in effects) or any(t not in obj.triggers for t in triggers):raise MatchError('authored source missing its registered triggers')
     live=state.priority.chain+((state.priority.resolving,) if state.priority.resolving else ()) if state.priority else ()
     if any(type(c.effect_id) is not int or c.effect_id<1 for c in state.pending_cards) or len({c.effect_id for c in state.pending_cards})!=len(state.pending_cards):
         raise MatchError('invalid/duplicate pending card effect ID')
     for c in state.pending_cards:
         if c.card_id not in instances or c.controller!=instances[c.card_id].owner or not any(e.effect_id==c.effect_id and e.controller==c.controller for e in live):
             raise MatchError('pending card/item mismatch')
+        _authored_trigger_parts(state,instances[c.card_id],definitions[instances[c.card_id].definition_key],c.controller)
 
 
 def _bound_card_steps(state, actor, definition, target):
@@ -1038,6 +1042,7 @@ def play_card(state, actor, card_id, payment, *, target=None, expected_revision)
     if card is None or card.owner!=actor or card_id not in player.cards.hand:
         raise MatchError('card unavailable')
     definition=next(d for d in state.card_definitions if d.key==card.definition_key)
+    _authored_trigger_parts(state,card,definition,actor)
     active=actor==state.turn.active_player
     if active and (state.turn.recharge or player.cards.end_turn_requested):raise MatchError('active turn restricted')
     if definition.kind!='reaction' and (not active or state.turn.phase not in ('MainBefore','MainAfter') or state.turn.end_requested or state.priority.chain):
@@ -1067,6 +1072,20 @@ def _discard_pending_card(state, pending, event):
     return state
 
 
+def _trigger_key(identity, key):return f'trigger:{len(identity)}:{identity}:{key}'
+
+
+def _authored_trigger_parts(state, card, definition, controller):
+    effects=[];triggers=[]
+    for ability in definition.triggered_abilities:
+        key=_trigger_key(card.instance_id,ability.key)
+        effect=EffectSpec(key,controller,tuple(replace(s,target=controller) for s in ability.steps),card.instance_id)
+        existing=next((e for e in state.effects if e.key==key),None)
+        if existing is not None and existing!=effect:raise MatchError('authored trigger registry collision')
+        effects.append(effect);triggers.append(TriggerSpec(ability.event,key,ability.watch))
+    return tuple(effects),tuple(triggers)
+
+
 def _finish_pending_card(state, effect_id):
     pending=next((c for c in state.pending_cards if c.effect_id==effect_id),None)
     if pending is None:return state
@@ -1078,13 +1097,23 @@ def _finish_pending_card(state, effect_id):
     if definition.kind=='creature':
         creature=Creature(card.instance_id,pending.controller,definition.attack,definition.health,definition.health,
                           attack_eligible=False,keywords=definition.keywords)
-    obj=MatchObject(card.instance_id,card.owner,pending.controller,definition.kind,creature,capacity_bonus=definition.capacity_bonus)
-    state=replace(state,battlefield=state.battlefield+(obj,),pending_cards=tuple(c for c in state.pending_cards if c!=pending))
+    effects,triggers=_authored_trigger_parts(state,card,definition,pending.controller)
+    obj=MatchObject(card.instance_id,card.owner,pending.controller,definition.kind,creature,triggers=triggers,capacity_bonus=definition.capacity_bonus)
+    known={e.key for e in state.effects}
+    state=replace(state,battlefield=state.battlefield+(obj,),effects=state.effects+tuple(e for e in effects if e.key not in known),pending_cards=tuple(c for c in state.pending_cards if c!=pending))
     state,_=_emit(state,'card_resolved',card.instance_id,'pending_to_battlefield')
     return state
 
 
 def _validate_card_definition(d):
+    if type(d.triggered_abilities) is not tuple or any(type(a) is not TriggeredAbility for a in d.triggered_abilities):raise MatchError('invalid authored trigger collection')
+    if d.triggered_abilities and d.kind!='permanent':raise UnsupportedMatchRule('authored triggers currently require a permanent')
+    keys=[]
+    for a in d.triggered_abilities:
+        if (not _name(a.key) or a.key in keys or a.event not in ('card_drawn','card_discarded') or a.watch!='self'
+                or type(a.steps) is not tuple or not a.steps or any(type(s) is not GrantResources or s.target!='$controller' or not _natural(s.amount) or s.amount==0 for s in a.steps)):
+            raise UnsupportedMatchRule('unsupported authored trigger')
+        keys.append(a.key)
     if (not _name(d.key) or d.kind not in ('creature','permanent','action','reaction') or not _natural(d.cost)
             or not _natural(d.attack) or not _natural(d.health) or not _natural(d.capacity_bonus)
             or type(d.steps) is not tuple or type(d.keywords) is not tuple

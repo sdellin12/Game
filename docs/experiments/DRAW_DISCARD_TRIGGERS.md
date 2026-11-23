@@ -1,10 +1,9 @@
 # Registered draw/discard observers
-2026-11-23. Coverage v10; practice pack v6; save schema v3 / compatibility 1.
+2026-11-23. Coverage v11; practice pack v7; save schema v4 / compatibility 1.
 
 ## Scope
-This checkpoint adds mandatory `card_drawn` and `card_discarded` events to existing
-registered battlefield TriggerSpec sources. It does not add trigger fields to
-CardDefinition or author new trigger-bearing practice cards. Canonical event and
+The observer layer adds mandatory `card_drawn` and `card_discarded` events to existing
+registered battlefield TriggerSpec sources. Authored permanent support is now implemented separately; see AUTHORED_TRIGGERS.md. Canonical event and
 atomic-boundary behavior is in RULES_DRAFT.md.
 
 Register an EffectSpec under the source controller, then attach a matching
@@ -22,7 +21,7 @@ before End proceeds. Triggered draws can require another hand-limit discard.
 
 Observer events are materialized only when a matching registered source exists.
 This keeps existing listener-free saves' event/request IDs unchanged; it does not
-alter the existing required_draw journal. Native-v3 fixtures and v1/v2 migration
+alter the existing required_draw journal. V1/v2/v3 migration
 next-command tests continue to verify exact states. Legacy converters additionally
 reject observer event names that did not exist in the old schema. No files migrate
 in place; compatibility/rollback policy is SAVE_FORMAT.md.
@@ -39,5 +38,5 @@ Run with PYTHONPATH=src:
 - python -m unittest discover -s tests -p test_draw_discard_triggers.py -q
 - python -m unittest discover -s tests -q
 
-New practice-card authoring needs a separate explicit trigger data model, migration
-plan, public ability text and entry registration. It remains gated in coverage.py.
+Authored permanent entry/text and v4 migration are covered in AUTHORED_TRIGGERS.md.
+Optional/targeted/any-watch authored rewards and damage/attack triggers remain gated.

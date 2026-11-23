@@ -15,7 +15,7 @@ import typing
 import uuid
 
 from crucible_content.practice import PracticePack, PackCard, ReserveIdentity, validate_pack, pack_hash
-from crucible_core.cards import CardDefinition, CardInstance, PendingCard
+from crucible_core.cards import CardDefinition, CardInstance, PendingCard, TriggeredAbility
 from crucible_core.combat import Shield, Creature, Player, CombatState, Attack
 from crucible_core.combat_flow import CombatFlow
 from crucible_core.durations import BoundaryCount, TimedEffect
@@ -31,12 +31,12 @@ from crucible_core.resources import ResourcePool, Payment
 from crucible_core.turns import DrawPlayer, TurnFlow, RefillPolicy, DrawState, _check_choice
 
 FORMAT='crucible-harness-private-save'
-VERSION=3
+VERSION=4
 # Increment when existing instructions/state/shuffle semantics become incompatible.
 COMPATIBILITY_VERSION=1
 MAX_BYTES=16*1024*1024
 MAX_DEPTH=64
-_RECORDS={c.__name__:c for c in (PracticePack,PackCard,ReserveIdentity,CardDefinition,CardInstance,PendingCard,
+_RECORDS={c.__name__:c for c in (PracticePack,PackCard,ReserveIdentity,CardDefinition,CardInstance,PendingCard,TriggeredAbility,
     Shield,Creature,Player,CombatState,Attack,CombatFlow,BoundaryCount,TimedEffect,LeaderAbility,LeaderDefinition,LeaderState,
     LobbyState,LobbyPlayer,DeckSelection,Opening,MatchState,MatchPlayer,MatchEvent,MatchResult,TriggerSpec,TriggerCandidate,
     Resolution,MatchObject,EffectSpec,ActionSpec,DamagePlayer,HealPlayer,DrawCards,DestroyCreature,GrantCapacity,
@@ -138,7 +138,7 @@ def _read_envelope(path):
     doc=json.loads(data.decode('utf-8'),object_pairs_hook=_object,parse_constant=invalid_number)
     if type(doc) is not dict or doc.get('format')!=FORMAT:raise SaveError('Not a Crucible private save')
     version=doc.get('schema_version')
-    if type(version) is not int or version not in (1,2,VERSION):raise SaveError('Unsupported save version; original file was not changed')
+    if type(version) is not int or version not in (1,2,3,VERSION):raise SaveError('Unsupported save version; original file was not changed')
     expected={'format','schema_version','runtime_hash','content_hash','payload','checksum'}
     if version>=2:expected.update(('compatibility_version','python_runtime'))
     if set(doc)!=expected:raise SaveError('Unknown or missing envelope fields')

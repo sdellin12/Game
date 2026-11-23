@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 10,
+    'version': 11,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -37,6 +37,9 @@ MATCH_COVERAGE = {
         'locked-own-discard-card-recovery-to-hand-and-resolution-revalidation',
         'revealed-combat-kernel-reaction-evaluation-and-exact-resource-choice',
         'registered-per-card-draw-and-hand-discard-trigger-observers',
+        'authored-own-draw-discard-permanent-resource-triggers-and-public-text',
+        'source-scoped-retained-trigger-registration-and-reentry-validation',
+        'explicit-v1-v2-v3-to-v4-empty-trigger-default-migration',
     ),
     'excluded': (
         'unreviewed-build-save-migrations-and-network-reconnect', 'network-session-authentication',
@@ -45,7 +48,7 @@ MATCH_COVERAGE = {
         'custom-leader-cost-formulas-and-both-location-ability-definitions',
         'transform-combine-and-continuous-stat-modifiers', 'continuous-stat-modifier-durations-and-custom-expiry-replacements',
         'nested-timed-grants-in-registered-expiration-payloads',
-        'authored-draw-discard-trigger-card-templates-and-damage-attack-triggers',
+        'authored-optional-any-watch-targeted-trigger-rewards-and-damage-attack-triggers',
         'repeated-recharge-debt-and-penalty-bypass',
     ),
 }

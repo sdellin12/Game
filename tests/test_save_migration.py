@@ -15,9 +15,16 @@ V2_FIXTURE=Path(__file__).parent/'fixtures'/'save_v2_before_exile.json.gz'
 
 
 def legacy_lobby(value):
-    # Independent expected schema delta: only the one authoritative match gains empty exile.
+    # Independent expected defaults, preserving all existing fields.
     value=json.loads(json.dumps(value));match=value['fields']['match']
-    if match is not None:match['fields']['exiled']={'tuple':[]}
+    if match is not None:match['fields'].setdefault('exiled',{'tuple':[]})
+    def visit(item):
+        if isinstance(item,dict):
+            if item.get('record')=='CardDefinition':item['fields']['triggered_abilities']={'tuple':[]}
+            for child in item.values():visit(child)
+        elif isinstance(item,list):
+            for child in item:visit(child)
+    visit(value)
     return _decode(value)
 
 
@@ -46,7 +53,7 @@ class MigrationTests(unittest.TestCase):
                 s.resume();s.send(case['actor'],case['packet'])
                 self.assertEqual(s._lobby,legacy_lobby(case['expected']))
                 self.assertEqual(self.source.read_bytes(),original)
-                self.assertEqual(json.loads(self.output.read_text())['schema_version'],3)
+                self.assertEqual(json.loads(self.output.read_text())['schema_version'],4)
 
     def test_v1_load_requires_explicit_conversion(self):
         self.source.write_bytes(sealed(self.cases[0]['save']))
@@ -157,7 +164,14 @@ class MigrationTests(unittest.TestCase):
                 s.redraw('P1',(s.view('P1')['you']['hand'][0]['instance_id'],),expected_revision=s.view()['revision'])
             if self.output.exists():self.output.unlink()
             save_session(s,self.source)
-            doc=json.loads(self.source.read_text());doc['schema_version']=2;self.source.write_bytes(sealed(doc))
+            doc=json.loads(self.source.read_text());doc['schema_version']=2
+            def strip(item):
+                if isinstance(item,dict):
+                    if item.get('record')=='CardDefinition':item['fields'].pop('triggered_abilities')
+                    for child in item.values():strip(child)
+                elif isinstance(item,list):
+                    for child in item:strip(child)
+            strip(doc);self.source.write_bytes(sealed(doc))
             before=self.source.read_bytes();migrate_save(self.source,self.output);loaded=load_session(self.output)
             self.assertEqual(loaded._lobby,s._lobby);self.assertEqual(self.source.read_bytes(),before)
             if opening:

@@ -253,5 +253,18 @@ class HarnessWidgetTests(unittest.TestCase):
         self.button('Confirm play and payment').invoke();self.assertEqual(s._lobby.match.effects[-1].steps[0].target,own.instance_id)
         passes(s);self.app.render();self.assertIn(own.instance_id,[c['instance_id'] for c in s.view(actor)['you']['hand']])
 
+    def test_authored_trigger_text_is_visible_in_inspection_and_public_battlefield(self):
+        from dataclasses import replace
+        from unittest.mock import patch
+        from test_persistence import prepared,state,cmd,passes
+        s=prepared();s.bots=frozenset();actor=s.view()['turn']['active_player'];m=s._lobby.match
+        source=next(c for c in m.card_instances if c.owner==actor and c.definition_key=='beacon-01')
+        state(s,turn=replace(m.turn,phase='MainBefore'),players=tuple(replace(p,cards=replace(p.cards,hand=(source.instance_id,),deck=tuple(i for i in p.cards.deck+p.cards.hand if i!=source.instance_id)),resources=replace(p.resources,available=4)) if p.cards.player_id==actor else p for p in m.players))
+        self.app.session=s;self.app.seat(actor);self.app.unlock();view=s.view(actor);card=view['you']['hand'][0]
+        with patch.object(tk.Toplevel,'grab_set'):self.app.card_dialog(view,card)
+        self.assertIn('When you draw a card, gain 1 resource.',self.text())
+        self.button('Confirm play and payment').invoke();passes(s);self.app.render()
+        self.assertIn(f'When {actor} draws a card, {actor} gains 1 resource.',self.text())
+
 
 if __name__=='__main__':unittest.main()

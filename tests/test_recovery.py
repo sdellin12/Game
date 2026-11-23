@@ -113,13 +113,16 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(event['card']['definition_key'],'unit');self.assertNotIn('SECRET',json.dumps(public))
         self.assertNotIn('SECRET',json.dumps(project_match(s,'B')))
 
-    def test_archived_v3_states_load_without_conversion_and_keep_next_results(self):
+    def test_archived_v3_states_convert_with_empty_triggers_and_keep_next_results(self):
+        from crucible_play.migrate import migrate_save
+        from test_save_migration import legacy_lobby
         cases=json.loads(gzip.decompress((Path(__file__).parent/'fixtures'/'save_v3_before_recovery.json.gz').read_bytes()))
         for case in cases:
             with tempfile.TemporaryDirectory() as directory:
                 path=Path(directory)/'legacy.crucible.json';path.write_text(json.dumps(case['save']));before=path.read_bytes()
-                s=load_session(path);self.assertTrue(s.paused);self.assertEqual(s._lobby,_decode(case['save']['payload']['lobby']))
-                s.resume();s.send(case['actor'],case['packet']);self.assertEqual(s._lobby,_decode(case['expected']))
+                target=Path(directory)/'converted.crucible.json';migrate_save(path,target)
+                s=load_session(target);self.assertTrue(s.paused);self.assertEqual(s._lobby,legacy_lobby(case['save']['payload']['lobby']))
+                s.resume();s.send(case['actor'],case['packet']);self.assertEqual(s._lobby,legacy_lobby(case['expected']))
                 self.assertEqual(path.read_bytes(),before)
 
     def test_practice_recovery_pending_save_and_replay_use_same_seeded_state(self):

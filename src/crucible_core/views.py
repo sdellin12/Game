@@ -52,7 +52,8 @@ def _card(state, instance_id):
         definition=next(d for d in state.card_definitions if d.key==record.definition_key)
         view.update({'definition_key':definition.key,'kind':definition.kind,'cost':definition.cost,
                      'target_kind':definition.target_kind,'target_relation':definition.target_relation,
-                     'steps':[_step(s) for s in definition.steps],'capacity_bonus':definition.capacity_bonus})
+                     'steps':[_step(s) for s in definition.steps],'capacity_bonus':definition.capacity_bonus,
+                     'triggered_abilities':[{'key':a.key,'event':a.event,'watch':a.watch,'steps':[_step(s) for s in a.steps]} for a in definition.triggered_abilities]})
         if definition.kind=='creature':
             view.update({'attack':definition.attack,'health':definition.health,'keywords':list(definition.keywords)})
     return view
@@ -169,4 +170,10 @@ def _effect_label(state, effect, spec):
     if leader:
         definition=next(d for d in state.leader_definitions if d.key==leader.definition_key)
         return f'Summon {definition.name}' if leader.pending_effect_id==effect.effect_id else f'{definition.name}: ability'
+    from .match import _trigger_key
+    card=next((c for c in state.card_instances if c.instance_id==spec.source_id),None)
+    if card:
+        definition=next(d for d in state.card_definitions if d.key==card.definition_key)
+        for ability in definition.triggered_abilities:
+            if spec.key==_trigger_key(card.instance_id,ability.key):return 'Draw trigger' if ability.event=='card_drawn' else 'Discard trigger'
     return spec.key

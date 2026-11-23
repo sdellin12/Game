@@ -1,5 +1,5 @@
 # Zone-move integration
-2026-11-23. Source checkpoint: coverage v10; practice pack v6.
+2026-11-23. Source checkpoint: coverage v11; practice pack v7.
 
 ## Implementation scope
 `ReturnCreatureToHand` and `ExileCreature` are registered instructions and authored
@@ -34,9 +34,9 @@ negation, missing/illegal targets, elimination privacy, refill exclusion, interr
 save/resume, combat blocked memory and the ordinary-card-versus-leader policy.
 The desktop widget check verifies displayed exile identity and effect text.
 
-Archived v1 and v2 next-command states still match after explicit schema-v3
-conversion; only an empty exile tuple is added to legacy MatchState records.
-Practice-policy runs for 2/3/4 players completed in 327/1488/1569 commands and
+Archived v1 and v2 next-command states still match after explicit current-schema
+conversion; legacy MatchState/CardDefinition records gain only documented empty defaults.
+Practice-policy runs for 2/3/4 players completed in 327/1488/1568 commands and
 17/73/61 turns. These runs check legal progress, not strategic quality.
 
 Run with PYTHONPATH=src:
