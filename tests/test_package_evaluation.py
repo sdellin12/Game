@@ -1,5 +1,6 @@
-import unittest
-from crucible_play.package_eval import prepare,evaluate_game,study_content,summarize,markdown,validate_report
+import unittest,tempfile,json,io,contextlib
+from pathlib import Path
+from crucible_play.package_eval import prepare,evaluate_game,study_content,summarize,markdown,validate_report,ablation_markdown
 
 
 class PackageEvaluationTests(unittest.TestCase):
@@ -39,3 +40,25 @@ class PackageEvaluationTests(unittest.TestCase):
         self.assertIn('0/2',markdown([a,b,c,d]))
         for rows in ([a],[a,b,a],[a,dict(b,starting_seat='different')],[a,dict(b,content_hash='different')]):
             with self.assertRaises(ValueError):validate_report(rows)
+
+    def test_ablation_and_trace_keep_one_case_and_omit_hidden_state(self):
+        traces=[]
+        a=evaluate_game(limit=30,trace=traces.append)
+        b=evaluate_game(policy='aware-no-setup',limit=30)
+        self.assertIn('aware-no-setup',ablation_markdown([a,b]))
+        self.assertTrue(traces)
+        for record in traces:
+            self.assertNotIn('hand',record);self.assertNotIn('shuffle_seed',record)
+            self.assertIn('baseline_selected',record)
+        with self.assertRaises(ValueError):ablation_markdown([a,dict(b,seat='P2')])
+
+    def test_ablation_cli_writes_trace_and_reports_incomplete_without_winner(self):
+        from crucible_play.package_eval import main
+        with tempfile.TemporaryDirectory() as directory:
+            target=Path(directory)/'traces.json';output=io.StringIO()
+            with contextlib.redirect_stdout(output):
+                status=main(['--ablation','--players','2','--seeds','trace-cli','--seat','P1','--policies','baseline','revised','--limit','30','--trace-output',str(target)])
+            self.assertEqual(status,2)
+            rows=json.loads(output.getvalue());self.assertTrue(all(r['result'] is None for r in rows))
+            traces=json.loads(target.read_text());self.assertEqual(set(traces),{'baseline','revised'})
+            self.assertTrue(all(traces.values()))

@@ -3,17 +3,17 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: 72-game seat-rotated deck study and experimental package-aware policy.
+- Latest checkpoint: sequencing-regression fix, six ablation runs and 72 fresh-seed comparisons.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 437 Windows tests; all 72 matched study games complete; live opponent unchanged.
+- Validation: 441 Windows tests; all 78 audit/fresh runs complete; live opponent unchanged.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Matched deck/policy study complete: experiments/PACKAGE_POLICY.md; source launch still supports --discard-package.
-Candidate adds outlets but loses one package case overall; do not promote it yet.
-Recommended next: isolate policy regressions with ablations, then test fresh held-out seeds.
+Revised preserves creature deployment and fixes the known P3 loss; see experiments/PACKAGE_REGRESSION.md.
+Fresh package case wins: revised 11/18 versus baseline 9/18; one fresh four-player regression remains.
+Recommended next: isolate that regression before promotion; subsequent tuning needs untouched seeds.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry

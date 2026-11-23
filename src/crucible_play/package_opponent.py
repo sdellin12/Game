@@ -22,11 +22,11 @@ def _keep_value(card,view):
     return 10 if card.get('kind')=='reaction' else max(0,8-cost)
 
 
-def choose_package_move(view):
+def choose_package_move(view,*,discard_values=True,draw_guard=True,sequencing=True,preserve_creatures=False):
     own=view.get('you')
     if not own or view.get('result'):return None
     choice=own['choice']
-    if choice and choice['kind'] in ('effect_discard','end_discard'):
+    if discard_values and choice and choice['kind'] in ('effect_discard','end_discard'):
         cards=sorted(own['hand'],key=lambda c:(_keep_value(c,view),-c.get('cost',0),c['instance_id']))
         if choice['kind']=='effect_discard':return 'effect_discard',{'card_id':cards[0]['instance_id'],'request_id':choice['request_id']}
         return 'end_discard',{'cards':[c['instance_id'] for c in cards[:choice['count']]]}
@@ -36,16 +36,17 @@ def choose_package_move(view):
     if not priority or priority['holder']!=actor or turn['active_player']!=actor or turn['phase'] not in ('MainBefore','MainAfter') or turn['recharge'] or turn['end_requested'] or view['chain']:return baseline
     me=next(p for p in view['players'] if p['player_id']==actor)
     # Do not voluntarily start a required draw that already needs paid refill.
-    safe=[c for c in own['hand'] if _draw_count(c)<=me['deck_count']]
+    safe=[c for c in own['hand'] if not draw_guard or _draw_count(c)<=me['deck_count']]
     if len(safe)!=len(own['hand']):
         view=dict(view,you=dict(own,hand=safe));baseline=choose_move(view)
+    if not sequencing:return baseline
     board=[o for o in view['battlefield'] if o['controller']==actor]
     creatures=sum(bool(o.get('creature')) for o in board)
     enemy_board=max((sum(bool(o.get('creature')) and o['controller']==p['player_id'] for o in view['battlefield']) for p in view['players'] if not p['eliminated'] and p['player_id']!=actor),default=0)
     if creatures<1 or me['health']<=me['max_health']//3 or baseline[0]=='summon_leader':return baseline
     if baseline[0]=='play_card':
         card=next(c for c in safe if c['instance_id']==baseline[1]['card_id'])
-        if card['kind']=='creature' and (creatures<2 or creatures<=enemy_board):return baseline
+        if card['kind']=='creature' and (preserve_creatures or creatures<2 or creatures<=enemy_board):return baseline
         # Preserve a direct lethal play instead of spending on an engine.
         target=next((p for p in view['players'] if p['player_id']==baseline[1].get('target')),None)
         if target and sum(s.get('amount',0) for s in card['steps'] if s['kind']=='damage')>=target['health']:return baseline
@@ -66,3 +67,8 @@ def choose_package_move(view):
         if card.get('target_kind'):args['target']=options[0]
         candidates.append((-score,card['cost'],card['instance_id'],args))
     return ('play_card',min(candidates,key=lambda c:c[:3])[3]) if candidates else baseline
+
+
+def choose_revised_move(view):
+    """Retain package sequencing without displacing affordable creature deployment."""
+    return choose_package_move(view,preserve_creatures=True)

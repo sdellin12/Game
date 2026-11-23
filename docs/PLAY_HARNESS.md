@@ -135,3 +135,9 @@ Seat-rotated deck/policy comparison: `python -m crucible_play.package_eval`.
 This is a separate headless experiment; `aware` is a candidate policy, while live
 computer seats retain the baseline. Reproduction/report commands and limitations:
 experiments/PACKAGE_POLICY.md.
+
+Known-case policy ablations and compact synthetic decision traces are available
+through package_eval's `--ablation` and `--trace-output` options. The corrected
+creature-priority variant is named `revised`; request it explicitly with
+`--policies baseline revised`. Fresh-seed commands and interpretation:
+experiments/PACKAGE_REGRESSION.md. These remain headless policy experiments.

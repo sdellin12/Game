@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 from dataclasses import replace
+from functools import partial
 from crucible_content.practice import practice_pack,discard_draw_pack,validate_pack,pack_hash
 from crucible_core.lobby import DeckSelection,select_deck
 from .session import HarnessSession
@@ -11,6 +12,7 @@ from .opponent import choose_move
 
 PAYOFFS=('beacon-01','beacon-02','beacon-03')
 PACKAGE_KEYS=('proposal-scrapyard-insight','proposal-surveyors-notes','proposal-deep-archive')
+POLICIES=('baseline','aware','aware-no-discard','aware-no-guard','aware-no-setup','revised')
 
 
 def study_content():
@@ -35,12 +37,15 @@ def prepare(players,seed,seat,deck):
     return session,actors,pack_hash(pool),hashlib.sha256(json.dumps(decks[deck]).encode()).hexdigest()
 
 
-def evaluate_game(players=2,seed='package-1',seat='P1',deck='package',policy='baseline',limit=4000):
-    if type(players) is not int or players not in (2,3,4) or seat not in tuple(f'P{i+1}' for i in range(players)) or deck not in ('control','package') or policy not in ('baseline','aware') or type(limit) is not int or limit<1:raise ValueError('Invalid package comparison settings')
+def evaluate_game(players=2,seed='package-1',seat='P1',deck='package',policy='baseline',limit=4000,*,trace=None):
+    if type(players) is not int or players not in (2,3,4) or seat not in tuple(f'P{i+1}' for i in range(players)) or deck not in ('control','package') or policy not in POLICIES or type(limit) is not int or limit<1:raise ValueError('Invalid package comparison settings')
     experimental=choose_move
-    if policy=='aware':
-        from .package_opponent import choose_package_move
-        experimental=choose_package_move
+    if policy!='baseline':
+        from .package_opponent import choose_package_move,choose_revised_move
+        if policy=='revised':experimental=choose_revised_move
+        else:
+            flags={'aware':{},'aware-no-discard':{'discard_values':False},'aware-no-guard':{'draw_guard':False},'aware-no-setup':{'sequencing':False}}[policy]
+            experimental=partial(choose_package_move,**flags)
     s,actors,content_hash,deck_hash=prepare(players,seed,seat,deck)
     first=s.view()['turn']['active_player'];known={};events=set();effects=set();entries={k:0 for k in PAYOFFS+PACKAGE_KEYS}
     queued={k:0 for k in PAYOFFS};delivered={k:0 for k in PAYOFFS}
@@ -84,6 +89,19 @@ def evaluate_game(players=2,seed='package-1',seat='P1',deck='package',policy='ba
         top=public['chain'][-1] if public['chain'] else None
         s.send(actor,{'kind':kind,'args':args,'expected_revision':view['revision']})
         after=s.view()
+        if trace is not None and actor==seat:
+            base=choose_move(view)
+            cards={c['instance_id']:c.get('definition_key','unknown') for c in view['you']['hand']}
+            def selected(move):
+                k,a=move
+                if k=='play_card' or k=='effect_discard':return [cards.get(a['card_id'],'unknown')]
+                if k=='end_discard':return [cards.get(c,'unknown') for c in a['cards']]
+                return [a['key']] if 'key' in a else []
+            trace({'command':count,'turn':public['turn']['turn_id'],'phase':public['turn']['phase'],
+                'kind':kind,'selected':selected((kind,args)),'baseline_kind':base[0],
+                'baseline_selected':selected(base),'changed':base!=(kind,args),
+                'health':me['health'],'available':me['resources']['available'],'deck_count':me['deck_count'],
+                'creatures':sum(bool(o.get('creature')) and o['controller']==seat for o in public['battlefield'])})
         if kind=='pass' and top and top['effect_id'] not in {e['effect_id'] for e in after['chain']} and top['label'] in ('Draw trigger','Discard trigger'):
             key,owner=known.get(top['source_id'],(None,None))
             if owner==seat and key in delivered:
@@ -114,9 +132,9 @@ def summarize(rows):
     return list(groups.values())
 
 
-def markdown(rows):
+def markdown(rows,method='PACKAGE_POLICY.md'):
     validate_report(rows)
-    lines=['# Seat-rotated package comparison','','Generated from synthetic study records by package_eval.markdown. Method and limits: PACKAGE_POLICY.md.','',
+    lines=['# Seat-rotated package comparison','',f'Generated from synthetic study records by package_eval.markdown. Method and limits: {method}.','',
         '| Seed | Seats | Policy | Deck | Complete | Wins | Observed own Starts (sum) | Outlet discards | Lantern resources | Battery resources | Well capacity | Paid refills |',
         '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |']
     for g in sorted(summarize(rows),key=lambda g:(g['seed'],g['players'],g['policy']!='baseline',g['deck']!='control')):
@@ -146,18 +164,43 @@ def validate_report(rows):
         if seats!={f'P{i+1}' for i in range(players)}:raise ValueError('Incomplete seat rotation')
 
 
-def main():
+def ablation_markdown(rows):
+    if not rows or len({tuple(r[k] for k in ('seed','players','seat','deck','limit','content_hash','deck_hash','starting_seat')) for r in rows})!=1 or len({r['policy'] for r in rows})!=len(rows):raise ValueError('Unmatched ablation cases')
+    lines=['# Known-regression policy ablation','','Generated by package_eval --ablation. Method and interpretation: PACKAGE_REGRESSION.md.','',
+        '| Policy | Status | Winner | Observed own Starts | Outlet discards | Lantern resources | Battery resources | Well capacity |',
+        '| --- | --- | --- | --- | --- | --- | --- | --- |']
+    for r in rows:lines.append(f"| {r['policy']} | {r['status']} | {(r['result'] or {}).get('winner','none')} | {r['experimental_own_starts']} | {r['outlet_discards']} | "+' | '.join(str(r['delivered'][k]) for k in PAYOFFS)+' |')
+    lines+=['','This is one development case. Restoring its win is a regression check, not general-strength evidence.','']
+    return '\n'.join(lines)
+
+
+def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seeds',nargs='+',default=['package-1','package-2'])
     parser.add_argument('--players',type=int,nargs='+',choices=(2,3,4),default=[2,3,4])
-    parser.add_argument('--policies',nargs='+',choices=('baseline','aware'),default=['baseline','aware'])
+    parser.add_argument('--policies',nargs='+',choices=POLICIES,default=['baseline','aware'])
     parser.add_argument('--limit',type=int,default=4000)
     parser.add_argument('--report-input',type=Path,nargs='+',help='regenerate a report from synthetic study JSON files')
     parser.add_argument('--format',choices=('json','markdown'),default='json')
-    args=parser.parse_args()
-    rows=[r for p in args.report_input for r in json.loads(p.read_text(encoding='utf-8'))] if args.report_input else run_batch(args.seeds,args.players,args.policies,args.limit)
-    validate_report(rows)
-    if args.format=='markdown':print(markdown(rows),end='')
+    parser.add_argument('--ablation',action='store_true',help='compare policies on one known case instead of the full rotation')
+    parser.add_argument('--seat',default='P3')
+    parser.add_argument('--deck',choices=('control','package'),default='package')
+    parser.add_argument('--trace-output',type=Path,help='write compact synthetic decision traces for an ablation run')
+    parser.add_argument('--method',default='PACKAGE_POLICY.md',help='method-document label for generated rotation reports')
+    args=parser.parse_args(argv)
+    if args.trace_output and (not args.ablation or args.report_input):parser.error('Trace output requires a new ablation run')
+    if args.report_input:rows=[r for p in args.report_input for r in json.loads(p.read_text(encoding='utf-8'))]
+    elif args.ablation:
+        if len(args.seeds)!=1 or len(args.players)!=1:parser.error('Ablation requires one seed and one player count')
+        rows=[];traces={}
+        for p in args.policies:
+            traces[p]=[]
+            rows.append(evaluate_game(args.players[0],args.seeds[0],args.seat,args.deck,p,args.limit,trace=traces[p].append if args.trace_output else None))
+        if args.trace_output:args.trace_output.write_text(json.dumps(traces,indent=2),encoding='utf-8')
+    else:rows=run_batch(args.seeds,args.players,args.policies,args.limit)
+    if args.ablation:ablation_markdown(rows)
+    else:validate_report(rows)
+    if args.format=='markdown':print(ablation_markdown(rows) if args.ablation else markdown(rows,args.method),end='')
     else:print(json.dumps(rows,indent=2))
     return 0 if all(r['status']=='completed' for r in rows) else 2
 

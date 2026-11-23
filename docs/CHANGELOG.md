@@ -261,3 +261,6 @@ Three-card discard/draw proposal and 13,200 count-only economy checks completed;
 
 ## 2026-11-23 checkpoint before matched package study
 Private discard continuation, opt-in three-card deck, v6 save conversion and recovery/refill audit shipped with 426 tests. Default pack v9 stayed unchanged; coverage v14, schema v6/compatibility 1. Next was seat-rotated deck comparisons and evidence-driven policy improvement.
+
+## 2026-11-23 checkpoint before policy-regression audit
+Matched package/control and baseline/aware study completed all 72 games; 437 tests passed. Aware added outlet discards but package case wins fell from 9/18 to 8/18, so live bots stayed unchanged. Next was component ablation, a focused revision and fresh-seed validation; coverage v14, packs v9/v1, schema v6/compatibility 1.

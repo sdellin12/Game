@@ -5,7 +5,7 @@ from crucible_content.practice import discard_draw_pack
 from crucible_core.match import MatchObject
 from crucible_core.combat import Creature
 from crucible_core.views import project_match
-from crucible_play.package_opponent import choose_package_move
+from crucible_play.package_opponent import choose_package_move,choose_revised_move
 from test_commands_cards_views import fixture,instances,command
 
 
@@ -26,6 +26,18 @@ class PackageOpponentTests(unittest.TestCase):
     def test_engine_is_played_before_outlet_on_established_board(self):
         s=policy_fixture(('beacon-02','proposal-scrapyard-insight','unit-01'))
         self.assertEqual(self.move(s)[1]['card_id'],'beacon-02')
+
+    def test_revised_preserves_affordable_creature_even_when_ahead_on_board(self):
+        s=policy_fixture(('beacon-02','proposal-scrapyard-insight','unit-18'))
+        view=project_match(s,'A')
+        self.assertEqual(choose_package_move(view)[1]['card_id'],'beacon-02')
+        move=choose_revised_move(view);self.assertEqual(move[1]['card_id'],'unit-18')
+        command(s,'A',move[0],**move[1])
+
+    def test_revised_still_sequences_payoff_when_no_creature_play_is_available(self):
+        s=policy_fixture(('beacon-02','proposal-scrapyard-insight','proposal-deep-archive'))
+        move=choose_revised_move(project_match(s,'A'));self.assertEqual(move[1]['card_id'],'beacon-02')
+        command(s,'A',move[0],**move[1])
 
     def test_early_creature_is_kept_before_engine(self):
         for board in (0,1):

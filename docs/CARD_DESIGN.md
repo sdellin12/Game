@@ -152,6 +152,9 @@ experiments/DISCARD_CONTINUATION.md.
 Seat-rotated control/package deck results and experimental policy behavior:
 experiments/PACKAGE_POLICY.md and its generated PACKAGE_COMPARISON.md table.
 Card wording, costs and the live opponent stay unchanged by that policy experiment.
+The creature-priority revision, one-component ablations and fresh-seed validation
+are documented in experiments/PACKAGE_REGRESSION.md. Historical `aware` and the
+new `revised` policy are separate variants; neither changes printed card text.
 Give those files to another LLM with this document when exploring these cards.
 
 ## Capacity and live state
