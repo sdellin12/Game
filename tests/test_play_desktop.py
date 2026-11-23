@@ -262,9 +262,31 @@ class HarnessWidgetTests(unittest.TestCase):
         state(s,turn=replace(m.turn,phase='MainBefore'),players=tuple(replace(p,cards=replace(p.cards,hand=(source.instance_id,),deck=tuple(i for i in p.cards.deck+p.cards.hand if i!=source.instance_id)),resources=replace(p.resources,available=4)) if p.cards.player_id==actor else p for p in m.players))
         self.app.session=s;self.app.seat(actor);self.app.unlock();view=s.view(actor);card=view['you']['hand'][0]
         with patch.object(tk.Toplevel,'grab_set'):self.app.card_dialog(view,card)
-        self.assertIn('When you draw a card, gain 1 resource.',self.text())
+        self.assertIn('When you draw a card, you may gain 1 resource.',self.text())
         self.button('Confirm play and payment').invoke();passes(s);self.app.render()
-        self.assertIn(f'When {actor} draws a card, {actor} gains 1 resource.',self.text())
+        self.assertIn(f'When {actor} draws a card, {actor} may gain 1 resource.',self.text())
+
+    def test_optional_trigger_use_skip_buttons_are_private_paused_and_confirmed(self):
+        from dataclasses import replace
+        from test_persistence import prepared,state,cmd,passes,register
+        from crucible_core.match import DrawCards
+        for use in (False,True):
+            s=prepared();s.bots=frozenset();actor=s.view()['turn']['active_player'];m=s._lobby.match
+            source=next(c for c in m.card_instances if c.owner==actor and c.definition_key=='beacon-01')
+            state(s,turn=replace(m.turn,phase='MainBefore'),players=tuple(replace(p,cards=replace(p.cards,hand=(source.instance_id,),deck=tuple(i for i in p.cards.deck+p.cards.hand if i!=source.instance_id)),resources=replace(p.resources,available=4)) if p.cards.player_id==actor else p for p in m.players))
+            cmd(s,actor,'play_card',card_id=source.instance_id,payment={'ordinary':4,'token_ids':[]});passes(s);register(s,'draw-one',actor,(DrawCards(actor,1 if use else 2),))
+            self.app.session=s;self.app.hide();self.assertNotIn('Use optional trigger',self.text())
+            self.app.seat(actor);self.app.unlock();s.paused=True;self.app.render()
+            self.assertEqual(str(self.button('Use optional trigger').cget('state')),'disabled')
+            self.button('Resume saved game').invoke();self.assertIn('Skip optional trigger',self.text())
+            self.button('Use optional trigger' if use else 'Skip optional trigger').invoke()
+            if not use:
+                self.button('Skip optional trigger').invoke()
+                self.assertIn('No triggered effects were selected.',self.text())
+                self.button('Confirm no triggered effects').invoke()
+            self.assertFalse(s._lobby.match.triggers)
+            if use:passes(s)
+            self.assertEqual(next(p.resources.available for p in s._lobby.match.players if p.cards.player_id==actor),int(use))
 
 
 if __name__=='__main__':unittest.main()

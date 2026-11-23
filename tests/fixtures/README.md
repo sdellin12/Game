@@ -23,3 +23,8 @@ conversion with empty trigger defaults. Do not regenerate these archived inputs.
 snapshot with two captured triggers, frozen content hash and the original next
 command/result, archived before the CardDefinition field change. Conversion adds
 empty authored-trigger defaults while preserving that hash/cursor/candidate set.
+
+`save_v4_before_optional.json.gz` archives mandatory authored sources before optional
+fields existed: a partial draw/refill and a discard-order choice, with content hashes
+and original next-command results. V5 conversion preserves the v4 abilities, adds
+mandatory False/None defaults and never retrofits the new pack-v8 "may" wording.

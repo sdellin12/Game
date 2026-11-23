@@ -3,6 +3,7 @@ from .match import MatchError, _living, match_combat_view
 
 
 def project_match(state, viewer=None):
+    from .match import _next_optional_trigger,_trigger_order_waiting
     if viewer is not None and (type(viewer) is not str or viewer not in state.seat_order):
         raise MatchError('unknown viewer')
     private=viewer if viewer in _living(state) else None
@@ -42,6 +43,9 @@ def project_match(state, viewer=None):
         player=next(p for p in state.players if p.cards.player_id==private)
         view['you']={'player_id':private,'hand':[_card(state,i) for i in player.cards.hand],
                      'choice':_own_choice(state,private)}
+    waiting=_next_optional_trigger(state)
+    view['trigger_waiting']=waiting.controller if waiting else None
+    view['trigger_order_waiting']=list(_trigger_order_waiting(state))
     return view
 
 
@@ -53,7 +57,7 @@ def _card(state, instance_id):
         view.update({'definition_key':definition.key,'kind':definition.kind,'cost':definition.cost,
                      'target_kind':definition.target_kind,'target_relation':definition.target_relation,
                      'steps':[_step(s) for s in definition.steps],'capacity_bonus':definition.capacity_bonus,
-                     'triggered_abilities':[{'key':a.key,'event':a.event,'watch':a.watch,'steps':[_step(s) for s in a.steps]} for a in definition.triggered_abilities]})
+                     'triggered_abilities':[{'key':a.key,'event':a.event,'watch':a.watch,'optional':a.optional,'steps':[_step(s) for s in a.steps]} for a in definition.triggered_abilities]})
         if definition.kind=='creature':
             view.update({'attack':definition.attack,'health':definition.health,'keywords':list(definition.keywords)})
     return view
@@ -83,8 +87,17 @@ def _own_choice(state, actor):
     if draw and draw.player.player_id==actor:
         return {'kind':'refill','request_id':draw.request_id,'remaining':draw.remaining,
                 'cost':draw.policy.life_cost,'minimum_health':draw.policy.minimum_health_after_payment}
-    own=tuple(t for t in state.triggers if t.controller==actor)
-    if own and actor not in dict(state.trigger_orders):
+    if state.pending:return None
+    from .match import _next_optional_trigger
+    optional=_next_optional_trigger(state)
+    if optional:
+        if optional.controller!=actor:return None
+        effect=next(e for e in state.effects if e.key==optional.effect_key)
+        return {'kind':'optional_trigger','trigger_id':optional.trigger_id,'source_id':optional.source_id,
+                'steps':[_public_step(state,s) for s in effect.steps]}
+    from .match import _trigger_order_waiting
+    own=tuple(t for t in state.triggers if t.controller==actor and t.decision is not False)
+    if actor in _trigger_order_waiting(state):
         return {'kind':'trigger_order','triggers':[{'trigger_id':t.trigger_id,'source_id':t.source_id,'effect_key':t.effect_key} for t in own]}
     if state.discard_needed and state.turn.active_player==actor:
         return {'kind':'end_discard','count':state.discard_needed}

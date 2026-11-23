@@ -112,6 +112,7 @@ class TriggerSpec:
     event: str  # defeat, departure, turn_start/end, card_drawn/discarded
     effect_key: str
     watch: str = 'self'  # self or any
+    optional: bool = False
 
 
 @dataclass(frozen=True)
@@ -151,6 +152,8 @@ class TriggerCandidate:
     controller: str
     source_id: str
     effect_key: str
+    optional: bool = False
+    decision: bool | None = None
 
 
 @dataclass(frozen=True)
@@ -336,10 +339,14 @@ def validate_match(state):
             raise MatchError('invalid/duplicate trigger specs')
         for t in o.triggers:
             if (type(t) is not TriggerSpec or t.event not in ('defeat','departure','turn_end','turn_start','card_drawn','card_discarded')
-                    or t.watch not in ('self','any') or t.effect_key not in definitions
+                    or t.watch not in ('self','any') or type(t.optional) is not bool or t.effect_key not in definitions
                     or definitions[t.effect_key].controller != o.controller):
                 raise MatchError('invalid registered trigger')
         ids.append(o.object_id)
+    if type(state.triggers) is not tuple or any(type(t) is not TriggerCandidate or type(t.optional) is not bool or (t.decision is not None and type(t.decision) is not bool) or (not t.optional and t.decision is not None) for t in state.triggers):raise MatchError('invalid trigger decision state')
+    if state.pending and any(t.decision is not None for t in state.triggers):raise MatchError('trigger decisions precede atomic completion')
+    if state.triggers and not state.pending and _next_optional_trigger(state) is None and not _trigger_order_waiting(state):raise MatchError('completed trigger group was not queued')
+    if state.trigger_orders and (state.pending or any(t.optional and t.decision is None for t in state.triggers)):raise MatchError('trigger order precedes atomic/optional completion')
     ids.extend(c.card_id for c in state.pending_cards)
     if type(state.exiled) is not tuple or any(not _name(i) for i in state.exiled):raise MatchError('invalid exile zone')
     ids.extend(state.exiled)
@@ -452,7 +459,7 @@ def _capture(state, sources, events):
             for trigger in source.triggers:
                 own = source.controller==event.subject if event.kind in ('turn_end','turn_start','card_drawn','card_discarded') else source.object_id==event.subject
                 if trigger.event==event.kind and (trigger.watch=='any' or own):
-                    candidates.append(TriggerCandidate(next_id,event.event_id,source.controller,source.object_id,trigger.effect_key))
+                    candidates.append(TriggerCandidate(next_id,event.event_id,source.controller,source.object_id,trigger.effect_key,trigger.optional))
                     next_id+=1
     return replace(state,triggers=tuple(candidates),next_trigger_id=next_id)
 
@@ -567,8 +574,31 @@ def _stabilize(state, *, reset_priority=True):
     return _flush_triggers(state)
 
 
+def _next_optional_trigger(state):
+    if state.pending or not state.priority:return None
+    seats=state.priority.seats;start=seats.index(state.priority.active_player)
+    for actor in seats[start:]+seats[:start]:
+        for candidate in state.triggers:
+            if candidate.controller==actor and candidate.optional and candidate.decision is None:return candidate
+    return None
+
+
+def choose_optional_trigger(state, actor, trigger_id, use, *, expected_revision):
+    _check(state,expected_revision);candidate=_next_optional_trigger(state)
+    if type(trigger_id) is not int or type(use) is not bool or candidate is None or candidate.controller!=actor or candidate.trigger_id!=trigger_id:
+        raise MatchError('wrong or absent optional trigger choice')
+    state=replace(state,triggers=tuple(replace(t,decision=use) if t.trigger_id==trigger_id else t for t in state.triggers),revision=state.revision+1)
+    return _quiescent(_flush_triggers(state))
+
+
+def _trigger_order_waiting(state):
+    if state.pending or not state.priority or _next_optional_trigger(state) is not None:return ()
+    seats=state.priority.seats;start=seats.index(state.priority.active_player);confirmed=dict(state.trigger_orders)
+    return tuple(p for p in seats[start:]+seats[:start] if sum(t.controller==p for t in state.triggers)>1 and p not in confirmed)
+
+
 def _flush_triggers(state):
-    if not state.triggers:
+    if not state.triggers or state.pending or _next_optional_trigger(state) is not None:
         return state
     groups={}
     for t in state.triggers:
@@ -576,13 +606,14 @@ def _flush_triggers(state):
     orders=dict(state.trigger_orders)
     if any(len(group)>1 and controller not in orders for controller,group in groups.items()):
         return state
+    if not any(t.decision is not False for t in state.triggers):return replace(state,triggers=(),trigger_orders=())
     p=state.priority
     start=p.seats.index(p.active_player)
     seats=p.seats[start:]+p.seats[:start]
     chain=list(p.chain);next_id=p.next_effect_id
     for controller in seats:
         candidates=groups.get(controller,[])
-        by_id={t.trigger_id:t for t in candidates}
+        by_id={t.trigger_id:t for t in candidates if t.decision is not False}
         order=orders.get(controller,tuple(by_id))
         for trigger_id in order:
             t=by_id[trigger_id]
@@ -593,8 +624,9 @@ def _flush_triggers(state):
 
 def choose_trigger_order(state, actor, order, *, expected_revision):
     _check(state,expected_revision)
-    own=tuple(t.trigger_id for t in state.triggers if t.controller==actor)
-    if (type(order) is not tuple or any(type(i) is not int for i in order) or not own or len(order)!=len(own) or set(order)!=set(own)
+    if state.pending or _next_optional_trigger(state) is not None:raise MatchError('finish atomic effects and optional decisions before ordering')
+    own=tuple(t.trigger_id for t in state.triggers if t.controller==actor and t.decision is not False)
+    if (type(order) is not tuple or any(type(i) is not int for i in order) or actor not in _trigger_order_waiting(state) or len(order)!=len(own) or set(order)!=set(own)
             or actor in dict(state.trigger_orders)):
         raise MatchError('invalid or already-confirmed trigger order')
     state=replace(state,trigger_orders=state.trigger_orders+((actor,order),),revision=state.revision+1)
@@ -1082,7 +1114,7 @@ def _authored_trigger_parts(state, card, definition, controller):
         effect=EffectSpec(key,controller,tuple(replace(s,target=controller) for s in ability.steps),card.instance_id)
         existing=next((e for e in state.effects if e.key==key),None)
         if existing is not None and existing!=effect:raise MatchError('authored trigger registry collision')
-        effects.append(effect);triggers.append(TriggerSpec(ability.event,key,ability.watch))
+        effects.append(effect);triggers.append(TriggerSpec(ability.event,key,ability.watch,ability.optional))
     return tuple(effects),tuple(triggers)
 
 
@@ -1110,7 +1142,7 @@ def _validate_card_definition(d):
     if d.triggered_abilities and d.kind!='permanent':raise UnsupportedMatchRule('authored triggers currently require a permanent')
     keys=[]
     for a in d.triggered_abilities:
-        if (not _name(a.key) or a.key in keys or a.event not in ('card_drawn','card_discarded') or a.watch!='self'
+        if (not _name(a.key) or a.key in keys or a.event not in ('card_drawn','card_discarded') or a.watch!='self' or type(a.optional) is not bool
                 or type(a.steps) is not tuple or not a.steps or any(type(s) is not GrantResources or s.target!='$controller' or not _natural(s.amount) or s.amount==0 for s in a.steps)):
             raise UnsupportedMatchRule('unsupported authored trigger')
         keys.append(a.key)

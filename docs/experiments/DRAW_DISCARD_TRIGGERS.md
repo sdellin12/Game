@@ -1,5 +1,5 @@
 # Registered draw/discard observers
-2026-11-23. Coverage v11; practice pack v7; save schema v4 / compatibility 1.
+2026-11-23. Coverage v12; practice pack v8; save schema v5 / compatibility 1.
 
 ## Scope
 The observer layer adds mandatory `card_drawn` and `card_discarded` events to existing
@@ -39,4 +39,4 @@ Run with PYTHONPATH=src:
 - python -m unittest discover -s tests -q
 
 Authored permanent entry/text and v4 migration are covered in AUTHORED_TRIGGERS.md.
-Optional/targeted/any-watch authored rewards and damage/attack triggers remain gated.
+Targeted/any-watch authored rewards and damage/attack triggers remain gated.

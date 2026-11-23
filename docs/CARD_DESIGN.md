@@ -120,12 +120,12 @@ into these slots and handle ownership/private projections correctly.
 ## Authored trigger wording / engine handoff
 The current practice pack adds Scholar's Lantern and Salvage Battery as permanents.
 Use the existing ordered `abilities` panels in both standard and full-art layouts:
-- When you draw a card, gain 1 resource.
-- When you discard a card from your hand, gain 1 resource.
+- Scholar's Lantern: When you draw a card, you may gain 1 resource.
+- Salvage Battery: When you discard a card from your hand, gain 1 resource.
 
-Preserve the actor, event, mandatory reward and any printed restrictions. Do not
-change these to optional "may" abilities or shorten hand discard into any discard
-entry. Executable definitions live in crucible_core/cards.py and the practice pack;
+Preserve the actor, event, whether the reward is mandatory or optional, and printed
+restrictions. Use "may" only for definitions marked optional. Do not shorten hand
+discard into any discard entry. Use/Skip is a runtime choice, not a printed cost. Executable definitions live in crucible_core/cards.py and the practice pack;
 `triggered_abilities` is not a new design-fixture field. Layouts and the shared
 information contract are unchanged. Engine scope/evidence: experiments/AUTHORED_TRIGGERS.md.
 Give another LLM this current document alongside an existing v1 layout ZIP; the

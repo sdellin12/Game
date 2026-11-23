@@ -8,6 +8,7 @@ class TriggeredAbility:
     event: str
     steps: tuple
     watch: str = 'self'
+    optional: bool = False
 
 
 @dataclass(frozen=True)

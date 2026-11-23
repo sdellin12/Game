@@ -76,6 +76,9 @@ def route_command(state, session_actor, command):
             _fields(args,('subject','order'))
             if type(args['subject']) is not str:raise CommandError('invalid order subject')
             result=engine.choose_match_combat_order(state,actor,args['subject'],_ids(args['order']),expected_revision=revision)
+        elif kind=='trigger_choice':
+            _fields(args,('trigger_id','use'))
+            result=engine.choose_optional_trigger(state,actor,args['trigger_id'],args['use'],expected_revision=revision)
         elif kind=='trigger_order':
             _fields(args,('order',))
             result=engine.choose_trigger_order(state,actor,_ids(args['order'],True),expected_revision=revision)

@@ -1,5 +1,5 @@
 # Zone-move integration
-2026-11-23. Source checkpoint: coverage v11; practice pack v7.
+2026-11-23. Source checkpoint: coverage v12; practice pack v8.
 
 ## Implementation scope
 `ReturnCreatureToHand` and `ExileCreature` are registered instructions and authored
@@ -36,8 +36,8 @@ The desktop widget check verifies displayed exile identity and effect text.
 
 Archived v1 and v2 next-command states still match after explicit current-schema
 conversion; legacy MatchState/CardDefinition records gain only documented empty defaults.
-Practice-policy runs for 2/3/4 players completed in 327/1488/1568 commands and
-17/73/61 turns. These runs check legal progress, not strategic quality.
+Practice-policy runs for 2/3/4 players completed in 327/829/1867 commands and
+17/36/74 turns. These runs check legal progress, not strategic quality.
 
 Run with PYTHONPATH=src:
 - python -m unittest discover -s tests -p test_zone_moves.py -q

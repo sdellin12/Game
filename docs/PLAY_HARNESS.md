@@ -40,7 +40,7 @@ canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation
 The 40-card versioned practice pack has distinct keys/names, 24 creatures,
-10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v7 includes three functional leaders with
+10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v8 includes three functional leaders with
 separate reserve/battle
 abilities. Inspect/summon your leader from the hand/choices tab; current summon
 cost, location and recovery are public. Ward cards now exercise timed prevention;
@@ -52,16 +52,22 @@ Scope/evidence: experiments/ZONE_MOVES.md and experiments/DISCARD_RECOVERY.md.
 The opponent now compares revealed final-combat reaction outcomes and exact
 payments, alongside combat threats and pending removal; its bounded tactical
 harness is documented in experiments/OPPONENT_TACTICS.md.
-Scholar's Lantern and Salvage Battery are four-resource capacity permanents with
-mandatory own-draw/own-hand-discard resource rewards. Inspect their trigger text
-before playing; it is also visible on the public battlefield. Evidence:
+Scholar's Lantern and Salvage Battery are four-resource capacity permanents.
+The Lantern's own-draw reward is optional; the Battery's hand-discard reward is mandatory. Inspect their trigger text
+before playing; it is also visible on the public battlefield.
+For optional triggers, follow the waiting-seat message, acknowledge that seat, then
+choose Use or Skip. No response/order choice interleaves; accepted effects queue
+only after all optional choices finish. Multi-trigger groups confirm their selected
+order even when nothing remains selected; this keeps choices private until queueing.
+See experiments/OPTIONAL_TRIGGERS.md. Evidence:
 experiments/AUTHORED_TRIGGERS.md and experiments/DRAW_DISCARD_TRIGGERS.md.
 Canonical mechanics remain in RULES_DRAFT.md.
 Deck validation enforces forty singleton entries, known cards and matching color.
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
-once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v4.
+once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v5.
 
-Windows Python 3.14.3: 367 tests pass, including save/desktop regressions. Duration evidence is in
+Windows Python 3.14.3: all 388 tests pass. An earlier concurrent SVG-generation
+mismatch cleared on recheck without changes to the art files from this task. Duration evidence is in
 experiments/DURATIONS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and
@@ -75,8 +81,8 @@ python -m crucible_play.smoke --players 3
 python -m crucible_play.smoke --players 4
 ```
 
-The passive view-only smoke scripts remain available. Current pack-v7 practice
-policy runs completed at 327/1488/1568 commands and 17/73/61 turns for 2/3/4 seats.
+The passive view-only smoke scripts remain available. Current pack-v8 practice
+policy runs completed at 327/829/1867 commands and 17/36/74 turns for 2/3/4 seats.
 The default driver is a bounded diagnostic; a command limit reports incomplete rather than inventing a result.
 Add
 `--practice` to exercise the actual computer policy for P2 and later seats.
@@ -100,5 +106,10 @@ replacement of the current session. The restored game opens paused, with hands
 hidden and computers stopped; click Resume saved game, choose a human seat and
 acknowledge its handoff to continue. File pickers pause computer stepping.
 
-Old schema-v1/v2/v3 files need explicit conversion to a separate v4 file before Load.
+Old schema-v1/v2/v3/v4 files need explicit conversion to a separate v5 file before Load.
 Format, privacy, build compatibility, conversion command and rollback policy: [SAVE_FORMAT.md](SAVE_FORMAT.md).
+
+For a bounded all-computer, multi-seed evaluation, set PYTHONPATH=src and run
+`python -m crucible_play.permanent_eval`. It reports completed/incomplete status,
+actual permanent entries and public queued-trigger items. Evidence and limits:
+experiments/PERMANENT_EVALUATION.md.

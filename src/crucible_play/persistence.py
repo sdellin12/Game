@@ -31,7 +31,7 @@ from crucible_core.resources import ResourcePool, Payment
 from crucible_core.turns import DrawPlayer, TurnFlow, RefillPolicy, DrawState, _check_choice
 
 FORMAT='crucible-harness-private-save'
-VERSION=4
+VERSION=5
 # Increment when existing instructions/state/shuffle semantics become incompatible.
 COMPATIBILITY_VERSION=1
 MAX_BYTES=16*1024*1024
@@ -138,7 +138,7 @@ def _read_envelope(path):
     doc=json.loads(data.decode('utf-8'),object_pairs_hook=_object,parse_constant=invalid_number)
     if type(doc) is not dict or doc.get('format')!=FORMAT:raise SaveError('Not a Crucible private save')
     version=doc.get('schema_version')
-    if type(version) is not int or version not in (1,2,3,VERSION):raise SaveError('Unsupported save version; original file was not changed')
+    if type(version) is not int or version not in (1,2,3,4,VERSION):raise SaveError('Unsupported save version; original file was not changed')
     expected={'format','schema_version','runtime_hash','content_hash','payload','checksum'}
     if version>=2:expected.update(('compatibility_version','python_runtime'))
     if set(doc)!=expected:raise SaveError('Unknown or missing envelope fields')
@@ -160,8 +160,9 @@ def _validate_pending(state):
     if len(trigger_ids)!=len(state.triggers) or any(type(t.trigger_id) is not int or not 0<t.trigger_id<state.next_trigger_id or t.controller not in state.priority.seats or t.effect_key not in effects or effects[t.effect_key].controller!=t.controller or not any(e.event_id==t.event_id for e in state.events) for t in state.triggers):raise SaveError('Invalid pending triggers')
     confirmed=[]
     for actor,order in state.trigger_orders:
-        own={t.trigger_id for t in state.triggers if t.controller==actor}
-        if actor in confirmed or not own or type(order) is not tuple or len(order)!=len(own) or set(order)!=own:raise SaveError('Invalid trigger order confirmation')
+        group=tuple(t for t in state.triggers if t.controller==actor)
+        own={t.trigger_id for t in group if t.decision is not False}
+        if actor in confirmed or len(group)<2 or type(order) is not tuple or len(order)!=len(own) or set(order)!=own:raise SaveError('Invalid trigger order confirmation')
         confirmed.append(actor)
     if state.rotation_queue and (state.end_stage!='done' or state.turn.phase not in ('End','Finished') or state.rotation_queue[-1][1]!='Turn' or any(k=='Turn' for _,k in state.rotation_queue[:-1]) or len(state.rotation_queue)>2*len(state.seat_order)+1):raise SaveError('Invalid boundary transition')
     pending=state.pending

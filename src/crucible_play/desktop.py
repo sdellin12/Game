@@ -256,8 +256,8 @@ class PlayWindow:
         toolbar=ttk.Frame(self.body);toolbar.pack(fill='x')
         ttk.Label(toolbar,text=f"Priority: {priority['holder'] or priority['status']}" if priority else 'Game finished').pack(side='left')
         if view.get('you') and not view['result']:
-            ttk.Button(toolbar,text='Pass / continue phase',command=lambda:self.send('pass'),state='normal' if not view.get('paused') and priority and priority['status']=='priority' and priority['holder']==self.gate.actor and not view['you']['choice'] else 'disabled').pack(side='left',padx=8)
-            ttk.Button(toolbar,text='End turn',command=lambda:self.send('end_turn'),state='normal' if not view.get('paused') and priority and priority['status']=='priority' and priority['holder']==self.gate.actor and turn['active_player']==self.gate.actor and turn['phase'] in ('MainBefore','MainAfter') and not view['chain'] and not view['you']['choice'] else 'disabled').pack(side='left')
+            ttk.Button(toolbar,text='Pass / continue phase',command=lambda:self.send('pass'),state='normal' if not view.get('paused') and priority and priority['status']=='priority' and priority['holder']==self.gate.actor and not view['you']['choice'] and not view.get('choice_pending') else 'disabled').pack(side='left',padx=8)
+            ttk.Button(toolbar,text='End turn',command=lambda:self.send('end_turn'),state='normal' if not view.get('paused') and priority and priority['status']=='priority' and priority['holder']==self.gate.actor and turn['active_player']==self.gate.actor and turn['phase'] in ('MainBefore','MainAfter') and not view['chain'] and not view['you']['choice'] and not view.get('choice_pending') else 'disabled').pack(side='left')
             ttk.Button(toolbar,text='Concede...',command=self.concede).pack(side='right')
         own=view.get('you')
         if not own:ttk.Label(private,text='Private cards are hidden. Choose a seat and acknowledge the handoff.').pack(anchor='w');return
@@ -275,6 +275,8 @@ class PlayWindow:
     def next_step(self, view):
         if view.get('paused'):return 'Loaded game is paused. Resume saved game to continue.'
         if view['result']:return 'Game finished. Use New lobby to play again.'
+        if view.get('trigger_waiting'):return f"{view['trigger_waiting']}: choose whether to use the optional trigger."
+        if view.get('trigger_order_waiting'):return 'Confirm triggered-effect order: '+', '.join(view['trigger_order_waiting'])+'.'
         combat=view.get('combat')
         if combat and combat['stage']=='blocking':return 'Defenders: take your seats and lock blockers privately. They reveal together.'
         if combat and combat['stage']=='ordering':return 'The relevant attacking/defending seat must confirm damage order.'
@@ -321,7 +323,8 @@ class PlayWindow:
         if controller:verb+='s'
         event=f'{verb} a card'+(' from your hand' if not controller and ability['event']=='card_discarded' else '')
         amount=sum(s['amount'] for s in ability['steps'])
-        reward=(f'{controller} gains' if controller else 'gain')+f" {amount} resource"+('s' if amount!=1 else '')
+        reward=(f'{controller} may gain' if controller else 'you may gain') if ability.get('optional') else (f'{controller} gains' if controller else 'gain')
+        reward+=f" {amount} resource"+('s' if amount!=1 else '')
         return f'When {who} {event}, {reward}.'
 
     def effect_text(self, step, view):
@@ -405,7 +408,12 @@ class PlayWindow:
 
     def render_choice(self, frame, view, choice):
         kind=choice['kind']
-        if kind=='refill':
+        if kind=='optional_trigger':
+            ttk.Label(frame,text='Optional trigger from '+self.public_name(view,choice['source_id']),wraplength=850).pack(anchor='w')
+            for step in choice['steps']:ttk.Label(frame,text=self.effect_text(step,view),wraplength=850).pack(anchor='w')
+            for use,label in ((True,'Use optional trigger'),(False,'Skip optional trigger')):
+                ttk.Button(frame,text=label,state='disabled' if view.get('paused') else 'normal',command=lambda value=use:self.send('trigger_choice',trigger_id=choice['trigger_id'],use=value)).pack(anchor='w',pady=5)
+        elif kind=='refill':
             penalty='This turn will end.' if view['turn']['active_player']==self.gate.actor else 'Your next turn will be Recharge.'
             ttk.Label(frame,text=f"Deck exhausted. Pay {choice['cost']} life to refill and finish drawing. {penalty}",wraplength=850).pack(anchor='w',pady=8)
             ttk.Button(frame,text=f"Pay {choice['cost']} life and refill",command=lambda:self.send('refill',pay=True,request_id=choice['request_id'])).pack(anchor='w',pady=5)
@@ -439,6 +447,10 @@ class PlayWindow:
             orders=choice['orders'] if kind=='combat_order' else [{'subject':None,'items':[t['trigger_id'] for t in choice['triggers']]}]
             current=orders[0];items=list(current['items'])
             ttk.Label(frame,text='Effects resolve from bottom to top.' if kind=='trigger_order' else 'Assign damage from top to bottom.').pack(anchor='w')
+            if kind=='trigger_order' and not items:
+                ttk.Label(frame,text='No triggered effects were selected. Confirm to continue.').pack(anchor='w')
+                ttk.Button(frame,text='Confirm no triggered effects',command=lambda:self.send('trigger_order',order=[])).pack(anchor='w',pady=6)
+                return
             listing=tk.Listbox(frame,exportselection=False,height=min(10,len(items)));listing.pack(fill='x',pady=6)
             for item in items:listing.insert('end',str(item))
             def move(delta):

@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 11,
+    'version': 12,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -40,6 +40,9 @@ MATCH_COVERAGE = {
         'authored-own-draw-discard-permanent-resource-triggers-and-public-text',
         'source-scoped-retained-trigger-registration-and-reentry-validation',
         'explicit-v1-v2-v3-to-v4-empty-trigger-default-migration',
+        'private-turn-ordered-optional-trigger-use-skip-and-paused-resume',
+        'explicit-v1-v2-v3-v4-to-v5-mandatory-trigger-default-migration',
+        'bounded-multi-seed-permanent-entry-and-queued-trigger-evaluation',
     ),
     'excluded': (
         'unreviewed-build-save-migrations-and-network-reconnect', 'network-session-authentication',
@@ -48,7 +51,7 @@ MATCH_COVERAGE = {
         'custom-leader-cost-formulas-and-both-location-ability-definitions',
         'transform-combine-and-continuous-stat-modifiers', 'continuous-stat-modifier-durations-and-custom-expiry-replacements',
         'nested-timed-grants-in-registered-expiration-payloads',
-        'authored-optional-any-watch-targeted-trigger-rewards-and-damage-attack-triggers',
+        'authored-any-watch-targeted-trigger-rewards-and-damage-attack-triggers',
         'repeated-recharge-debt-and-penalty-bypass',
     ),
 }

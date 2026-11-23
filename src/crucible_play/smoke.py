@@ -12,6 +12,7 @@ def choose_move(view):
     actor=own['player_id'];choice=own['choice']
     if choice:
         kind=choice['kind']
+        if kind=='optional_trigger':return 'trigger_choice',{'trigger_id':choice['trigger_id'],'use':True}
         if kind=='refill':return 'refill',{'pay':True,'request_id':choice['request_id']}
         if kind=='end_discard':return 'end_discard',{'cards':[c['instance_id'] for c in own['hand'][:choice['count']]]}
         if kind=='blockers':

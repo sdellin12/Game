@@ -1,5 +1,5 @@
 # Discard recovery integration
-2026-11-23. Coverage v11; practice pack v7; save schema v4 / compatibility 1.
+2026-11-23. Coverage v12; practice pack v8; save schema v5 / compatibility 1.
 
 ## Implementation
 `RecoverDiscardCard` uses a registered ordinary card instance as its locked target.
@@ -23,7 +23,7 @@ cards; and save cursors before or after recovery followed by a required draw.
 A desktop widget test confirms the actual target-selection/payment handler.
 
 Archived pre-recovery v3 fixtures include a nonempty exile zone/refill cursor and a
-nested-negation chain. Both retain exact command results after explicit schema-v4 conversion with empty
+nested-negation chain. Both retain exact command results after explicit current-schema conversion with empty
 trigger defaults. Existing v1/v2/v3 converters and
 all prior persistence tests remain in the suite. Compatibility/rollback: SAVE_FORMAT.md.
 
@@ -32,5 +32,5 @@ Run with PYTHONPATH=src:
 - python -m unittest discover -s tests -p test_play_desktop.py -q
 - python -m crucible_play.tactics
 
-Current practice runs complete at 327/1488/1568 commands and 17/73/61 turns for
+Current practice runs complete at 327/829/1867 commands and 17/36/74 turns for
 2/3/4 seats. These check legal progress; tactical evidence is in OPPONENT_TACTICS.md.

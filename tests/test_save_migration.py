@@ -20,7 +20,9 @@ def legacy_lobby(value):
     if match is not None:match['fields'].setdefault('exiled',{'tuple':[]})
     def visit(item):
         if isinstance(item,dict):
-            if item.get('record')=='CardDefinition':item['fields']['triggered_abilities']={'tuple':[]}
+            if item.get('record')=='CardDefinition':item['fields'].setdefault('triggered_abilities',{'tuple':[]})
+            if item.get('record') in ('TriggeredAbility','TriggerSpec','TriggerCandidate'):item['fields']['optional']=False
+            if item.get('record')=='TriggerCandidate':item['fields']['decision']=None
             for child in item.values():visit(child)
         elif isinstance(item,list):
             for child in item:visit(child)
@@ -53,7 +55,7 @@ class MigrationTests(unittest.TestCase):
                 s.resume();s.send(case['actor'],case['packet'])
                 self.assertEqual(s._lobby,legacy_lobby(case['expected']))
                 self.assertEqual(self.source.read_bytes(),original)
-                self.assertEqual(json.loads(self.output.read_text())['schema_version'],4)
+                self.assertEqual(json.loads(self.output.read_text())['schema_version'],5)
 
     def test_v1_load_requires_explicit_conversion(self):
         self.source.write_bytes(sealed(self.cases[0]['save']))

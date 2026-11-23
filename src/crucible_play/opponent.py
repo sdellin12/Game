@@ -136,7 +136,7 @@ def _useful(view, card):
     if any(s['kind']=='damage' and s.get('target')=='$controller' for s in steps):return False
     # Keep limited healing for low-life emergencies rather than recasting at every scratch.
     if steps and all(s['kind']=='heal' for s in steps) and me['health']>me['max_health']//3:return False
-    if card.get('kind')=='permanent' and me['resources']['own_starts']>5:return False
+    if card.get('kind')=='permanent' and me['resources']['own_starts']>5 and not card.get('triggered_abilities'):return False
     return True
 
 
@@ -146,6 +146,9 @@ def choose_move(view):
     actor=own['player_id'];choice=own['choice'];turn=view['turn'];priority=view['priority']
     if choice:
         kind=choice['kind']
+        if kind=='optional_trigger':
+            harmful=any(s['kind']=='damage' and s.get('target')==actor and s.get('amount',0)>0 for s in choice['steps'])
+            return 'trigger_choice',{'trigger_id':choice['trigger_id'],'use':not harmful}
         if kind=='refill':return 'refill',{'pay':True,'request_id':choice['request_id']}
         if kind=='end_discard':
             cards=sorted(own['hand'],key=lambda c:(-c['cost'],c['instance_id']))

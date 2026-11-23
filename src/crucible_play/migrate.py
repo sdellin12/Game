@@ -26,6 +26,7 @@ GrantResources GrantShield NegateEffect PriorityState PendingEffect ResourcePool
 
 V2_RECORDS=V1_RECORDS|{'ReturnCreatureToHand'}
 V3_RECORDS=V2_RECORDS|{'ExileCreature','RecoverDiscardCard'}
+V4_RECORDS=V3_RECORDS|{'TriggeredAbility'}
 
 
 def _upgrade_payload(value, allowed, depth=0, version=2):
@@ -39,10 +40,17 @@ def _upgrade_payload(value, allowed, depth=0, version=2):
             fields=result.get('fields')
             if type(fields) is not dict or 'exiled' in fields:raise SaveError('Invalid legacy MatchState fields')
             fields['exiled']={'tuple':[]}
-        if value.get('record')=='CardDefinition':
+        if value.get('record')=='CardDefinition' and version<4:
             fields=result.get('fields')
             if type(fields) is not dict or 'triggered_abilities' in fields:raise SaveError('Invalid legacy CardDefinition fields')
             fields['triggered_abilities']={'tuple':[]}
+        if value.get('record') in ('TriggeredAbility','TriggerSpec','TriggerCandidate'):
+            fields=result.get('fields')
+            if type(fields) is not dict or 'optional' in fields:raise SaveError('Invalid legacy optional-trigger fields')
+            fields['optional']=False
+            if value['record']=='TriggerCandidate':
+                if 'decision' in fields:raise SaveError('Invalid legacy trigger decision')
+                fields['decision']=None
         return result
     if type(value) is list:return [_upgrade_payload(item,allowed,depth+1,version) for item in value]
     return value
@@ -61,13 +69,13 @@ def migrate_save(source, destination):
         if version==1:
             rules=V1_BUILDS.get(doc['runtime_hash'])
             if rules is None:raise SaveError('Unknown v1 build; retain its matching original runtime')
-        elif version in (2,3):
+        elif version in (2,3,4):
             if type(doc['compatibility_version']) is not int or doc['compatibility_version']!=COMPATIBILITY_VERSION:
                 raise SaveError('Unsupported legacy gameplay compatibility')
-        else:raise SaveError('Converter accepts only schema-v1/v2/v3 input')
+        else:raise SaveError('Converter accepts only schema-v1/v2/v3/v4 input')
         converted={**doc,'schema_version':VERSION,'compatibility_version':COMPATIBILITY_VERSION,
                    'python_runtime':'cpython-3.14' if version==1 else doc['python_runtime'],
-                   'payload':_upgrade_payload(doc['payload'],V1_RECORDS if version==1 else V2_RECORDS if version==2 else V3_RECORDS,version=version)}
+                   'payload':_upgrade_payload(doc['payload'],{1:V1_RECORDS,2:V2_RECORDS,3:V3_RECORDS,4:V4_RECORDS}[version],version=version)}
         session=_session_from_document(converted)
         if version==1 and session._lobby.phase!='lobby' and session._lobby.rules_hash!=rules:
             raise SaveError('Version-1 source/rules provenance mismatch')
@@ -82,7 +90,7 @@ def migrate_save(source, destination):
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(description='Convert a known v1 or compatible v2/v3 private save to a new current-schema file; preserve the original.')
+    parser=argparse.ArgumentParser(description='Convert a known v1 or compatible v2-v4 private save to a new current-schema file; preserve the original.')
     parser.add_argument('source',type=Path);parser.add_argument('destination',type=Path)
     args=parser.parse_args(argv)
     try:result=migrate_save(args.source,args.destination)
