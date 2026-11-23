@@ -1,6 +1,20 @@
 # Private save format and rollback policy
-Schema v5 / gameplay compatibility 1, implemented 2026-11-23.
+Schema v6 / gameplay compatibility 1, implemented 2026-11-23.
 Local harness only; catalog and combat-lab formats are unchanged.
+
+## V6 discard-continuation plan (recorded before model changes)
+Add Resolution.discard_request=None and discard_done=False, and an allowlisted
+DiscardThenDraw(target,count) instruction. At a private choice the cursor stays on
+that instruction; after actual discard, discard_done survives partial refill until
+the draw advances the cursor. Do not rewrite the registered instruction list.
+V1-v5 conversions add only these defaults alongside the existing earlier defaults.
+V5 optional decisions must be preserved, never reset to mandatory defaults.
+Archive native-v5 partial optional and partial-refill fixtures with exact hashes and
+next-command results before editing. Reject premature new fields/records in old
+schemas. Plain Load requires v6; conversion publishes a separate file and preserves
+original bytes/frozen packs. Compatibility remains 1: no old instruction semantics
+change. Retain original builds/saves for rollback; new discard pauses cannot be
+downgraded by deleting fields. No household/catalog/database migration is involved.
 
 ## Storage and validation
 A save contains frozen lobby/match/content, computer roles, hidden zones, seeds,
@@ -32,16 +46,16 @@ Explicit conversion from the Game repository directory:
 $env:PYTHONPATH='src'
 python -m crucible_play.migrate "old.crucible.json" "converted.crucible.json"
 ```
-Plain Load requires v5. The converter accepts known published v1 builds (9b0f7f5,
-CPython 3.14, recorded workspace/LF/CRLF hashes), and compatible v2-v4 envelopes.
+Plain Load requires v6. The converter accepts known published v1 builds (9b0f7f5,
+CPython 3.14, recorded workspace/LF/CRLF hashes), and compatible v2-v5 envelopes.
 Unknown v1 builds retain their original runtime. Verify the original checksum,
 provenance, content identity and legacy record/field permissions.
 
 Apply only the relevant defaults:
-- V1/v2 MatchState gains empty exile; v3/v4 retain their existing zone.
-- V1-v3 CardDefinition gains empty triggered_abilities; preserve v4 authored lists.
-- All earlier TriggeredAbility/TriggerSpec records gain optional=False.
-- All earlier TriggerCandidate records gain optional=False and decision=None.
+- V1/v2 MatchState gains empty exile; later schemas retain their existing zone.
+- V1-v3 CardDefinition gains empty triggered_abilities; preserve v4/v5 authored lists.
+- V1-v4 TriggeredAbility/TriggerSpec records gain optional=False; preserve v5 values.
+- V1-v4 TriggerCandidate records gain optional=False and decision=None; preserve v5 decisions.
 - Preserve every other field, including names, effects, seeds, event/request IDs,
   revisions, locks, cursors, captured candidates and ordering confirmations.
 
@@ -69,12 +83,13 @@ abilities must match their registered sources. Retain effects after departure so
 captured effects remain valid, and reuse definitions on re-entry.
 
 ## Writes, restore and evidence
-Fixed-controller reward extension plan: reuse existing HealPlayer and GrantCapacity
+Historical fixed-controller reward extension: reuse existing HealPlayer and GrantCapacity
 records without adding fields or changing schema v5 / compatibility 1. Preserve the
 archived native-v5 partial-decision fixture and its exact next-command result.
 Hash newly authored healing/capacity steps with an instruction discriminator;
 retain the existing encoding for resource-only authored rewards and all old packs.
-Old saves load directly; old builds may reject new reward content. Roll back code
+That v5 extension required no conversion; the current v6 conversion is described above.
+Old builds may reject new reward content. Roll back code
 with its original saves/build, never rewrite a new-content save to force downgrade.
 
 Validate/encode, write a same-folder temp, flush/fsync, then atomically replace.
@@ -86,7 +101,7 @@ Load validates a separate candidate before replacement; restore paused, hands hi
 computers stopped. Resume enables commands; private seat acknowledgement remains.
 File pickers suspend computers. Partial decisions never restore the old UI viewer.
 
-Existing v1-v4 fixtures retain their content hashes and exact next-command results
+Existing v1-v5 fixtures retain their content hashes and exact next-command results
 with only defaults added. V4 fixtures include live mandatory authored sources,
 partial refill/candidates and discard ordering. New tests cover partial private
 choices, Use/Skip, stale/wrong-actor requests, End behavior, negation/elimination,

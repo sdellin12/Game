@@ -82,6 +82,9 @@ def route_command(state, session_actor, command):
         elif kind=='trigger_order':
             _fields(args,('order',))
             result=engine.choose_trigger_order(state,actor,_ids(args['order'],True),expected_revision=revision)
+        elif kind=='effect_discard':
+            _fields(args,('card_id','request_id'))
+            result=engine.choose_effect_discard(state,actor,args['card_id'],expected_request_id=args['request_id'],expected_revision=revision)
         elif kind=='end_discard':
             _fields(args,('cards',))
             result=engine.choose_end_discards(state,actor,_ids(args['cards']),expected_revision=revision)

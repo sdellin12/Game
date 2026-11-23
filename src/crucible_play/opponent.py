@@ -133,6 +133,7 @@ def opening_choice(view):
 def _useful(view, card):
     actor=view['you']['player_id'];me=next(p for p in view['players'] if p['player_id']==actor)
     steps=card.get('steps',[])
+    if any(s['kind']=='discard_then_draw' for s in steps) and len(view['you']['hand'])<2:return False
     if any(s['kind']=='damage' and s.get('target')=='$controller' for s in steps):return False
     # Keep limited healing for low-life emergencies rather than recasting at every scratch.
     if steps and all(s['kind']=='heal' for s in steps) and me['health']>me['max_health']//3:return False
@@ -146,6 +147,9 @@ def choose_move(view):
     actor=own['player_id'];choice=own['choice'];turn=view['turn'];priority=view['priority']
     if choice:
         kind=choice['kind']
+        if kind=='effect_discard':
+            card=max(own['hand'],key=lambda c:(c.get('cost',0),c['instance_id']))
+            return 'effect_discard',{'card_id':card['instance_id'],'request_id':choice['request_id']}
         if kind=='optional_trigger':
             harmful=any(s['kind']=='damage' and s.get('target')==actor and s.get('amount',0)>0 for s in choice['steps'])
             return 'trigger_choice',{'trigger_id':choice['trigger_id'],'use':not harmful}

@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 13,
+    'version': 14,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -44,6 +44,8 @@ MATCH_COVERAGE = {
         'private-turn-ordered-optional-trigger-use-skip-and-paused-resume',
         'explicit-v1-v2-v3-v4-to-v5-mandatory-trigger-default-migration',
         'bounded-multi-seed-permanent-entry-and-queued-trigger-evaluation',
+        'private-required-hand-discard-and-conditional-draw-continuation',
+        'explicit-v1-v5-to-v6-discard-cursor-default-migration',
     ),
     'excluded': (
         'unreviewed-build-save-migrations-and-network-reconnect', 'network-session-authentication',

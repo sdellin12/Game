@@ -69,10 +69,15 @@ class TriggerRewardTests(unittest.TestCase):
         case=json.loads(gzip.decompress((Path(__file__).parent/'fixtures/save_v5_before_reward_types.json.gz').read_bytes()))
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'old.crucible.json';path.write_bytes(sealed(case['save']))
-            s=load_session(path)
+            from crucible_play.migrate import migrate_save
+            output=Path(directory)/'new.crucible.json';migrate_save(path,output)
+            s=load_session(output)
             self.assertEqual(pack_hash(s._lobby.pack),case['save']['content_hash'])
             s.resume();s.send(case['actor'],case['packet'])
-            self.assertEqual(s._lobby,_decode(case['expected']))
+            # This fixture includes private optional decisions: preserve them;
+            # only Resolution receives the new continuation defaults.
+            from crucible_play.migrate import _upgrade_payload,V5_RECORDS
+            self.assertEqual(s._lobby,_decode(_upgrade_payload(case['expected'],V5_RECORDS,version=5)))
 
     def test_reward_text_names_healing_and_delayed_capacity(self):
         window=PlayWindow.__new__(PlayWindow)

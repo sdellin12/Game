@@ -83,6 +83,9 @@ def _object(state, obj):
 
 
 def _own_choice(state, actor):
+    if state.pending and state.pending.discard_request is not None:
+        step=state.pending.steps[state.pending.index]
+        if step.target==actor:return {'kind':'effect_discard','request_id':state.pending.discard_request,'count':1}
     draw=state.pending.draw if state.pending else None
     if draw and draw.player.player_id==actor:
         return {'kind':'refill','request_id':draw.request_id,'remaining':draw.remaining,
@@ -115,14 +118,14 @@ def _own_choice(state, actor):
 
 def _public_events(state):
     # Deliberately omit raw causes, private draw records and unknown future events.
-    allowed={'damage','heal','required_draw','card_drawn','card_discarded','combat_damage','combat_miss','elimination','departure','defeat',
+    allowed={'damage','heal','required_draw','card_drawn','card_discarded','card_effect_discarded','combat_damage','combat_miss','elimination','departure','defeat',
              'turn_end','turn_start','action_committed','concede_request','start_refill',
              'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','card_returned','card_exiled','card_recovered','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
     events=[]
     for event in state.events:
         if event.kind not in allowed:continue
         row={'event_id':event.event_id,'kind':event.kind,'subject':event.subject}
-        if event.kind in ('card_played','card_returned','card_exiled','card_recovered'):row['card']=_card(state,event.subject)
+        if event.kind in ('card_played','card_returned','card_exiled','card_recovered','card_effect_discarded'):row['card']=_card(state,event.subject)
         if event.kind=='scheduled_boundary' and event.cause in ('Start','End'):row['boundary']=event.cause
         if event.kind=='duration_expired':
             parts=event.cause.rsplit(':',2)
@@ -134,7 +137,8 @@ def _public_events(state):
 
 def _step(step):
     # Effect types are closed/validated by the coordinator; do not recursively dump.
-    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard, GrantCapacity, GrantResources, NegateEffect, GrantShield
+    from .match import DamagePlayer, HealPlayer, DrawCards, DiscardThenDraw, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard, GrantCapacity, GrantResources, NegateEffect, GrantShield
+    if type(step) is DiscardThenDraw:return {'kind':'discard_then_draw','target':step.target,'amount':step.count}
     if type(step) is GrantShield:return {'kind':'shield','target':step.target,'amount':step.amount,'duration':step.duration,'anchor_player':step.anchor_player}
     if type(step) is NegateEffect:return {'kind':'negate','effect_id':step.effect_id}
     if type(step) is DestroyCreature:return {'kind':'destroy','target':step.target}

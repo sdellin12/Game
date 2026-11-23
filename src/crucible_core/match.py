@@ -44,6 +44,12 @@ class DrawCards:
 
 
 @dataclass(frozen=True)
+class DiscardThenDraw:
+    target: str
+    count: int
+
+
+@dataclass(frozen=True)
 class DestroyCreature:
     target: str
 
@@ -164,6 +170,8 @@ class Resolution:
     cleanup: bool = False
     effect_id: int | None = None
     controller: str | None = None
+    discard_request: int | None = None
+    discard_done: bool = False
 
 
 @dataclass(frozen=True)
@@ -243,7 +251,7 @@ def _steps_valid(steps, seats, objects):
     for step in steps:
         if type(step) in (DamagePlayer, HealPlayer, GrantCapacity, GrantResources):
             valid = step.target in seats and _natural(step.amount)
-        elif type(step) is DrawCards:
+        elif type(step) in (DrawCards,DiscardThenDraw):
             valid = step.target in seats and _natural(step.count)
         elif type(step) is GrantShield:
             valid = _name(step.target) and _natural(step.amount) and step.duration in ('turn_end','next_start') and (step.anchor_player is None if step.duration=='turn_end' else step.anchor_player in seats)
@@ -264,6 +272,17 @@ def validate_match(state):
         raise MatchError('invalid original seat order')
     if any(type(value) is not tuple for value in (state.players,state.battlefield,state.effects)):
         raise MatchError('match collections must be tuples')
+    if state.pending:
+        r=state.pending
+        if type(r) is not Resolution or type(r.index) is not int or not 0<=r.index<=len(r.steps) or (r.draw is not None and r.index==len(r.steps)):raise MatchError('invalid resolution cursor')
+        if type(r.discard_done) is not bool:raise MatchError('invalid discard continuation')
+        if r.discard_done and r.draw is None:raise MatchError('unpaused discard continuation')
+        if r.discard_request is not None or r.discard_done:
+            if type(r.index) is not int or not 0<=r.index<len(r.steps) or type(r.steps[r.index]) is not DiscardThenDraw:raise MatchError('discard cursor mismatch')
+            if r.discard_request is not None:
+                if type(r.discard_request) is not int or not 0<r.discard_request<state.next_event_id or r.discard_done or r.draw is not None or r.steps[r.index].target not in state.seat_order or not _player(state,r.steps[r.index].target).cards.hand:raise MatchError('invalid discard request')
+                if not any(e.event_id==r.discard_request and e.kind=='discard_choice' and e.subject==r.steps[r.index].target for e in state.events):raise MatchError('discard request event mismatch')
+        if r.draw and type(r.steps[r.index]) is DiscardThenDraw and not r.discard_done:raise MatchError('draw precedes required discard')
     if any(type(p) is not MatchPlayer or type(p.cards) is not DrawPlayer for p in state.players):
         raise MatchError('invalid player record')
     if any(type(e) is not EffectSpec for e in state.effects) or any(type(o) is not MatchObject for o in state.battlefield):
@@ -651,7 +670,7 @@ def _record_draw(state, draw):
     if draw.status=='failed' and draw.player.player_id not in failures:
         failures+= (draw.player.player_id,)
     return replace(state,failed_draws=failures,draw_records=state.draw_records+(draw,),
-                   pending=replace(state.pending,index=state.pending.index+1,draw=None))
+                   pending=replace(state.pending,index=state.pending.index+1,draw=None,discard_done=False))
 
 
 def _run(state):
@@ -659,6 +678,19 @@ def _run(state):
         if state.pending.draw is not None:
             return state
         step=state.pending.steps[state.pending.index]
+        if type(step) is DiscardThenDraw:
+            p=_player(state,step.target)
+            if p.eliminated or (not state.pending.discard_done and not p.cards.hand):
+                state=replace(state,pending=replace(state.pending,index=state.pending.index+1,discard_request=None,discard_done=False));continue
+            if not state.pending.discard_done:
+                if state.pending.discard_request is None:
+                    request=state.next_event_id
+                    state,_=_emit(state,'discard_choice',step.target,'required')
+                    state=replace(state,pending=replace(state.pending,discard_request=request))
+                if step.target in state.concedes:
+                    return choose_effect_discard(state,step.target,p.cards.hand[0],expected_request_id=state.pending.discard_request,expected_revision=state.revision)
+                return state
+            step=DrawCards(step.target,step.count)
         if type(step) in (DamagePlayer,HealPlayer,DrawCards,GrantCapacity,GrantResources):
             p=_player(state,step.target)
             if p.eliminated:
@@ -735,6 +767,22 @@ def choose_refill(state, actor, *, pay, shuffled_discard=(), expected_request_id
     return _run(_record_draw(state,draw))
 
 
+def choose_effect_discard(state,actor,card_id,*,expected_request_id,expected_revision):
+    _check(state,expected_revision)
+    pending=state.pending
+    if pending is None or type(expected_request_id) is not int or pending.discard_request!=expected_request_id or pending.discard_done or pending.draw is not None:
+        raise MatchError('wrong or absent effect discard choice')
+    step=pending.steps[pending.index]
+    if type(step) is not DiscardThenDraw or step.target!=actor or type(card_id) is not str or card_id not in _player(state,actor).cards.hand:
+        raise MatchError('invalid effect discard actor/card')
+    p=_player(state,actor)
+    state=_set_player(state,replace(p,cards=replace(p.cards,hand=tuple(i for i in p.cards.hand if i!=card_id),discard=p.cards.discard+(card_id,))))
+    state,_=_emit(state,'card_effect_discarded',card_id,'hand_to_discard')
+    state=_observe_cards(state,'card_discarded',actor,1)
+    state=replace(state,pending=replace(pending,discard_request=None,discard_done=True),revision=state.revision+1)
+    return _run(state)
+
+
 def concede(state, actor, *, expected_revision):
     _check(state,expected_revision)
     if actor not in _living(state):
@@ -744,6 +792,9 @@ def concede(state, actor, *, expected_revision):
     state=replace(state,concedes=state.concedes+(actor,),revision=state.revision+1)
     state,_=_emit(state,'concede_request',actor,'confirmed')
     if state.pending or (state.priority and state.priority.status=='resolving'):
+        if state.pending and state.pending.discard_request is not None:
+            step=state.pending.steps[state.pending.index]
+            if step.target==actor:return _run(state)
         if state.pending and state.pending.draw and state.pending.draw.player.player_id==actor:
             draw=state.pending.draw
             draw=decline_refill(draw,expected_request_id=draw.request_id,expected_revision=draw.revision)
@@ -1163,12 +1214,13 @@ def _validate_card_definition(d):
         raise MatchError('only permanents may grant ongoing capacity here')
     has_target=False
     for step in d.steps:
+        if type(step) is DiscardThenDraw and step.target!='$controller':raise MatchError('discard outlet requires controller')
         if type(step) is NegateEffect and step.effect_id=='$target':
             if d.target_kind!='effect':raise MatchError('effect target mismatch')
             has_target=True;continue
         if type(step) is NegateEffect:
             raise UnsupportedMatchRule('negation requires a chosen effect target')
-        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard,GrantShield):
+        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,DiscardThenDraw,GrantResources,GrantCapacity,DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard,GrantShield):
             raise UnsupportedMatchRule('unsupported card instruction')
         if step.target=='$target':
             expected='discard' if type(step) is RecoverDiscardCard else 'creature' if type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature,GrantShield) else 'player'
@@ -1183,7 +1235,7 @@ def _validate_card_definition(d):
             if step.duration not in ('turn_end','next_start') or (step.anchor_player is not None if step.duration=='turn_end' else step.anchor_player!='$controller'):
                 raise UnsupportedMatchRule('unsupported authored shield duration')
         if type(step) not in (DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard):
-            amount=step.count if type(step) is DrawCards else step.amount
+            amount=step.count if type(step) in (DrawCards,DiscardThenDraw) else step.amount
             if not _natural(amount):raise MatchError('invalid card instruction quantity')
     if d.target_kind is None and d.target_relation!='any':raise MatchError('unused target relation')
     if has_target!=(d.target_kind is not None):raise MatchError('unused/missing target declaration')

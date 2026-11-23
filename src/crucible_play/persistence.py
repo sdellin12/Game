@@ -24,14 +24,14 @@ from crucible_core.lobby import (LobbyState, LobbyPlayer, DeckSelection, Opening
     new_lobby, begin_opening, lock_redraw, validate_deck)
 from crucible_core.match import (MatchState, MatchPlayer, MatchEvent, MatchResult, TriggerSpec,
     TriggerCandidate, Resolution, MatchObject, EffectSpec, ActionSpec, DamagePlayer,
-    HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard, GrantCapacity, GrantResources, GrantShield,
+    HealPlayer, DrawCards, DiscardThenDraw, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard, GrantCapacity, GrantResources, GrantShield,
     NegateEffect, validate_match, _steps_valid)
 from crucible_core.priority import PriorityState, PendingEffect
 from crucible_core.resources import ResourcePool, Payment
 from crucible_core.turns import DrawPlayer, TurnFlow, RefillPolicy, DrawState, _check_choice
 
 FORMAT='crucible-harness-private-save'
-VERSION=5
+VERSION=6
 # Increment when existing instructions/state/shuffle semantics become incompatible.
 COMPATIBILITY_VERSION=1
 MAX_BYTES=16*1024*1024
@@ -39,7 +39,7 @@ MAX_DEPTH=64
 _RECORDS={c.__name__:c for c in (PracticePack,PackCard,ReserveIdentity,CardDefinition,CardInstance,PendingCard,TriggeredAbility,
     Shield,Creature,Player,CombatState,Attack,CombatFlow,BoundaryCount,TimedEffect,LeaderAbility,LeaderDefinition,LeaderState,
     LobbyState,LobbyPlayer,DeckSelection,Opening,MatchState,MatchPlayer,MatchEvent,MatchResult,TriggerSpec,TriggerCandidate,
-    Resolution,MatchObject,EffectSpec,ActionSpec,DamagePlayer,HealPlayer,DrawCards,DestroyCreature,GrantCapacity,
+    Resolution,MatchObject,EffectSpec,ActionSpec,DamagePlayer,HealPlayer,DrawCards,DiscardThenDraw,DestroyCreature,GrantCapacity,
     GrantResources,GrantShield,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
 
 
@@ -138,7 +138,7 @@ def _read_envelope(path):
     doc=json.loads(data.decode('utf-8'),object_pairs_hook=_object,parse_constant=invalid_number)
     if type(doc) is not dict or doc.get('format')!=FORMAT:raise SaveError('Not a Crucible private save')
     version=doc.get('schema_version')
-    if type(version) is not int or version not in (1,2,3,4,VERSION):raise SaveError('Unsupported save version; original file was not changed')
+    if type(version) is not int or version not in (1,2,3,4,5,VERSION):raise SaveError('Unsupported save version; original file was not changed')
     expected={'format','schema_version','runtime_hash','content_hash','payload','checksum'}
     if version>=2:expected.update(('compatibility_version','python_runtime'))
     if set(doc)!=expected:raise SaveError('Unknown or missing envelope fields')
@@ -179,7 +179,7 @@ def _validate_pending(state):
         player=next(p for p in state.players if p.cards.player_id==draw.player.player_id)
         if draw.player!=player.cards or draw.turn!=state.turn or draw.policy!=state.policy or pending.index>=len(pending.steps):raise SaveError('Refill snapshot does not match live state')
         step=pending.steps[pending.index]
-        if type(step) is not DrawCards or step.target!=draw.player.player_id:raise SaveError('Refill cursor target mismatch')
+        if type(step) not in (DrawCards,DiscardThenDraw) or step.target!=draw.player.player_id:raise SaveError('Refill cursor target mismatch')
 
 
 def _validate_lobby(lobby, bots):

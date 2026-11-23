@@ -134,3 +134,31 @@ and End/mandatory effects, no normal draw or voluntary plays/abilities/Combat.
 Blocking/reactions work normally on other players' turns. Explicit future mechanics
 may bypass the penalty. Cost20 is only a test candidate; repeat-penalty stacking
 and bypass interactions still need specification. See DECK_REFILL_DESIGN.md.
+
+## Discard-then-draw Actions
+1. Confirm/pay the ordinary resource cost and put the Action publicly pending.
+   The pending Action is not in hand and cannot be its own discard choice.
+2. Opponents respond normally before resolution. Negating the Action prevents
+   its instructions; payment stays spent. There is no separate discard cost.
+3. On resolution, if the controller has a hand card, privately choose exactly one
+   from the current hand. Require the correct actor, request/revision and current
+   hand membership. Do not pre-lock a card at play time or expose tentative choices.
+4. Commit the chosen card publicly to its owner's discard, capture actual hand-
+   discard triggers, then draw two. The discard is mandatory when possible; there
+   is no optional cancellation or response between that discard and the draws.
+5. If no hand card exists at this instruction, discard nothing and skip both draws.
+   Playing the Action as the last hand card is legal but produces no draw/reward.
+   This is a failed conditional instruction, not a failed required draw.
+6. Complete required draws under the existing paid-refill/Recharge rules. A freshly
+   discarded card can be in the refill pool; the still-pending Action cannot.
+   Keep the completed-discard gate and draw cursor across any private choice/refill
+   pause. Never discard or draw twice after load/retry. Finish later instructions
+   and pending-card movement at the engine's existing atomic boundaries.
+7. Captured discard/draw triggers wait for atomic completion, including refill
+   decisions, before optional choices/order/priority. Existing End cleanup still
+   checks the actual hand. Ordinary Action movement to discard is not a hand discard.
+
+For example, with a five-card hand, playing Insight leaves four, discarding leaves
+three, and two completed draws return the hand to five. Battery captures one
+discard reward, Well one optional capacity reward, and Lantern two optional draw
+rewards. No source can contribute resources to the initial cost from future rewards.

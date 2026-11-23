@@ -1,4 +1,4 @@
-"""Explicit, non-destructive schema-v1/v2 conversion to the current private save."""
+"""Explicit, non-destructive schema-v1-v5 conversion to the current private save."""
 import argparse
 import hashlib
 import json
@@ -27,6 +27,7 @@ GrantResources GrantShield NegateEffect PriorityState PendingEffect ResourcePool
 V2_RECORDS=V1_RECORDS|{'ReturnCreatureToHand'}
 V3_RECORDS=V2_RECORDS|{'ExileCreature','RecoverDiscardCard'}
 V4_RECORDS=V3_RECORDS|{'TriggeredAbility'}
+V5_RECORDS=V4_RECORDS
 
 
 def _upgrade_payload(value, allowed, depth=0, version=2):
@@ -44,7 +45,11 @@ def _upgrade_payload(value, allowed, depth=0, version=2):
             fields=result.get('fields')
             if type(fields) is not dict or 'triggered_abilities' in fields:raise SaveError('Invalid legacy CardDefinition fields')
             fields['triggered_abilities']={'tuple':[]}
-        if value.get('record') in ('TriggeredAbility','TriggerSpec','TriggerCandidate'):
+        if value.get('record')=='Resolution':
+            fields=result.get('fields')
+            if type(fields) is not dict or 'discard_request' in fields or 'discard_done' in fields:raise SaveError('Invalid legacy discard fields')
+            fields.update(discard_request=None,discard_done=False)
+        if version<5 and value.get('record') in ('TriggeredAbility','TriggerSpec','TriggerCandidate'):
             fields=result.get('fields')
             if type(fields) is not dict or 'optional' in fields:raise SaveError('Invalid legacy optional-trigger fields')
             fields['optional']=False
@@ -69,13 +74,13 @@ def migrate_save(source, destination):
         if version==1:
             rules=V1_BUILDS.get(doc['runtime_hash'])
             if rules is None:raise SaveError('Unknown v1 build; retain its matching original runtime')
-        elif version in (2,3,4):
+        elif version in (2,3,4,5):
             if type(doc['compatibility_version']) is not int or doc['compatibility_version']!=COMPATIBILITY_VERSION:
                 raise SaveError('Unsupported legacy gameplay compatibility')
-        else:raise SaveError('Converter accepts only schema-v1/v2/v3/v4 input')
+        else:raise SaveError('Converter accepts only schema-v1/v2/v3/v4/v5 input')
         converted={**doc,'schema_version':VERSION,'compatibility_version':COMPATIBILITY_VERSION,
                    'python_runtime':'cpython-3.14' if version==1 else doc['python_runtime'],
-                   'payload':_upgrade_payload(doc['payload'],{1:V1_RECORDS,2:V2_RECORDS,3:V3_RECORDS,4:V4_RECORDS}[version],version=version)}
+                   'payload':_upgrade_payload(doc['payload'],{1:V1_RECORDS,2:V2_RECORDS,3:V3_RECORDS,4:V4_RECORDS,5:V5_RECORDS}[version],version=version)}
         session=_session_from_document(converted)
         if version==1 and session._lobby.phase!='lobby' and session._lobby.rules_hash!=rules:
             raise SaveError('Version-1 source/rules provenance mismatch')
@@ -90,7 +95,7 @@ def migrate_save(source, destination):
 
 
 def main(argv=None):
-    parser=argparse.ArgumentParser(description='Convert a known v1 or compatible v2-v4 private save to a new current-schema file; preserve the original.')
+    parser=argparse.ArgumentParser(description='Convert a known v1 or compatible v2-v5 private save to a new current-schema file; preserve the original.')
     parser.add_argument('source',type=Path);parser.add_argument('destination',type=Path)
     args=parser.parse_args(argv)
     try:result=migrate_save(args.source,args.destination)

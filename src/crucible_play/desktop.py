@@ -9,6 +9,7 @@ class PlayWindow:
     def __init__(self, root, session=None):
         self.root=root
         self.session=session or HarnessSession(bots=('P2',))
+        self.new_pack=self.session._lobby.pack
         self._bot_timer=None;self._bot_steps=0;self._bot_error=False
         self.root.bind('<Destroy>',self._destroyed,add='+')
         self.gate=HotseatGate()
@@ -73,7 +74,7 @@ class PlayWindow:
         if not 2<=count<=4:return self.error('Choose 2 through 4 seats.')
         current=self.session.view()
         if (current.get('phase')!='lobby' or any(p.get('deck_name') for p in current['players'])) and not messagebox.askyesno('New local lobby','Discard this local session and start a new lobby?',parent=self.root):return
-        self.session=HarnessSession(tuple(f'Player {i+1}' for i in range(count)),bots=tuple(f'P{i+1}' for i in range(1,count)) if self.computer_mode.get() else ())
+        self.session=HarnessSession(tuple(f'Player {i+1}' for i in range(count)),pack=self.new_pack,bots=tuple(f'P{i+1}' for i in range(1,count)) if self.computer_mode.get() else ())
         self._bot_error=False;self._bot_steps=0;self._schedule_bots()
         self.gate.hide();self.notice.set('New lobby. Each seat selects a reserve identity and confirms Ready.');self.render()
 
@@ -172,7 +173,8 @@ class PlayWindow:
         for p in view['players']:
             leader=p['leader']['name'] if p['leader'] else 'not selected'
             ttk.Label(self.body,text=f"{p['name']}  |  {p['deck_name'] or 'No deck'}  |  {leader}  |  {'READY' if p['ready'] else 'Not ready'}").pack(anchor='w',pady=5)
-        ttk.Label(self.body,text='Practice Forty: 24 creatures, 10 Actions/Reactions, 6 capacity permanents. Test refill cost: 20 life.',wraplength=900).pack(anchor='w',pady=10)
+        description='Discard package: 24 creatures, 13 Actions/Reactions, 3 trigger permanents.' if self.session._lobby.pack.pack_id=='crucible-discard-draw' else 'Practice Forty: 24 creatures, 10 Actions/Reactions, 6 capacity permanents.'
+        ttk.Label(self.body,text=description+' Test refill cost: 20 life.',wraplength=900).pack(anchor='w',pady=10)
         if self.gate.actor:
             leaders=self.session.leaders();selected=tk.StringVar(value=next((p['leader']['name'] for p in view['players'] if p['player_id']==self.gate.actor and p['leader']),leaders[0]['name']))
             ttk.Label(self.body,text='Your reserve identity (deck uses Generic cards)').pack(anchor='w')
@@ -340,6 +342,7 @@ class PlayWindow:
         if kind=='damage':return f'Deal {amount} damage to {who}.'
         if kind=='heal':return f'Restore {amount} life to {who}.'
         if kind=='draw':return f'{who.capitalize()} draw {amount} card(s).'
+        if kind=='discard_then_draw':return f'Discard a card from your hand. If you do, draw {amount} cards.'
         if kind=='capacity':return f'Permanently add {amount} resource capacity for {who}; available at the next refill.'
         if kind=='resources':return f'{who.capitalize()} gain {amount} resources now.'
         if kind=='destroy':return f'Defeat {who}.'
@@ -423,6 +426,14 @@ class PlayWindow:
             ttk.Label(frame,text=f"Deck exhausted. Pay {choice['cost']} life to refill and finish drawing. {penalty}",wraplength=850).pack(anchor='w',pady=8)
             ttk.Button(frame,text=f"Pay {choice['cost']} life and refill",command=lambda:self.send('refill',pay=True,request_id=choice['request_id'])).pack(anchor='w',pady=5)
             ttk.Button(frame,text='Decline refill (eliminates you)',command=lambda:self.send('refill',pay=False,request_id=choice['request_id'])).pack(anchor='w')
+        elif kind=='effect_discard':
+            ttk.Label(frame,text='Choose one hand card to discard, then finish the effect.').pack(anchor='w')
+            cards=view['you']['hand'];listing=tk.Listbox(frame,selectmode='single',exportselection=False,height=10);listing.pack(fill='x',pady=8)
+            for c in cards:listing.insert('end',self.label(c))
+            def confirm_effect_discard():
+                selected=listing.curselection()
+                if len(selected)==1:self.send('effect_discard',card_id=cards[selected[0]]['instance_id'],request_id=choice['request_id'])
+            ttk.Button(frame,text='Confirm effect discard',state='disabled' if view.get('paused') else 'normal',command=confirm_effect_discard).pack(anchor='w')
         elif kind=='end_discard':
             ttk.Label(frame,text=f"Choose exactly {choice['count']} cards to discard.").pack(anchor='w')
             cards=view['you']['hand'];listing=tk.Listbox(frame,selectmode='multiple',exportselection=False,height=10);listing.pack(fill='x',pady=8)
@@ -472,7 +483,10 @@ class PlayWindow:
 
 
 def main():
-    root=tk.Tk();PlayWindow(root);root.mainloop()
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--discard-package',action='store_true');args=parser.parse_args()
+    from crucible_content.practice import discard_draw_pack
+    root=tk.Tk();PlayWindow(root,HarnessSession(pack=discard_draw_pack(),bots=('P2',)) if args.discard_package else None);root.mainloop()
 
 
 if __name__=='__main__':main()

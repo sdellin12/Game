@@ -255,3 +255,6 @@ Fixed-controller healing/capacity authoring and pack-v9 Archive Well shipped wit
 
 ## 2026-11-23 checkpoint before discard package design
 Archive Well's 54 directed cases and 24 strategy/cost games completed; full suite 403 tests. Holding produced rewards in one duel but no P1 wins; keep Battery/Well costs 4/5. Coverage v13, pack v9 and schema v5/compatibility 1 unchanged. Next work was a deliberate discard outlet with supporting draws.
+
+## 2026-11-23 checkpoint before private discard implementation
+Three-card discard/draw proposal and 13,200 count-only economy checks completed; full suite 410 tests. Default pack v9, schema v5/compatibility 1 and coverage v13 remained. Next was private discard continuation, explicit schema conversion, and recovery/refill loop audit.

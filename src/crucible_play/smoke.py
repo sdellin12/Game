@@ -12,6 +12,7 @@ def choose_move(view):
     actor=own['player_id'];choice=own['choice']
     if choice:
         kind=choice['kind']
+        if kind=='effect_discard':return 'effect_discard',{'card_id':own['hand'][0]['instance_id'],'request_id':choice['request_id']}
         if kind=='optional_trigger':return 'trigger_choice',{'trigger_id':choice['trigger_id'],'use':True}
         if kind=='refill':return 'refill',{'pay':True,'request_id':choice['request_id']}
         if kind=='end_discard':return 'end_discard',{'cards':[c['instance_id'] for c in own['hand'][:choice['count']]]}
@@ -41,8 +42,8 @@ def choose_move(view):
     return 'pass',{}
 
 
-def run_smoke(players=2, seed='smoke-1', limit=4000, practice=False):
-    session=HarnessSession(tuple(f'Player {i+1}' for i in range(players)),seed=hashlib.sha256(seed.encode()).digest(),bots=tuple(f'P{i+1}' for i in range(1,players)) if practice else ())
+def run_smoke(players=2, seed='smoke-1', limit=4000, practice=False,pack=None):
+    session=HarnessSession(tuple(f'Player {i+1}' for i in range(players)),pack=pack,seed=hashlib.sha256(seed.encode()).digest(),bots=tuple(f'P{i+1}' for i in range(1,players)) if practice else ())
     actors=[p['player_id'] for p in session.view()['players']]
     for actor in actors:
         session.choose_deck(actor,'core-gold',expected_revision=session.view()['revision'])
@@ -83,8 +84,10 @@ def main():
     parser.add_argument('--seed',default='smoke-1')
     parser.add_argument('--limit',type=int,default=4000)
     parser.add_argument('--practice',action='store_true',help='use the actual computer policy for P2 and later seats')
+    parser.add_argument('--discard-package',action='store_true')
     args=parser.parse_args()
-    report=run_smoke(args.players,args.seed,args.limit,args.practice)
+    from crucible_content.practice import discard_draw_pack
+    report=run_smoke(args.players,args.seed,args.limit,args.practice,discard_draw_pack() if args.discard_package else None)
     print(json.dumps(report,indent=2))
     return 0 if report['status']=='completed' else 2
 

@@ -64,7 +64,7 @@ experiments/AUTHORED_TRIGGERS.md and experiments/DRAW_DISCARD_TRIGGERS.md.
 Canonical mechanics remain in RULES_DRAFT.md.
 Deck validation enforces forty singleton entries, known cards and matching color.
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
-once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v5.
+once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v6.
 
 Windows Python 3.14.3: all 388 tests pass. An earlier concurrent SVG-generation
 mismatch cleared on recheck without changes to the art files from this task. Duration evidence is in
@@ -106,7 +106,7 @@ replacement of the current session. The restored game opens paused, with hands
 hidden and computers stopped; click Resume saved game, choose a human seat and
 acknowledge its handoff to continue. File pickers pause computer stepping.
 
-Old schema-v1/v2/v3/v4 files need explicit conversion to a separate v5 file before Load.
+Old schema-v1/v2/v3/v4/v5 files need explicit conversion to a separate v6 file before Load.
 Format, privacy, build compatibility, conversion command and rollback policy: [SAVE_FORMAT.md](SAVE_FORMAT.md).
 
 For a bounded all-computer, multi-seed evaluation, set PYTHONPATH=src and run
@@ -125,3 +125,8 @@ Design-only package economics: `python -m crucible_play.package_economy`.
 Regenerate its readable report with `--format markdown` into
 docs/experiments/DISCARD_PACKAGE_ECONOMY.md. It reads the proposal JSON, not the
 live practice deck. Scope and next engine work: DISCARD_DRAW_PACKAGE.md.
+
+Opt-in discard/draw deck: `python run_play.py --discard-package`. New games in that
+window retain the selected pack; default launch keeps Practice Forty v9. Headless
+check: `python -m crucible_play.smoke --practice --discard-package --players 3`.
+Timing, save and loop evidence: experiments/DISCARD_CONTINUATION.md.

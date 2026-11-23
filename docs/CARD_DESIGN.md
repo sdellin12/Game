@@ -146,7 +146,9 @@ local ZIP may predate these wording notes. No generated design assets changed he
 Design-only card data: `design/packages/discard_draw.json`. Exact card wording,
 costs and a generated comparison table: experiments/DISCARD_PACKAGE_ECONOMY.md.
 Resolution contract, deck roles and implementation acceptance criteria:
-DISCARD_DRAW_PACKAGE.md. This package has not replaced live pack-v9 cards.
+DISCARD_DRAW_PACKAGE.md. This provisional package is executable with `python run_play.py --discard-package`;
+default pack-v9 cards remain unchanged. Continuation/loop evidence:
+experiments/DISCARD_CONTINUATION.md.
 Give those files to another LLM with this document when exploring these cards.
 
 ## Capacity and live state

@@ -1,11 +1,12 @@
 """Versioned, engine-validated practice content; separate from the household catalog."""
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 import hashlib
 import json
+from pathlib import Path
 from crucible_core.leaders import LeaderAbility, LeaderDefinition
 from crucible_core.cards import CardDefinition,TriggeredAbility
 from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard,
-    GrantResources, GrantCapacity, NegateEffect, GrantShield, MatchPlayer, new_match)
+    GrantResources, GrantCapacity, NegateEffect, GrantShield, DiscardThenDraw, MatchPlayer, new_match)
 from crucible_core.turns import DrawPlayer, RefillPolicy
 
 
@@ -95,6 +96,15 @@ def validate_pack(pack):
     return pack
 
 
+def discard_draw_pack():
+    """Opt-in package; preserve the original v9 control and its frozen saves."""
+    pack=practice_pack()
+    proposal=json.loads((Path(__file__).resolve().parents[2]/'design/packages/discard_draw.json').read_text(encoding='utf-8'))
+    additions=tuple(PackCard(c['name'],c['color'],CardDefinition(c['key'],'action',c['cost'],
+        ((DiscardThenDraw if c['discard_before_draw'] else DrawCards)('$controller',c['draw']),))) for c in proposal['cards'])
+    return validate_pack(replace(pack,pack_id='crucible-discard-draw',version=1,cards=tuple(c for c in pack.cards if c.definition.key not in ('beacon-04','beacon-05','beacon-06'))+additions))
+
+
 def pack_hash(pack):
     def normalized(value):
         if isinstance(value,dict):return {k:normalized(v) for k,v in value.items() if not ((k=='triggered_abilities' and v==()) or (k=='optional' and v is False))}
@@ -104,7 +114,13 @@ def pack_hash(pack):
     # Old resource-only authored packs retain their original hashes. asdict loses
     # instruction types, so distinguish the newly admitted, same-shaped rewards.
     for card,encoded in zip(pack.cards,data['cards']):
+        for step,encoded_step in zip(card.definition.steps,encoded['definition']['steps']):
+            if type(step) is DiscardThenDraw:encoded_step['instruction']='DiscardThenDraw'
         for ability,encoded_ability in zip(card.definition.triggered_abilities,encoded['definition']['triggered_abilities']):
             for step,encoded_step in zip(ability.steps,encoded_ability['steps']):
                 if type(step) in (HealPlayer,GrantCapacity):encoded_step['instruction']=type(step).__name__
+    for leader,encoded in zip(pack.leaders,data['leaders']):
+        for location in ('reserve_ability','battle_ability'):
+            for step,encoded_step in zip(getattr(leader.definition,location).steps,encoded['definition'][location]['steps']):
+                if type(step) is DiscardThenDraw:encoded_step['instruction']='DiscardThenDraw'
     return hashlib.sha256(json.dumps(normalized(data),sort_keys=True,separators=(',',':')).encode()).hexdigest()
