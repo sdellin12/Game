@@ -249,3 +249,6 @@ attack/block flow and private projections.
 
 ## 2026-11-23 checkpoint before fixed-controller rewards
 Private optional choices and nine-seed permanent evaluation completed; 388 tests, tactics 21/21, pack v8, coverage v12, schema v5/compatibility 1. Follow-up targeted Salvage Battery End-discard pressure and broader fixed-controller rewards.
+
+## 2026-11-23 checkpoint before Archive strategy study
+Fixed-controller healing/capacity authoring and pack-v9 Archive Well shipped with 397 tests, 18 Battery cases, tactics 21/21 and nine completed seed games. Schema v5/compatibility 1 and coverage v13 retained. Directed Archive choices and natural strategy/cost evaluation were the follow-up.

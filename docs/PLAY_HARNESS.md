@@ -115,5 +115,8 @@ actual permanent entries and public queued-trigger items. Evidence and limits:
 experiments/PERMANENT_EVALUATION.md.
 
 For directed End-discard cases, run `python -m crucible_play.hand_pressure`.
-It checks draws/recovery, actual salvage rewards and resource retention across
-turn rotation; fixture details are in experiments/HAND_PRESSURE.md.
+It checks draws/recovery, actual salvage rewards, Archive Well Use/Skip and the
+next own Start refill; fixture details are in experiments/HAND_PRESSURE.md.
+For paired baseline/holding-policy games, run `python -m crucible_play.discard_eval
+--players 2 3 4`. Add `--source-discount 1` for isolated cost sensitivity.
+Study method/results: experiments/DISCARD_STRATEGY.md.

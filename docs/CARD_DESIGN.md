@@ -130,6 +130,9 @@ no recurring-healing card is included in the practice pack. Keep life generation
 cost decisions separate from the engine's supported instructions. Mixed rewards
 are one effect and one Use/Skip decision. Permanent granted capacity survives the
 source leaving play; its printed ongoing capacity bonus does not.
+Archive Well's Use/Skip and next-Start behavior are verified across 54 directed
+cases; strategy/cost evidence lives in experiments/DISCARD_STRATEGY.md. Printed
+Battery/Well costs remain 4/5; experimental cost variants do not alter card files.
 
 Preserve the actor, event, whether the reward is mandatory or optional, and printed
 restrictions. Use "may" only for definitions marked optional. Do not shorten hand

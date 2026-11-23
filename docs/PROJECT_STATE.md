@@ -3,17 +3,17 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: hand-pressure evaluator and fixed-controller trigger rewards.
+- Latest implementation: Archive Well choice matrix and paired discard strategy/cost evaluation.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 397 Windows tests; hand-pressure 18/18; tactics 21/21; pack-v9 smoke and all 9 seed games complete.
+- Validation: 403 Windows tests; Battery 18/18; Archive 54/54; all 24 strategy/cost games complete.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Hand-pressure and controller-only healing/capacity rewards are implemented.
-Recommended next: directed Archive Well choices and natural hand-pressure strategy evaluation.
-Alternative: review recurring-healing costs before adding any healing permanent.
+Archive choices and discard strategy/cost study are complete; printed costs stay 4/5.
+Recommended next: design a deliberate discard outlet and evaluate a supporting package.
+Alternative: seat-rotated strategy comparisons with stronger defensive requirements.
 Versioned implementation coverage: src/crucible_core/coverage.py v13; practice pack v9; save schema v5 / compatibility 1.
 
 ## Read only the relevant entry
