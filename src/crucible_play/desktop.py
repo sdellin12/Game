@@ -299,6 +299,7 @@ class PlayWindow:
         choices=[]
         if kind=='player':choices=[(p['player_id'],p['player_id'],p['player_id']) for p in view['players'] if not p['eliminated']]
         elif kind=='creature':choices=[(f"{o['controller']} / {self.session.card_name(o.get('definition_key',o['instance_id']))} / {o['instance_id'][-6:]}",o['instance_id'],o['controller']) for o in view['battlefield'] if o.get('creature')]
+        elif kind=='discard':choices=[(f"{self.session.card_name(c['definition_key'])} / {c['instance_id'][-6:]}",c['instance_id'],p['player_id']) for p in view['players'] if p['player_id']==actor for c in p.get('discard',[]) if c.get('definition_key')]
         elif kind=='effect':choices=[(f"#{e['effect_id']} / {e['controller']} / {e['effect_key']}",str(e['effect_id']),e['controller']) for e in view['chain'] if not e['resolving']]
         return [(name,key) for name,key,owner in choices if relation=='any' or (relation=='friendly' and owner==actor) or (relation=='enemy' and owner!=actor)]
 
@@ -326,6 +327,7 @@ class PlayWindow:
         if kind=='destroy':return f'Defeat {who}.'
         if kind=='return_to_hand':return f"Return {who} to its owner's hand. Tokens disappear; leaders return to reserve."
         if kind=='exile':return f'Exile {who}. Tokens disappear; leaders return to reserve.'
+        if kind=='recover':return f'Return {who} from your discard to your hand.'
         if kind=='negate':return 'Negate the chosen pending effect.' if step['effect_id']=='$target' else f"Negate pending effect #{step['effect_id']}."
         return kind
 

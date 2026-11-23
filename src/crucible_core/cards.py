@@ -12,7 +12,7 @@ class CardDefinition:
     health: int = 0
     keywords: tuple[str, ...] = ()
     capacity_bonus: int = 0
-    target_kind: str | None = None  # player, creature, effect
+    target_kind: str | None = None  # player, creature, effect, discard
     target_relation: str = 'any'  # any, friendly, enemy
 
 

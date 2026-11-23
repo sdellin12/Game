@@ -9,7 +9,7 @@ from crucible_core.resources import ResourcePool
 from crucible_core.commands import route_command
 from crucible_core.views import project_match
 from crucible_play.opponent import choose_move
-from crucible_core.match import ReturnCreatureToHand
+from crucible_core.match import ReturnCreatureToHand,NegateEffect
 
 
 @dataclass(frozen=True)
@@ -71,6 +71,22 @@ def scenarios():
     yield Scenario('stop-breakthrough-through-small-blocker',attack_window(final=True,breakthrough=True),'attacker')
     yield Scenario('remove-blocker-for-own-breakthrough',attack_window('B',final=True,breakthrough=True,active='A'),'blocker')
     yield Scenario('hold-against-zero-attack-body-with-no-own-attackers',fixture([creature('wall','B',0,4)]),None)
+    yield from chain_scenarios()
+
+
+def chain_scenarios():
+    # A's next priority must distinguish removal from countered removal.
+    for depth,move_type in tuple((n,DestroyCreature) for n in range(5))+((1,ReturnCreatureToHand),):
+        s=attack_window();controller=s.priority.holder
+        key='remove-attacker';s=replace(s,effects=s.effects+(EffectSpec(key,controller,(move_type('attacker'),)),))
+        s=queue_effect(s,controller,key,expected_revision=s.revision)
+        previous=s.priority.chain[-1].effect_id
+        for index in range(depth):
+            actor=s.priority.holder;key=f'counter-{index}'
+            s=replace(s,effects=s.effects+(EffectSpec(key,actor,(NegateEffect(previous),)),))
+            s=queue_effect(s,actor,key,expected_revision=s.revision);previous=s.priority.chain[-1].effect_id
+        while s.priority.holder!='A':s=command(s,s.priority.holder,'pass')
+        yield Scenario(f'{move_type.__name__}-with-{depth}-nested-negates',s,'attacker' if depth%2 else None)
 
 
 def evaluate(policy=choose_move):

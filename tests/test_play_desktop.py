@@ -229,5 +229,29 @@ class HarnessWidgetTests(unittest.TestCase):
         self.assertIn(s.card_name(s.view()['exile'][0]['definition_key']),text.split('EXILE')[1])
         self.assertEqual(self.app.effect_text({'kind':'exile','target':'$target'},s.view()),'Exile the chosen target. Tokens disappear; leaders return to reserve.')
 
+    def test_recovery_dialog_lists_only_own_discard_and_confirms_actual_card(self):
+        from dataclasses import replace
+        from unittest.mock import patch
+        from test_persistence import prepared,state,passes
+        s=prepared();s.bots=frozenset();actor=s.view()['turn']['active_player'];m=s._lobby.match
+        recovery=next(c for c in m.card_instances if c.owner==actor and c.definition_key=='spell-09')
+        own=next(c for c in m.card_instances if c.owner==actor and c.definition_key=='unit-01')
+        foreign=next(c for c in m.card_instances if c.owner!=actor and c.definition_key=='unit-01')
+        moved={recovery.instance_id,own.instance_id,foreign.instance_id};players=[]
+        for p in m.players:
+            hand=(recovery.instance_id,) if p.cards.player_id==actor else tuple(i for i in p.cards.hand if i not in moved)
+            discard=(own.instance_id,) if p.cards.player_id==actor else (foreign.instance_id,) if p.cards.player_id==foreign.owner else ()
+            deck=tuple(i for i in p.cards.deck+(p.cards.hand if p.cards.player_id==actor else ()) if i not in moved)
+            players.append(replace(p,cards=replace(p.cards,hand=hand,deck=deck,discard=discard),resources=replace(p.resources,available=3)))
+        state(s,turn=replace(m.turn,phase='MainBefore'),players=tuple(players));self.app.session=s
+        self.app.seat(actor);self.app.unlock();view=s.view(actor);card=view['you']['hand'][0]
+        self.assertEqual([key for _,key in self.app.target_options(view,card)],[own.instance_id])
+        self.assertIn('from your discard to your hand',self.app.effect_text(card['steps'][0],view))
+        before=s._lobby
+        with patch.object(tk.Toplevel,'grab_set'):self.app.card_dialog(view,card)
+        self.assertEqual(s._lobby,before)
+        self.button('Confirm play and payment').invoke();self.assertEqual(s._lobby.match.effects[-1].steps[0].target,own.instance_id)
+        passes(s);self.app.render();self.assertIn(own.instance_id,[c['instance_id'] for c in s.view(actor)['you']['hand']])
+
 
 if __name__=='__main__':unittest.main()

@@ -61,6 +61,14 @@ legacy payloads that already declare the new field or instruction; enforce each
 legacy record allowlist, then validate the complete current state. Keep the input
 bytes and publish only to a new destination. This is never an in-place migration.
 
+## Additive discard-recovery record
+Recovery adds the allowlisted `RecoverDiscardCard` record and `discard` target kind,
+without changing existing record fields, state layout or instruction semantics.
+Schema v3 / compatibility 1 therefore stays unchanged. Archived pre-recovery v3
+snapshots (exile/refill and nested counters) load directly and reproduce their exact
+next-command states. Snapshots containing a new record require a reader that knows
+it; older readers fail closed. Retain earlier files/builds for rollback.
+
 ## Durable writes and rollback
 Regular saving validates/encodes first, writes a same-folder temporary file,
 flushes/fsyncs, and atomically replaces the destination. Before replacement, retain
@@ -86,4 +94,4 @@ next-command results (priority, refill, private blockers, pending Unravel), open
 locks, source/newline variants, unknown builds/versions, wrong Python, premature
 exile data, occupied/concurrent outputs and failed publication. Desktop tests
 cover paused loads, privacy reset and the public exile table. Return-to-hand and
-exile instructions round-trip in pending cards and refill cursors.
+exile and recovery instructions round-trip in pending cards and refill cursors.

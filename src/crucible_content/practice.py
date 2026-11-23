@@ -4,7 +4,7 @@ import hashlib
 import json
 from crucible_core.leaders import LeaderAbility, LeaderDefinition
 from crucible_core.cards import CardDefinition
-from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature,
+from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard,
     GrantResources, GrantCapacity, NegateEffect, GrantShield, MatchPlayer, new_match)
 from crucible_core.turns import DrawPlayer, RefillPolicy
 
@@ -54,14 +54,14 @@ def practice_pack():
         ('Brace for Impact','reaction',2,(GrantShield('$target',3),),'creature','friendly'),
         ('Enduring Ward','reaction',3,(GrantShield('$target',2,'next_start','$controller'),),'creature','friendly'),
         ('Interrupt','reaction',3,(NegateEffect('$target'),),'effect','enemy'),
-        ('Stored Momentum','action',2,(GrantResources('$controller',3),),None,'any'),
+        ('Second Chance','action',3,(RecoverDiscardCard('$target'),),'discard','friendly'),
         ('Lasting Growth','action',4,(GrantCapacity('$controller',1),),None,'any'),
     )
     for i,(name,kind,cost,steps,target,relation) in enumerate(spells):
         cards.append(PackCard(name,'Generic',CardDefinition(f'spell-{i+1:02}',kind,cost,steps,target_kind=target,target_relation=relation)))
     for i,name in enumerate(('Workshop Lantern','Root Battery','Memory Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
         cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',3 if i<3 else 5,capacity_bonus=1 if i<3 else 2)))
-    return validate_pack(PracticePack('crucible-practice',5,tuple(cards),(
+    return validate_pack(PracticePack('crucible-practice',6,tuple(cards),(
         ReserveIdentity('core-gold','Aster, Practice Core','Gold',LeaderDefinition('core-gold','Aster, Practice Core','Gold',4,3,5,
             LeaderAbility('core-repair',3,(HealPlayer('$controller',3),)),
             LeaderAbility('guiding-bolt',2,(DamagePlayer('$target',1),),target_kind='player',target_relation='enemy',exhaust_source=True))),

@@ -24,7 +24,7 @@ from crucible_core.lobby import (LobbyState, LobbyPlayer, DeckSelection, Opening
     new_lobby, begin_opening, lock_redraw, validate_deck)
 from crucible_core.match import (MatchState, MatchPlayer, MatchEvent, MatchResult, TriggerSpec,
     TriggerCandidate, Resolution, MatchObject, EffectSpec, ActionSpec, DamagePlayer,
-    HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, GrantCapacity, GrantResources, GrantShield,
+    HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, ExileCreature, RecoverDiscardCard, GrantCapacity, GrantResources, GrantShield,
     NegateEffect, validate_match, _steps_valid)
 from crucible_core.priority import PriorityState, PendingEffect
 from crucible_core.resources import ResourcePool, Payment
@@ -40,7 +40,7 @@ _RECORDS={c.__name__:c for c in (PracticePack,PackCard,ReserveIdentity,CardDefin
     Shield,Creature,Player,CombatState,Attack,CombatFlow,BoundaryCount,TimedEffect,LeaderAbility,LeaderDefinition,LeaderState,
     LobbyState,LobbyPlayer,DeckSelection,Opening,MatchState,MatchPlayer,MatchEvent,MatchResult,TriggerSpec,TriggerCandidate,
     Resolution,MatchObject,EffectSpec,ActionSpec,DamagePlayer,HealPlayer,DrawCards,DestroyCreature,GrantCapacity,
-    GrantResources,GrantShield,ReturnCreatureToHand,ExileCreature,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
+    GrantResources,GrantShield,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
 
 
 class SaveError(ValueError):

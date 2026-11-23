@@ -3,18 +3,18 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest implementation: combat-aware opponent, public exile and v1/v2-to-v3 save conversion.
+- Latest implementation: nested-chain decisions and own-discard recovery with compatible saves.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 320 Windows tests; tactics 8/8, migrations, exile and desktop checks pass.
+- Validation: 335 Windows tests; tactics 14/14, recovery, legacy saves and desktop checks pass.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Save schema v3 / gameplay compatibility 1, Unravel tactics and exile are complete.
-Recommended next: add explicit discard-to-hand recovery using the existing zone model.
-Alternative: expand tactical scenarios before further opponent tuning.
-Versioned implementation coverage: src/crucible_core/coverage.py v8; practice pack v5.
+Nested-negation scenarios and discard-to-hand recovery are complete.
+Recommended next: add explicit draw/discard trigger coverage.
+Alternative: evaluate multi-attacker resource tradeoffs before further opponent tuning.
+Versioned implementation coverage: src/crucible_core/coverage.py v9; practice pack v6; save schema v3 / compatibility 1.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.

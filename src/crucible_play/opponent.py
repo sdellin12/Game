@@ -20,6 +20,12 @@ def targets(view, card):
     if kind is None:return [None]
     if kind=='player':items=[(p['player_id'],p['player_id'],p['health']) for p in view['players'] if not p['eliminated']]
     elif kind=='creature':items=[(o['instance_id'],o['controller'],-o['creature']['attack']) for o in view['battlefield'] if o.get('creature')]
+    elif kind=='discard':
+        own=next(p for p in view['players'] if p['player_id']==actor)
+        committed={s.get('target') for e in _expected_chain(view) for s in e['steps'] if s['kind']=='recover'}
+        budget=max(0,own['resources']['available']-card['cost'])
+        cards=[c for c in own.get('discard',[]) if c.get('definition_key') and c['instance_id'] not in committed]
+        return [c['instance_id'] for c in sorted(cards,key=lambda c:(c['kind']!='creature',c['cost']>budget,-c.get('attack',0),c['cost'],c['instance_id']))]
     else:items=[(str(e['effect_id']),e['controller'],-e['effect_id']) for e in view['chain'] if not e['resolving']]
     options=[key for key,owner,_ in sorted(items,key=lambda x:(x[2],x[0])) if relation=='any' or (relation=='enemy' and owner!=actor) or (relation=='friendly' and owner==actor)]
     if kind=='creature' and any(s['kind'] in ('return_to_hand','exile') for s in card.get('steps',[])):
@@ -27,10 +33,22 @@ def targets(view, card):
     return options
 
 
+def _expected_chain(view):
+    """Public items still on track to resolve, assuming no further responses."""
+    cancelled=set();live=[]
+    for effect in reversed(view['chain']):
+        if effect['effect_id'] in cancelled:continue
+        live.append(effect)
+        for step in effect['steps']:
+            if step['kind']=='negate' and type(step.get('effect_id')) is int:
+                cancelled.add(step['effect_id'])
+    return tuple(reversed(live))
+
+
 def _zone_move_targets(view, options, *, exile=False):
     """Public-stat tempo heuristics; no hidden zones or speculative combat resolver."""
     actor=view['you']['player_id'];objects={o['instance_id']:o for o in view['battlefield']}
-    committed={s.get('target') for e in view['chain'] for s in e['steps'] if s['kind'] in ('destroy','return_to_hand','exile')}
+    committed={s.get('target') for e in _expected_chain(view) for s in e['steps'] if s['kind'] in ('destroy','return_to_hand','exile')}
     combat=view.get('combat');scores={}
     fighting=combat and combat['stage'] in ('attack_responses','final_responses')
     main=view['turn']['active_player']==actor and view['turn']['phase'] in ('MainBefore','MainAfter') and not view['chain']

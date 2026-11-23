@@ -1,5 +1,5 @@
 # Zone-move integration
-2026-11-23. Source checkpoint: coverage v8; practice pack v5.
+2026-11-23. Source checkpoint: coverage v9; practice pack v6.
 
 ## Implementation scope
 `ReturnCreatureToHand` and `ExileCreature` are registered instructions and authored
@@ -17,7 +17,8 @@ discard callers unchanged. The move gathers structural attachments and removes
 targeted prevention durations before any later instruction can pause for refill.
 Exile uses registered ordinary-card instances, preserving owner identity separately
 from battlefield control. Token/leader replacements do not populate that zone.
-Deck moves, discard/exile recovery and hand transfers remain gated.
+Own-discard recovery is implemented separately; see DISCARD_RECOVERY.md.
+Deck moves, exile recovery and hand transfers remain gated.
 
 ## Verification
 13 return-to-hand cases cover paid public pending cards; borrowed ownership and fresh
@@ -35,8 +36,8 @@ The desktop widget check verifies displayed exile identity and effect text.
 
 Archived v1 and v2 next-command states still match after explicit schema-v3
 conversion; only an empty exile tuple is added to legacy MatchState records.
-Practice-policy runs for 2/3/4 players completed in 327/1302/1747 commands and
-17/61/69 turns. These runs check legal progress, not strategic quality.
+Practice-policy runs for 2/3/4 players completed in 327/1488/1569 commands and
+17/73/61 turns. These runs check legal progress, not strategic quality.
 
 Run with PYTHONPATH=src:
 - python -m unittest discover -s tests -p test_zone_moves.py -q

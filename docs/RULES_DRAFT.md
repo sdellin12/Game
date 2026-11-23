@@ -38,6 +38,11 @@ stay outside discard/refill unless an effect explicitly moves them elsewhere.
 Exiled card identities remain public after their owner is eliminated. Exiling
 a creature discards its attachments to their owners; token/leader replacements
 follow the existing token and leader removal rules.
+Discard-to-hand recovery chooses a card in your own discard at confirmation and
+checks that it is still there when the instruction resolves. The recovered card
+is publicly identified and enters your hand; playing it requires a separate legal
+play and payment. Recovery does not use exile, pending cards, or eliminated players'
+cards. A missing recovery target does not cancel independent effect instructions.
 
 ## Healing/protection/upgrades
 Healing stops max; unused excess no benefit unless explicit. No initial overheal, future expensive effects deferred. Player max30 initially, healing very rare/expensive except dedicated style; creature healing separate.

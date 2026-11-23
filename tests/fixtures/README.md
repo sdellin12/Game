@@ -11,3 +11,9 @@ next-command results before the exile state change: priority, refill and a pendi
 Unravel that resolves on the recorded command. Built from the fbfdbd6 engine/state
 with the subsequent view-only policy fix (no state or command semantics changes).
 Do not regenerate these from the schema-v3 runtime.
+
+`save_v3_before_recovery.json.gz` archives synthetic schema-v3 snapshots and next
+commands before adding the recovery instruction: exile plus interrupted refill, and
+an Unravel chain with nested counters. Generated from the 1864642 state/engine with
+the subsequent view-only nested-chain policy fix. No state layout changed. These
+fixtures load directly in the newer v3 runtime; do not regenerate them from it.
