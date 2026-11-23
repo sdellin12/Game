@@ -1,5 +1,5 @@
 # Local playable harness
-Updated 2026-11-22. This is a separate source launcher from the combat balance lab.
+Updated 2026-11-23. This is a separate source launcher from the combat balance lab.
 
 ## Launch
 From the Game repository directory, on Windows with Python/Tk installed:
@@ -14,8 +14,11 @@ confirmation because this session has no save/resume yet.
 
 ## First game
 1. Leave two seats selected, or choose 3-4 and click New lobby.
-2. Click View Player 1, then acknowledge the handoff. Select Practice Forty and
-   a reserve identity, then Ready. Repeat for the other seats.
+2. Computer opponents in P2-P4 are enabled for a new practice lobby by default.
+   Uncheck the new-lobby computer option before New lobby for human hotseat play.
+   Click View Player 1, then acknowledge the handoff. Select Practice Forty and
+   a reserve identity, then Ready. Computers select/ready themselves. In hotseat mode, repeat for
+   the other seats.
 3. Return to Player 1 (the setup host) and click Deal opening hands.
 4. Each seat privately selects opening cards to replace, or confirms Keep all.
    Hide the hand before handing over. Choices lock once; counts and the starting
@@ -27,7 +30,8 @@ confirmation because this session has no save/resume yet.
    After responses, defenders lock assignments privately. Damage orders, when
    needed, are confirmed before the final response round. Pass to finish damage.
 7. End turn from Main, choose required discards/refill when prompted, and continue
-   until the engine reports a winner/draw. Each human can operate any local seat.
+   until the engine reports a winner/draw. Human seats require manual decisions;
+   computer hands cannot be opened through the seat buttons.
 
 Public table/history remain separate tabs. Hide private hand clears private
 widgets immediately; changing seats always requires another acknowledgement.
@@ -36,13 +40,16 @@ canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation
 The 40-card versioned practice pack has distinct keys/names, 24 creatures,
-10 Actions/Reactions and 6 capacity permanents, all engine-validated. Public reserve
-identities satisfy setup selection; leader summons/abilities are not enabled.
+10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v2 includes three functional leaders with
+separate reserve/battle
+abilities. Inspect/summon your leader from the hand/choices tab; current summon
+cost, location and recovery are public. Canonical leader rules are in RULES_DRAFT.md.
 Deck validation enforces forty singleton entries, known cards and matching color.
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
 once setup begins. Existing catalog, checkpoint and saved-data formats are untouched.
 
-Windows Python 3.14.3: 203 tests pass, including 24 new setup/harness/widget tests.
+Windows Python 3.14.3: 236 tests pass. Current opponent/leader evidence is in
+experiments/OPPONENT_LEADERS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and
 scroll geometry with 30 attack choices. A projection fix makes depletion-related
@@ -56,11 +63,15 @@ python -m crucible_play.smoke --players 4
 ```
 
 Fixed-seed view-only scripts completed at 205/415/740 commands and 11/16/24 turns.
-The driver is a bounded diagnostic, not the UI's practice opponent or a balance
-measurement; a command limit reports incomplete rather than inventing a result.
+The default driver is a bounded diagnostic; a command limit reports incomplete rather than inventing a result.
+Add
+`--practice` to exercise the actual computer policy for P2 and later seats.
+Computers use only their permitted views and stop at human choices. The desktop
+driver caps an uninterrupted computer burst at 200 commands and reports a diagnostic
+without creating a draw/winner. A new lobby clears that diagnostic.
 
 Visual review covered the initial lobby. Later computer-use snapshots did not
 reliably target the selected window, so further input stopped. Other screens have
 widget/geometry checks, not a completed visual review. Coverage/gates live in
-crucible_core/coverage.py v3; PROJECT_STATE.md owns the next step. Rollback is a
+crucible_core/coverage.py v4; PROJECT_STATE.md owns the next step. Rollback is a
 source revert; preserve old experiment data. No game-runtime dependencies added.

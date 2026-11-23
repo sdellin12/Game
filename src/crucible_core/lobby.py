@@ -5,6 +5,7 @@ import json
 import random
 import secrets
 from pathlib import Path
+from .leaders import LeaderState
 from .cards import CardInstance
 from .match import MatchPlayer, new_match
 from .turns import DrawPlayer, RefillPolicy
@@ -139,7 +140,9 @@ def lock_redraw(lobby, actor, rejected, *, expected_revision):
     match=new_match(players,(),(),RefillPolicy(20,1),active_player=order[0],phase='Start',managed_turns=True,
                     card_definitions=tuple(c.definition for c in lobby.pack.cards),
                     card_instances=tuple(c for p in final for c in p.instances),
-                    shuffle_seed=hashlib.sha256(lobby.seed+b'match-refills').digest())
+                    shuffle_seed=hashlib.sha256(lobby.seed+b'match-refills').digest(),
+                    leader_definitions=tuple(l.definition for l in lobby.pack.leaders),
+                    leaders=tuple(LeaderState(f'leader-{p.player_id}',p.player_id,p.deck.leader_key) for p in lobby.players))
     return replace(lobby,phase='match',opening=tuple(final),order=order,match=match,
                    redraw_counts=tuple((p.player_id,len(choices[p.player_id])) for p in lobby.players))
 
@@ -163,5 +166,5 @@ def project_lobby(lobby, viewer=None):
             own=next(p for p in lobby.opening if p.player_id==viewer)
             instances={c.instance_id:c for c in own.instances};cards={c.definition.key:c for c in lobby.pack.cards}
             view['you']={'player_id':viewer,'locked':viewer in dict(lobby.redraw_locks),
-                         'hand':[{'instance_id':i,'definition_key':instances[i].definition_key,'name':cards[instances[i].definition_key].name} for i in own.hand]}
+                         'hand':[{'instance_id':i,'definition_key':instances[i].definition_key,'name':cards[instances[i].definition_key].name,'cost':cards[instances[i].definition_key].definition.cost,'kind':cards[instances[i].definition_key].definition.kind} for i in own.hand]}
     return view

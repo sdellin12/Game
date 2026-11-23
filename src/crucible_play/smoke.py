@@ -40,8 +40,8 @@ def choose_move(view):
     return 'pass',{}
 
 
-def run_smoke(players=2, seed='smoke-1', limit=4000):
-    session=HarnessSession(tuple(f'Player {i+1}' for i in range(players)),seed=hashlib.sha256(seed.encode()).digest())
+def run_smoke(players=2, seed='smoke-1', limit=4000, practice=False):
+    session=HarnessSession(tuple(f'Player {i+1}' for i in range(players)),seed=hashlib.sha256(seed.encode()).digest(),bots=tuple(f'P{i+1}' for i in range(1,players)) if practice else ())
     actors=[p['player_id'] for p in session.view()['players']]
     for actor in actors:
         session.choose_deck(actor,'core-gold',expected_revision=session.view()['revision'])
@@ -52,6 +52,13 @@ def run_smoke(players=2, seed='smoke-1', limit=4000):
         public=session.view()
         if public['result']:
             return {'status':'completed','commands':index,'turns':public['turn']['turn_id'],'result':public['result']}
+        if practice:
+            if session.step_opponent():continue
+            view=session.view('P1');move=choose_move(view)
+            if move is None:return {'status':'incomplete','reason':'no projected human command','commands':index}
+            kind,args=move
+            session.send('P1',{'kind':kind,'expected_revision':view['revision'],'args':args})
+            continue
         selected=None
         # The driver schedules separate projected clients; a policy never sees another hand.
         for actor in actors:
@@ -74,8 +81,9 @@ def main():
     parser.add_argument('--players',type=int,choices=(2,3,4),default=2)
     parser.add_argument('--seed',default='smoke-1')
     parser.add_argument('--limit',type=int,default=4000)
+    parser.add_argument('--practice',action='store_true',help='use the actual computer policy for P2 and later seats')
     args=parser.parse_args()
-    report=run_smoke(args.players,args.seed,args.limit)
+    report=run_smoke(args.players,args.seed,args.limit,args.practice)
     print(json.dumps(report,indent=2))
     return 0 if report['status']=='completed' else 2
 

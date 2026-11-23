@@ -25,11 +25,13 @@ def project_match(state, viewer=None):
             spec=next(e for e in state.effects if e.key==effect.effect_key)
             chain.append({'effect_id':effect.effect_id,'controller':effect.controller,
                           'effect_key':spec.key,'source_id':spec.source_id,
-                          'resolving':effect==priority.resolving,'steps':[_public_step(state,s) for s in spec.steps]})
+                          'resolving':effect==priority.resolving,'label':_effect_label(state,effect,spec),'steps':[_public_step(state,s) for s in spec.steps]})
     view={'revision':state.revision,'turn':{'active_player':state.turn.active_player,'turn_id':state.turn.turn_id,
           'phase':state.turn.phase,'recharge':state.turn.recharge,'end_requested':state.turn.end_requested or next(p.cards.end_turn_requested for p in state.players if p.cards.player_id==state.turn.active_player)},
           'players':players,'battlefield':[_object(state,o) for o in state.battlefield],
           'priority':None if priority is None else {'holder':priority.holder,'status':priority.status,'passes':list(priority.passes)},
+          'choice_pending':bool(state.pending or state.triggers or state.discard_needed or (state.combat and state.combat.stage in ('blocking','ordering'))),
+          'leaders':_leaders(state),
           'chain':chain,'pending_cards':[{**_card(state,c.card_id),'effect_id':c.effect_id,'controller':c.controller} for c in state.pending_cards],'combat':match_combat_view(state,private),
           'result':None if state.result is None else {'kind':state.result.kind,'winner':state.result.winner},
           'events':_public_events(state)}
@@ -56,6 +58,11 @@ def _card(state, instance_id):
 def _object(state, obj):
     view={**_card(state,obj.object_id),'owner':obj.owner,'controller':obj.controller,'kind':obj.kind,
           'attached_to':obj.attached_to,'capacity_bonus':obj.capacity_bonus}
+    if obj.kind=='leader':
+        leader=next(l for l in state.leaders if l.instance_id==obj.object_id)
+        definition=next(d for d in state.leader_definitions if d.key==leader.definition_key)
+        view.update({'name':definition.name,'definition_key':definition.key,'cost':definition.summon_cost,
+                     'attack':definition.attack,'health':definition.health,'keywords':list(definition.keywords)})
     if obj.kind=='resource_token':view['resource_value']=obj.resource_value
     if obj.creature:
         c=obj.creature
@@ -93,7 +100,7 @@ def _public_events(state):
     # Deliberately omit raw causes, private draw records and unknown future events.
     allowed={'damage','heal','required_draw','combat_damage','combat_miss','elimination','departure','defeat',
              'turn_end','turn_start','action_committed','concede_request','start_refill',
-             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','effect_negated'}
+             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed'}
     events=[]
     for event in state.events:
         if event.kind not in allowed:continue
@@ -116,9 +123,36 @@ def _step(step):
 def _public_step(state, step):
     view=_step(step)
     target=view.get('target')
-    public_ids=set(state.seat_order)|{o.object_id for o in state.battlefield}
+    public_ids=set(state.seat_order)|{o.object_id for o in state.battlefield}|{l.instance_id for l in state.leaders}
     public_ids.update(c.card_id for c in state.pending_cards)
     public_ids.update(e.subject for e in state.events if e.kind in ('departure','defeat','card_played'))
     if target is not None and target not in public_ids:
         view['target']=None
     return view
+
+def _leaders(state):
+    from .match import leader_ability_available
+    leaders=[]
+    for leader in state.leaders:
+        definition=next(d for d in state.leader_definitions if d.key==leader.definition_key)
+        abilities=[]
+        for location,ability in (('reserve',definition.reserve_ability),('battlefield',definition.battle_ability)):
+            abilities.append({'key':ability.key,'location':location,'cost':ability.cost,'timing':ability.timing,
+                             'target_kind':ability.target_kind,'target_relation':ability.target_relation,
+                             'exhaust_source':ability.exhaust_source,'once_per_turn':ability.once_per_turn,
+                             'steps':[_step(s) for s in ability.steps],
+                             'available':leader_ability_available(state,leader,ability)})
+        leaders.append({'instance_id':leader.instance_id,'owner':leader.owner,'definition_key':definition.key,
+                        'name':definition.name,'color':definition.color,'location':leader.location,
+                        'removals':leader.removals,'recovering':leader.recovering,'pending_effect_id':leader.pending_effect_id,
+                        'base_summon_cost':definition.summon_cost,'summon_cost':definition.summon_cost+2*leader.removals,
+                        'attack':definition.attack,'health':definition.health,'keywords':list(definition.keywords),'abilities':abilities})
+    return leaders
+
+
+def _effect_label(state, effect, spec):
+    leader=next((l for l in state.leaders if l.pending_effect_id==effect.effect_id or l.instance_id==spec.source_id),None)
+    if leader:
+        definition=next(d for d in state.leader_definitions if d.key==leader.definition_key)
+        return f'Summon {definition.name}' if leader.pending_effect_id==effect.effect_id else f'{definition.name}: ability'
+    return spec.key

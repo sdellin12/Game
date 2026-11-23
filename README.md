@@ -7,8 +7,8 @@ Original household card battler: imaginative themed decks, private phone/tablet 
 py -3 run_play.py
 ```
 
-Two to four local hotseat players: choose a practice deck/reserve identity, ready,
-lock opening redraws, then play through the existing engine commands. See the
+Play against a computer by default, or choose two to four hotseat seats in a new
+lobby. Choose a practice deck/leader, ready and lock opening redraws. See the
 [short harness walkthrough and current scope](docs/PLAY_HARNESS.md).
 
 ## Open the desktop lab

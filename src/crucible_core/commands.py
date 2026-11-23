@@ -99,6 +99,13 @@ def route_command(state, session_actor, command):
             result=engine.choose_refill(state,actor,pay=args['pay'],shuffled_discard=shuffled,
                                        expected_request_id=args['request_id'],expected_revision=revision)
             if args['pay']:result=replace(result,shuffle_counter=state.shuffle_counter+1)
+        elif kind=='summon_leader':
+            _fields(args,('payment',))
+            result=engine.summon_leader(state,actor,_payment(args['payment']),expected_revision=revision)
+        elif kind=='leader_ability':
+            _fields(args,('key','payment'),('target',))
+            if type(args['key']) is not str or ('target' in args and type(args['target']) is not str):raise CommandError('invalid leader ability')
+            result=engine.activate_leader(state,actor,args['key'],_payment(args['payment']),target=args.get('target'),expected_revision=revision)
         elif kind=='play_card':
             _fields(args,('card_id','payment'),('target',))
             if type(args['card_id']) is not str or ('target' in args and type(args['target']) is not str):

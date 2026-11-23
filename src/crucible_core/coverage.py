@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 3,
+    'version': 4,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -20,11 +20,16 @@ MATCH_COVERAGE = {
         'private-five-card-opening-and-locked-partial-redraw',
         'post-redraw-starting-seat-and-count-reveal', 'frozen-engine-content-fingerprints',
         'validated-forty-card-practice-pack',
+        'view-only-practice-opponent-and-bounded-ui-driver',
+        'outside-deck-leader-summon-negation-and-reserve-return',
+        'cumulative-leader-removal-cost-and-own-start-recovery',
+        'location-timing-exhaust-and-per-turn-leader-abilities',
     ),
     'excluded': (
         'production-match-save-and-reconnect', 'network-session-authentication',
         'advanced-zone-moves-exile-bounce-and-hand-transfers', 'multiple-targets-modes-x-discounts',
-        'authored-health-sacrifice-costs-and-replacements', 'leaders-and-recovery',
+        'authored-health-sacrifice-costs-and-replacements',
+        'custom-leader-cost-formulas-and-both-location-ability-definitions',
         'transform-combine-and-continuous-stat-modifiers', 'general-duration-scheduler',
         'discard-draw-damage-and-attack-trigger-abilities',
         'repeated-recharge-debt-and-penalty-bypass',

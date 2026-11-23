@@ -7,7 +7,9 @@ from .session import HarnessSession, HotseatGate
 class PlayWindow:
     def __init__(self, root, session=None):
         self.root=root
-        self.session=session or HarnessSession()
+        self.session=session or HarnessSession(bots=('P2',))
+        self._bot_timer=None;self._bot_steps=0;self._bot_error=False
+        self.root.bind('<Destroy>',self._destroyed,add='+')
         self.gate=HotseatGate()
         self.root.title('The Crucible - Local Rules Harness')
         self.root.geometry('1120x820');self.root.minsize(950,700)
@@ -19,17 +21,41 @@ class PlayWindow:
         style.configure('TButton',padding=6)
         outer=ttk.Frame(root,padding=14);outer.pack(fill='both',expand=True)
         ttk.Label(outer,text='THE CRUCIBLE  /  LOCAL RULES HARNESS',style='Heading.TLabel').pack(anchor='w')
-        ttk.Label(outer,text='Pass-and-play on this computer. Reserve identities are shown; leader summons/abilities are not enabled.').pack(anchor='w',pady=(2,8))
+        ttk.Label(outer,text='Practice against computer seats, or use local hotseat play. Leader summons and recovery are enabled.').pack(anchor='w',pady=(2,8))
         bar=ttk.Frame(outer);bar.pack(fill='x')
         ttk.Label(bar,text='Seats').pack(side='left')
-        self.count=tk.IntVar(value=2);ttk.Spinbox(bar,from_=2,to=4,width=3,textvariable=self.count).pack(side='left',padx=4)
+        self.count=tk.IntVar(value=len(self.session.view()['players']));ttk.Spinbox(bar,from_=2,to=4,width=3,textvariable=self.count).pack(side='left',padx=4)
         self.new_button=ttk.Button(bar,text='New lobby',command=self.new_lobby);self.new_button.pack(side='left')
+        self.computer_mode=tk.BooleanVar(value=bool(self.session.bots))
+        ttk.Checkbutton(bar,text='New lobby: computers in P2-P4',variable=self.computer_mode).pack(side='left',padx=8)
         ttk.Button(bar,text='Hide private hand / public view',command=self.hide).pack(side='right')
         self.seatbar=ttk.Frame(outer);self.seatbar.pack(fill='x',pady=8)
         self.notice=tk.StringVar(value='Choose a seat to select a deck and reserve identity.')
         ttk.Label(outer,textvariable=self.notice,wraplength=1030).pack(anchor='w',pady=(0,8))
         self.body=ttk.Frame(outer);self.body.pack(fill='both',expand=True)
-        self.render()
+        self.render();self._schedule_bots()
+
+    def _destroyed(self, event):
+        if event.widget==self.root and self._bot_timer is not None:
+            try:self.root.after_cancel(self._bot_timer)
+            except tk.TclError:pass
+            self._bot_timer=None
+
+    def _schedule_bots(self):
+        if self.session.bots and self._bot_timer is None and not self._bot_error:
+            self._bot_timer=self.root.after(200,self._pump_bots)
+
+    def _pump_bots(self):
+        self._bot_timer=None
+        try:
+            if self.session.step_opponent():
+                self._bot_steps+=1
+                self.render()
+                if self._bot_steps>=200 and not self.session.view().get('result'):raise ValueError('Computer action limit reached; inspect the game or start a new lobby.')
+            else:self._bot_steps=0
+        except ValueError as exc:
+            self._bot_error=True;self.notice.set(f'Computer stopped: {exc}');return
+        self._schedule_bots()
 
     def close(self):
         if self.session.view().get('phase')!='lobby' and not messagebox.askyesno('Close local game','This local game is not saved. Close it?',parent=self.root):return
@@ -41,13 +67,15 @@ class PlayWindow:
         if not 2<=count<=4:return self.error('Choose 2 through 4 seats.')
         current=self.session.view()
         if (current.get('phase')!='lobby' or any(p.get('deck_name') for p in current['players'])) and not messagebox.askyesno('New local lobby','Discard this local session and start a new lobby?',parent=self.root):return
-        self.session=HarnessSession(tuple(f'Player {i+1}' for i in range(count)))
+        self.session=HarnessSession(tuple(f'Player {i+1}' for i in range(count)),bots=tuple(f'P{i+1}' for i in range(1,count)) if self.computer_mode.get() else ())
+        self._bot_error=False;self._bot_steps=0;self._schedule_bots()
         self.gate.hide();self.notice.set('New lobby. Each seat selects a reserve identity and confirms Ready.');self.render()
 
     def hide(self):
         self.gate.hide();self.notice.set('Public view. Private cards are hidden.');self.render()
 
     def seat(self, actor):
+        if actor in self.session.bots:return self.error('Computer hands stay private. Choose a human seat.')
         self.gate.request(actor);self.notice.set(f'Pass the computer to {actor}. Private cards stay hidden until they continue.');self.render()
 
     def unlock(self):
@@ -59,7 +87,8 @@ class PlayWindow:
     def perform(self, callback):
         try:callback()
         except ValueError as exc:self.error(str(exc));return False
-        self.notice.set('Confirmed.');self.render();return True
+        self._bot_steps=0
+        self.notice.set('Confirmed.');self.render();self._schedule_bots();return True
 
     def send(self, kind, **args):
         actor=self.gate.actor
@@ -73,8 +102,8 @@ class PlayWindow:
         view=self.session.view(self.gate.actor)
         roster=view.get('setup',view)['players']
         for player in roster:
-            ttk.Button(self.seatbar,text=f"View {player.get('name',player['player_id'])}",
-                       command=lambda p=player['player_id']:self.seat(p)).pack(side='left',padx=(0,6))
+            ttk.Button(self.seatbar,text=f"Computer {player['player_id']}" if player.get('computer') else f"View {player.get('name',player['player_id'])}",
+                       state='disabled' if player.get('computer') else 'normal',command=lambda p=player['player_id']:self.seat(p)).pack(side='left',padx=(0,6))
         if self.gate.pending:
             panel=ttk.Frame(self.body,padding=30);panel.pack(fill='x')
             ttk.Label(panel,text=f'Pass to {self.gate.pending}',style='Heading.TLabel').pack(anchor='w')
@@ -110,6 +139,9 @@ class PlayWindow:
         ttk.Label(self.body,text='Opening hand - one partial redraw',style='Heading.TLabel').pack(anchor='w')
         ttk.Label(self.body,text='Choose cards to replace, or confirm Keep all. Counts and starting player reveal only after all seats lock.').pack(anchor='w',pady=8)
         own=view.get('you')
+        if not own:
+            for popup in self.root.winfo_children():
+                if isinstance(popup,tk.Toplevel):popup.destroy()
         if not own:ttk.Label(self.body,text=view['waiting']).pack(anchor='w');return
         if own['locked']:ttk.Label(self.body,text='Your opening choice is locked. Hide your hand and pass to the next seat.').pack(anchor='w');return
         listing=tk.Listbox(self.body,selectmode='multiple',exportselection=False,height=7,font=('Segoe UI',12))
@@ -119,7 +151,7 @@ class PlayWindow:
             lambda:self.session.redraw(self.gate.actor,[own['hand'][i]['instance_id'] for i in listing.curselection()],expected_revision=view['revision']))).pack(anchor='w')
 
     def label(self, card):
-        name=self.session.card_name(card.get('definition_key',card.get('instance_id','Card')))
+        name=card.get('name') or self.session.card_name(card.get('definition_key',card.get('instance_id','Card')))
         stats=f" | {card['attack']}/{card['health']}" if 'attack' in card else ''
         return f"{name} | {card.get('kind','card')} | cost {card.get('cost',0)}{stats}"
 
@@ -142,7 +174,7 @@ class PlayWindow:
         notebook.add(table,text='Public table');notebook.add(private_page,text='Your hand / choices');notebook.add(history,text='Public history')
         private=self.scrollable(private_page)
         board=tk.Text(table,wrap='word',height=12,font=('Segoe UI',11));board.pack(fill='both',expand=True)
-        for p in setup['players']:board.insert('end',f"{p['player_id']} reserve: {p['leader']['name']}\n")
+        for leader in view.get('leaders',[]):board.insert('end',f"{leader['owner']} leader: {leader['name']} | {leader['location']} | summon {leader['summon_cost']} | {'recovering until own Start' if leader['recovering'] else 'not recovering'}\n")
         board.insert('end','\nBATTLEFIELD\n')
         for o in view['battlefield']:
             c=o.get('creature')
@@ -151,7 +183,7 @@ class PlayWindow:
         board.insert('end','\nPENDING\n')
         pending={c['effect_id']:c for c in view['pending_cards']}
         for effect in view['chain']:
-            name=self.label(pending[effect['effect_id']]) if effect['effect_id'] in pending else effect['effect_key']
+            name=self.label(pending[effect['effect_id']]) if effect['effect_id'] in pending else effect.get('label',effect['effect_key'])
             board.insert('end',f"#{effect['effect_id']} {effect['controller']}: {name} | {'; '.join(self.effect_text(step,view) for step in effect['steps'])}\n")
         for p in view['players']:
             if 'discard' in p:board.insert('end',f"\n{p['player_id']} discard: "+', '.join(self.session.card_name(c.get('definition_key','Card')) for c in p['discard'])+'\n')
@@ -171,6 +203,7 @@ class PlayWindow:
         if not own:ttk.Label(private,text='Private cards are hidden. Choose a seat and acknowledge the handoff.').pack(anchor='w');return
         if own['choice']:
             self.render_choice(private,view,own['choice']);notebook.select(private_page);return
+        self.leader_panel(private,view)
         ttk.Label(private,text='Select a card to inspect and confirm a play. Targets/payments stay private until confirmation.').pack(anchor='w')
         cards=own['hand'];listing=tk.Listbox(private,exportselection=False,height=8,font=('Segoe UI',11));listing.pack(fill='x',pady=6)
         for c in cards:listing.insert('end',self.label(c))
@@ -211,8 +244,12 @@ class PlayWindow:
         return [(name,key) for name,key,owner in choices if relation=='any' or (relation=='friendly' and owner==actor) or (relation=='enemy' and owner!=actor)]
 
     def public_name(self, view, identity):
+        leader=next((l for l in view.get('leaders',[]) if l['instance_id']==identity),None)
+        if leader:return leader['name']
         obj=next((o for o in view['battlefield'] if o['instance_id']==identity),None)
-        if obj:return self.session.card_name(obj.get('definition_key',identity))
+        if obj:
+            leader=next((l for l in view.get('leaders',[]) if l['instance_id']==identity),None)
+            return leader['name'] if leader else self.session.card_name(obj.get('definition_key',identity))
         reveal=next((e['card'] for e in view['events'] if e.get('card',{}).get('instance_id')==identity),None)
         if reveal:return self.session.card_name(reveal.get('definition_key',identity))
         return identity
@@ -230,8 +267,21 @@ class PlayWindow:
         if kind=='negate':return 'Negate the chosen pending effect.' if step['effect_id']=='$target' else f"Negate pending effect #{step['effect_id']}."
         return kind
 
-    def card_dialog(self, view, card):
-        popup=tk.Toplevel(self.root);popup.title('Confirm card play');popup.transient(self.root);popup.grab_set()
+    def leader_panel(self, frame, view):
+        leader=next((l for l in view.get('leaders',[]) if l['owner']==self.gate.actor),None)
+        if not leader:return
+        ttk.Label(frame,text=f"{leader['name']} | {leader['location']} | current summon cost {leader['summon_cost']}").pack(anchor='w',pady=5)
+        if leader['recovering']:ttk.Label(frame,text='Recovering until your next Start; reserve abilities and summoning are unavailable.').pack(anchor='w')
+        if leader['location']=='reserve' and not leader['recovering'] and leader['pending_effect_id'] is None:
+            card={**leader,'kind':'leader','cost':leader['summon_cost'],'steps':[]}
+            ttk.Button(frame,text='Inspect / summon leader',command=lambda:self.card_dialog(view,card,'summon_leader')).pack(anchor='w')
+        for ability in leader['abilities']:
+            label=f"{ability['location'].title()} - {ability['key'].replace('-',' ').title()} ({ability['cost']})"
+            card={**ability,'name':label,'kind':'leader ability','ability_key':ability['key']}
+            ttk.Button(frame,text=label,command=lambda c=card:self.card_dialog(view,c,'leader_ability'),state='normal' if ability['available'] else 'disabled').pack(anchor='w',pady=2)
+
+    def card_dialog(self, view, card, command='play_card'):
+        popup=tk.Toplevel(self.root);popup.title('Confirm leader action' if command!='play_card' else 'Confirm card play');popup.transient(self.root);popup.grab_set()
         frame=ttk.Frame(popup,padding=18);frame.pack(fill='both',expand=True)
         ttk.Label(frame,text=self.label(card),wraplength=520).pack(anchor='w')
         if card['kind']=='creature':ttk.Label(frame,text='Enters ready. Can block immediately; waits until your next Start to attack.',wraplength=520).pack(anchor='w',pady=5)
@@ -251,12 +301,14 @@ class PlayWindow:
         def confirm():
             try:ordinary=amount.get()
             except tk.TclError:return self.error('Enter a whole-number payment.')
-            args={'card_id':card['instance_id'],'payment':{'ordinary':ordinary,'token_ids':[i for i,v in tokens if v.get()]}}
+            args={'payment':{'ordinary':ordinary,'token_ids':[i for i,v in tokens if v.get()]}}
+            if command=='play_card':args['card_id']=card['instance_id']
+            elif command=='leader_ability':args['key']=card['ability_key']
             if card.get('target_kind'):
                 chosen=next((key for label,key in options if label==target.get()),None)
                 if chosen is None:return self.error('No valid target is selected.')
                 args['target']=chosen
-            if self.send('play_card',**args):popup.destroy()
+            if self.send(command,**args):popup.destroy()
         ttk.Button(frame,text='Confirm play and payment',command=confirm,state='disabled' if view['result'] else 'normal').pack(anchor='w',pady=12)
         ttk.Button(frame,text='Cancel',command=popup.destroy).pack(anchor='w')
 

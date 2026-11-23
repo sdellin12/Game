@@ -146,5 +146,33 @@ class HarnessWidgetTests(unittest.TestCase):
         self.assertNotIn(card['instance_id'],[c['instance_id'] for c in after['you']['hand']])
         self.assertEqual(next(p['resources']['available'] for p in after['players'] if p['player_id']==actor),2-card['cost'])
 
+    def test_computer_seat_is_not_a_viewable_human_hand(self):
+        self.app.session=HarnessSession(seed=b'computer-widget-seed-1234',bots=('P2',))
+        self.app.render()
+        self.assertEqual(str(self.button('Computer P2').cget('state')),'disabled')
+        self.app.seat('P2')
+        self.assertIsNone(self.app.gate.actor);self.assertIsNone(self.app.gate.pending)
+        self.assertIn('Computer hands stay private',self.app.notice.get())
+
+    def test_bot_timer_readies_computer_but_stops_before_human_setup(self):
+        self.app.session=HarnessSession(seed=b'computer-widget-seed-1234',bots=('P2',))
+        self.app._schedule_bots()
+        self.root.after(650,self.root.quit);self.root.mainloop()
+        roster=self.app.session.view()['players']
+        self.assertFalse(roster[0]['ready']);self.assertTrue(roster[1]['ready'])
+        self.assertIsNone(self.app.gate.actor)
+
+    def test_summon_inspection_displays_current_price_and_both_ability_locations(self):
+        from unittest.mock import patch
+        self.ready_opening()
+        for actor in ('P1','P2'):self.session.redraw(actor,(),expected_revision=self.session.view()['revision'])
+        actor=self.session.view()['turn']['active_player'];self.app.seat(actor);self.app.unlock()
+        with patch.object(tk.Toplevel,'grab_set'):
+            self.button('Inspect / summon leader').invoke()
+        # The modal contains the resource price, but confirmation still goes to the engine.
+        self.assertIn('leader',self.text().lower())
+        self.assertTrue(any(isinstance(c,ttk.Spinbox) for c in children(self.root)))
+        popup=next(c for c in self.root.winfo_children() if isinstance(c,tk.Toplevel));popup.destroy()
+
 
 if __name__=='__main__':unittest.main()

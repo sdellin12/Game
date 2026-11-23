@@ -2,6 +2,7 @@
 from dataclasses import dataclass, asdict
 import hashlib
 import json
+from crucible_core.leaders import LeaderAbility, LeaderDefinition
 from crucible_core.cards import CardDefinition
 from crucible_core.match import (DamagePlayer, HealPlayer, DrawCards, DestroyCreature,
     GrantResources, GrantCapacity, NegateEffect, MatchPlayer, new_match)
@@ -20,6 +21,7 @@ class ReserveIdentity:
     key: str
     name: str
     color: str
+    definition: LeaderDefinition
 
 
 @dataclass(frozen=True)
@@ -59,10 +61,16 @@ def practice_pack():
         cards.append(PackCard(name,'Generic',CardDefinition(f'spell-{i+1:02}',kind,cost,steps,target_kind=target,target_relation=relation)))
     for i,name in enumerate(('Workshop Lantern','Root Battery','Memory Well','Beacon Tower','Sun Engine','Crystal Reservoir')):
         cards.append(PackCard(name,'Generic',CardDefinition(f'beacon-{i+1:02}','permanent',3 if i<3 else 5,capacity_bonus=1 if i<3 else 2)))
-    return validate_pack(PracticePack('crucible-practice',1,tuple(cards),(
-        ReserveIdentity('core-gold','Aster, Practice Core','Gold'),
-        ReserveIdentity('core-green','Moss, Practice Core','Green'),
-        ReserveIdentity('core-silver','Gear, Practice Core','Silver'))))
+    return validate_pack(PracticePack('crucible-practice',2,tuple(cards),(
+        ReserveIdentity('core-gold','Aster, Practice Core','Gold',LeaderDefinition('core-gold','Aster, Practice Core','Gold',4,3,5,
+            LeaderAbility('core-repair',3,(HealPlayer('$controller',3),)),
+            LeaderAbility('guiding-bolt',2,(DamagePlayer('$target',1),),target_kind='player',target_relation='enemy',exhaust_source=True))),
+        ReserveIdentity('core-green','Moss, Practice Core','Green',LeaderDefinition('core-green','Moss, Practice Core','Green',4,2,6,
+            LeaderAbility('root-memory',4,(GrantCapacity('$controller',1),)),
+            LeaderAbility('renewal',2,(HealPlayer('$controller',2),)))),
+        ReserveIdentity('core-silver','Gear, Practice Core','Silver',LeaderDefinition('core-silver','Gear, Practice Core','Silver',4,4,4,
+            LeaderAbility('scouting-lens',3,(DrawCards('$controller',1),)),
+            LeaderAbility('overload',3,(DamagePlayer('$target',3),),target_kind='player',target_relation='enemy',exhaust_source=True))))))
 
 
 def validate_pack(pack):
@@ -77,9 +85,11 @@ def validate_pack(pack):
         raise ValueError('Duplicate card key/name')
     if any(type(l) is not ReserveIdentity or type(l.key) is not str or not l.key or type(l.name) is not str or not l.name.strip() or l.color not in ('Gold','Green','Silver') for l in pack.leaders) or len({l.key for l in pack.leaders})!=len(pack.leaders):
         raise ValueError('Invalid reserve identity')
+    if any(type(l.definition) is not LeaderDefinition or (l.key,l.name,l.color)!=(l.definition.key,l.definition.name,l.definition.color) for l in pack.leaders):
+        raise ValueError('Leader identity/definition mismatch')
     # Reuse engine content validation rather than maintaining a second effect grammar.
     new_match(tuple(MatchPlayer(DrawPlayer(p,30,(),())) for p in ('A','B')),(),(),RefillPolicy(20,1),
-              active_player='A',card_definitions=tuple(c.definition for c in pack.cards))
+              active_player='A',card_definitions=tuple(c.definition for c in pack.cards),leader_definitions=tuple(l.definition for l in pack.leaders))
     return pack
 
 

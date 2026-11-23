@@ -7,6 +7,7 @@ from dataclasses import dataclass, replace
 from .combat import Creature, CombatState, Player, resolve_combat, validate_state
 from .combat_flow import (CombatFlow, commit_attacks, begin_blocking, lock_blockers,
                           required_orders, choose_order, resolve_committed, combat_view, validate_flow)
+from .leaders import LeaderAbility, LeaderDefinition, LeaderState
 from .cards import CardDefinition, CardInstance, PendingCard
 from .resources import ResourcePool, Payment, validate_pool, start_resources, pay_resources
 from .priority import PriorityState, PendingEffect, add_effect, pass_priority, validate_priority
@@ -179,6 +180,8 @@ class MatchState:
     pending_cards: tuple[PendingCard, ...] = ()
     shuffle_seed: bytes | None = None
     shuffle_counter: int = 0
+    leader_definitions: tuple[LeaderDefinition, ...] = ()
+    leaders: tuple[LeaderState, ...] = ()
 
 
 def _name(value):
@@ -282,9 +285,11 @@ def validate_match(state):
         if (not _natural(o.capacity_bonus) or type(o.resource_value) is not int or o.resource_value<1
                 or (o.kind!='resource_token' and o.resource_value!=1)):
             raise MatchError('invalid capacity/token value')
-        if o.kind not in ('creature','creature_token','permanent','resource_token'):
+        if o.kind not in ('creature','creature_token','permanent','resource_token','leader'):
             raise UnsupportedMatchRule('leader/combined/unknown object not covered')
-        if o.kind in ('creature','creature_token'):
+        if o.kind=='leader' and not any(l.instance_id==o.object_id for l in state.leaders):
+            raise UnsupportedMatchRule('leader requires a registered definition/state')
+        if o.kind in ('creature','creature_token','leader'):
             if (type(o.creature) is not Creature or o.creature.instance_id != o.object_id
                     or o.creature.controller != o.controller or type(o.creature.health) is not int):
                 raise MatchError('creature/object identity mismatch')
@@ -304,6 +309,7 @@ def validate_match(state):
                 raise MatchError('invalid registered trigger')
         ids.append(o.object_id)
     ids.extend(c.card_id for c in state.pending_cards)
+    _validate_leaders(state,ids)
     _validate_card_state(state,ids)
     if (state.shuffle_seed is not None and (type(state.shuffle_seed) is not bytes or len(state.shuffle_seed)<16)) or not _natural(state.shuffle_counter):
         raise MatchError('invalid server shuffle state')
@@ -328,13 +334,13 @@ def validate_match(state):
 
 
 def new_match(players, battlefield, effects, policy, *, active_player, phase='MainBefore', end_cleanup=(),
-              actions=(), managed_turns=False, start_cleanup=(), card_definitions=(), card_instances=(), shuffle_seed=None):
+              actions=(), managed_turns=False, start_cleanup=(), card_definitions=(), card_instances=(), shuffle_seed=None, leader_definitions=(), leaders=()):
     """Fixture/coordinator factory; no deck/lobby setup or full-match mode implied."""
     seats=tuple(p.cards.player_id for p in players)
     state=MatchState(seats,players,battlefield,effects,policy,TurnFlow(active_player,1,phase=phase),
                      PriorityState(seats,active_player,active_player),end_cleanup=end_cleanup,actions=actions,managed_turns=managed_turns,
                      starting_player=active_player,start_cleanup=start_cleanup,card_definitions=card_definitions,
-                     card_instances=card_instances,shuffle_seed=shuffle_seed)
+                     card_instances=card_instances,shuffle_seed=shuffle_seed,leader_definitions=leader_definitions,leaders=leaders)
     validate_match(state)
     if any(p.eliminated or p.cards.health <= 0 for p in players):
         raise MatchError('initial players must be alive')
@@ -418,7 +424,11 @@ def _depart(state, ids, cause, *, genuine=False):
         if genuine:
             state,e=_emit(state,'defeat',o.object_id,cause);events.append(e)
         state,e=_emit(state,'departure',o.object_id,cause);events.append(e)
-        if o.kind not in ('creature_token','resource_token'):
+        if o.kind=='leader':
+            leader=next(l for l in state.leaders if l.instance_id==o.object_id)
+            state=_set_leader(state,replace(leader,location='reserve',removals=leader.removals+1,recovering=True,pending_effect_id=None))
+            state,_=_emit(state,'leader_returned',o.object_id,cause)
+        elif o.kind not in ('creature_token','resource_token'):
             owner=_player(state,o.owner)
             owner=replace(owner,cards=replace(owner.cards,discard=owner.cards.discard+(o.object_id,)))
             state=_set_player(state,owner)
@@ -474,6 +484,9 @@ def _stabilize(state, *, reset_priority=True):
     for card in state.pending_cards:
         if _player(state,card.controller).eliminated:
             state=_discard_pending_card(state,card,'card_cancelled')
+    for leader in state.leaders:
+        if leader.pending_effect_id is not None and _player(state,leader.owner).eliminated:
+            state=_cancel_leader_summon(state,leader.pending_effect_id)
     if reset_priority:
         state=_priority_after_cleanup(state)
     return _flush_triggers(state)
@@ -566,6 +579,7 @@ def _run(state):
             if item is not None:
                 card=next((c for c in state.pending_cards if c.effect_id==item.effect_id),None)
                 if card:state=_discard_pending_card(state,card,'card_cancelled')
+                state=_cancel_leader_summon(state,item.effect_id)
                 state=replace(state,priority=replace(state.priority,chain=tuple(e for e in state.priority.chain if e!=item)))
                 state,_=_emit(state,'effect_negated',str(item.effect_id),'negation')
         else:  # validated DestroyCreature; absent targets do not cancel independent instructions
@@ -575,6 +589,7 @@ def _run(state):
         state=replace(state,pending=replace(state.pending,index=state.pending.index+1))
     cleanup=state.pending.cleanup
     state=_finish_pending_card(state,state.pending.effect_id)
+    state=_finish_leader_summon(state,state.pending.effect_id)
     state=replace(state,pending=None)
     if cleanup:
         state=replace(state,end_stage='done')
@@ -825,6 +840,7 @@ def _finish_start(state):
     state=replace(state,start_stage='done',start_cleanup=())
     if active.eliminated:
         return _quiescent(state)
+    state=replace(state,leaders=tuple(replace(l,recovering=False) if l.owner==active.cards.player_id else l for l in state.leaders))
     bonus=sum(o.capacity_bonus for o in state.battlefield if o.controller==active.cards.player_id)
     active=replace(active,resources=start_resources(active.resources,bonus))
     state=_set_player(state,active)
@@ -870,43 +886,7 @@ def _validate_card_state(state, zone_ids):
     if len(definitions)!=len(state.card_definitions) or len(instances)!=len(state.card_instances):
         raise MatchError('duplicate card definition/instance')
     for d in definitions.values():
-        if (not _name(d.key) or d.kind not in ('creature','permanent','action','reaction') or not _natural(d.cost)
-                or not _natural(d.attack) or not _natural(d.health) or not _natural(d.capacity_bonus)
-                or type(d.steps) is not tuple or type(d.keywords) is not tuple
-                or d.target_kind not in (None,'player','creature','effect') or d.target_relation not in ('any','friendly','enemy')):
-            raise UnsupportedMatchRule('unsupported card definition')
-        if d.kind=='creature':
-            if d.health<1 or d.steps or d.target_kind is not None or d.capacity_bonus:
-                raise UnsupportedMatchRule('creature entry abilities not supported')
-            validate_state(CombatState((Player('template-owner'),),(Creature('template-creature','template-owner',d.attack,d.health,d.health,keywords=d.keywords),)))
-        elif d.attack or d.health or d.keywords:
-            raise MatchError('noncreature stats/keywords')
-        if d.kind=='permanent' and (d.steps or d.target_kind is not None):
-            raise UnsupportedMatchRule('permanent entry abilities not supported')
-        if d.kind in ('action','reaction') and d.capacity_bonus:
-            raise MatchError('only permanents may grant ongoing capacity here')
-        has_target=False
-        for step in d.steps:
-            if type(step) is NegateEffect and step.effect_id=='$target':
-                if d.target_kind!='effect':raise MatchError('effect target mismatch')
-                has_target=True;continue
-            if type(step) is NegateEffect:
-                raise UnsupportedMatchRule('negation requires a chosen effect target')
-            if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature):
-                raise UnsupportedMatchRule('unsupported card instruction')
-            if step.target=='$target':
-                expected='creature' if type(step) is DestroyCreature else 'player'
-                if d.target_kind!=expected:raise MatchError('card target mismatch')
-                has_target=True
-            elif step.target!='$controller':
-                raise UnsupportedMatchRule('card targets must bind controller or the chosen target')
-            elif type(step) is DestroyCreature:
-                raise MatchError('controller is not a creature')
-            if type(step) is not DestroyCreature:
-                amount=step.count if type(step) is DrawCards else step.amount
-                if not _natural(amount):raise MatchError('invalid card instruction quantity')
-        if d.target_kind is None and d.target_relation!='any':raise MatchError('unused target relation')
-        if has_target!=(d.target_kind is not None):raise MatchError('unused/missing target declaration')
+        _validate_card_definition(d)
     for c in instances.values():
         if not _name(c.instance_id) or c.definition_key not in definitions or c.owner not in state.seat_order or zone_ids.count(c.instance_id)!=1:
             raise MatchError('registered card must occupy exactly one zone')
@@ -1003,4 +983,178 @@ def _finish_pending_card(state, effect_id):
     obj=MatchObject(card.instance_id,card.owner,pending.controller,definition.kind,creature,capacity_bonus=definition.capacity_bonus)
     state=replace(state,battlefield=state.battlefield+(obj,),pending_cards=tuple(c for c in state.pending_cards if c!=pending))
     state,_=_emit(state,'card_resolved',card.instance_id,'pending_to_battlefield')
+    return state
+
+
+def _validate_card_definition(d):
+    if (not _name(d.key) or d.kind not in ('creature','permanent','action','reaction') or not _natural(d.cost)
+            or not _natural(d.attack) or not _natural(d.health) or not _natural(d.capacity_bonus)
+            or type(d.steps) is not tuple or type(d.keywords) is not tuple
+            or d.target_kind not in (None,'player','creature','effect') or d.target_relation not in ('any','friendly','enemy')):
+        raise UnsupportedMatchRule('unsupported card definition')
+    if d.kind=='creature':
+        if d.health<1 or d.steps or d.target_kind is not None or d.capacity_bonus:
+            raise UnsupportedMatchRule('creature entry abilities not supported')
+        validate_state(CombatState((Player('template-owner'),),(Creature('template-creature','template-owner',d.attack,d.health,d.health,keywords=d.keywords),)))
+    elif d.attack or d.health or d.keywords:
+        raise MatchError('noncreature stats/keywords')
+    if d.kind=='permanent' and (d.steps or d.target_kind is not None):
+        raise UnsupportedMatchRule('permanent entry abilities not supported')
+    if d.kind in ('action','reaction') and d.capacity_bonus:
+        raise MatchError('only permanents may grant ongoing capacity here')
+    has_target=False
+    for step in d.steps:
+        if type(step) is NegateEffect and step.effect_id=='$target':
+            if d.target_kind!='effect':raise MatchError('effect target mismatch')
+            has_target=True;continue
+        if type(step) is NegateEffect:
+            raise UnsupportedMatchRule('negation requires a chosen effect target')
+        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature):
+            raise UnsupportedMatchRule('unsupported card instruction')
+        if step.target=='$target':
+            expected='creature' if type(step) is DestroyCreature else 'player'
+            if d.target_kind!=expected:raise MatchError('card target mismatch')
+            has_target=True
+        elif step.target!='$controller':
+            raise UnsupportedMatchRule('card targets must bind controller or the chosen target')
+        elif type(step) is DestroyCreature:
+            raise MatchError('controller is not a creature')
+        if type(step) is not DestroyCreature:
+            amount=step.count if type(step) is DrawCards else step.amount
+            if not _natural(amount):raise MatchError('invalid card instruction quantity')
+    if d.target_kind is None and d.target_relation!='any':raise MatchError('unused target relation')
+    if has_target!=(d.target_kind is not None):raise MatchError('unused/missing target declaration')
+
+def _set_leader(state, leader):
+    return replace(state,leaders=tuple(leader if l.instance_id==leader.instance_id else l for l in state.leaders))
+
+
+def _leader_definition(state, leader):
+    return next(d for d in state.leader_definitions if d.key==leader.definition_key)
+
+
+def _validate_leaders(state, zone_ids):
+    if type(state.leader_definitions) is not tuple or type(state.leaders) is not tuple or any(type(d) is not LeaderDefinition for d in state.leader_definitions) or any(type(l) is not LeaderState for l in state.leaders):
+        raise MatchError('invalid leader records')
+    definitions={d.key:d for d in state.leader_definitions}
+    if len(definitions)!=len(state.leader_definitions) or len({l.instance_id for l in state.leaders})!=len(state.leaders) or len({l.owner for l in state.leaders})!=len(state.leaders):
+        raise MatchError('duplicate leader definition/owner/instance')
+    if set(definitions)&{d.key for d in state.card_definitions}:raise MatchError('leader and ordinary card definitions require distinct keys')
+    for d in definitions.values():
+        if not _name(d.key) or not _name(d.name) or not _name(d.color) or not _natural(d.summon_cost):raise MatchError('invalid leader definition')
+        validate_state(CombatState((Player('owner'),),(Creature('leader','owner',d.attack,d.health,d.health,keywords=d.keywords),)))
+        if type(d.reserve_ability) is not LeaderAbility or type(d.battle_ability) is not LeaderAbility:raise MatchError('invalid leader abilities')
+        if d.reserve_ability.key==d.battle_ability.key:raise UnsupportedMatchRule('separate reserve/battle ability keys required')
+        for location,ability in (('reserve',d.reserve_ability),('battlefield',d.battle_ability)):
+            if (type(ability) is not LeaderAbility or not _name(ability.key) or ability.timing not in ('main','reaction')
+                    or type(ability.exhaust_source) is not bool or type(ability.once_per_turn) is not bool
+                    or (location=='reserve' and ability.exhaust_source)):
+                raise UnsupportedMatchRule('unsupported leader ability')
+            _validate_card_definition(CardDefinition(ability.key,'reaction' if ability.timing=='reaction' else 'action',ability.cost,ability.steps,
+                                                    target_kind=ability.target_kind,target_relation=ability.target_relation))
+    live=state.priority.chain+((state.priority.resolving,) if state.priority.resolving else ()) if state.priority else ()
+    pending=[]
+    for l in state.leaders:
+        if (not _name(l.instance_id) or l.owner not in state.seat_order or l.definition_key not in definitions
+                or l.location not in ('reserve','battlefield') or not _natural(l.removals) or type(l.recovering) is not bool
+                or any(c.instance_id==l.instance_id for c in state.card_instances)):
+            raise MatchError('invalid outside-deck leader state')
+        obj=next((o for o in state.battlefield if o.object_id==l.instance_id),None)
+        if l.location=='battlefield':
+            if obj is None or obj.kind!='leader' or obj.owner!=l.owner or obj.controller!=l.owner or l.recovering or l.pending_effect_id is not None:
+                raise MatchError('leader battlefield/control mismatch')
+        else:
+            if obj is not None:raise MatchError('reserved leader cannot occupy battlefield')
+            zone_ids.append(l.instance_id)
+        if l.pending_effect_id is not None:
+            if (type(l.pending_effect_id) is not int or l.location!='reserve' or l.recovering or
+                    not any(e.effect_id==l.pending_effect_id and e.controller==l.owner and e.effect_key==f'leader-summon:{l.pending_effect_id}' for e in live)):
+                raise MatchError('invalid pending leader summon')
+            pending.append(l.pending_effect_id)
+    if len(set(pending))!=len(pending) or set(pending)&{c.effect_id for c in state.pending_cards}:raise MatchError('duplicate pending leader item')
+
+
+def leader_ability_available(state, leader, ability):
+    if leader.owner not in _living(state) or leader.recovering:return False
+    definition=_leader_definition(state,leader)
+    if ability!=(definition.reserve_ability if leader.location=='reserve' else definition.battle_ability):return False
+    key=f'leader-ability:{leader.instance_id}:{ability.key}'
+    if ability.once_per_turn and (key,state.turn.turn_id) in state.action_uses:return False
+    if ability.exhaust_source:
+        obj=next((o for o in state.battlefield if o.object_id==leader.instance_id),None)
+        if obj is None or obj.creature.exhausted or not obj.creature.attack_eligible:return False
+    return True
+
+
+def _leader_window(state, actor, *, main):
+    if (_blocked(state) or state.priority is None or state.priority.status!='priority' or state.priority.holder!=actor
+            or actor not in _living(state)):
+        raise MatchError('leader action requires priority')
+    if actor==state.turn.active_player and (state.turn.recharge or _player(state,actor).cards.end_turn_requested):raise MatchError('active turn restricted')
+    if main and (actor!=state.turn.active_player or state.turn.phase not in ('MainBefore','MainAfter') or state.turn.end_requested or state.priority.chain):
+        raise MatchError('leader action requires own empty-chain Main')
+
+
+def _pay_leader_item(state, leader, key, steps, cost, payment):
+    owner=_player(state,leader.owner)
+    tokens=tuple((o.object_id,o.resource_value) for o in state.battlefield if o.kind=='resource_token' and o.controller==leader.owner)
+    pool=pay_resources(owner.resources,cost,payment,tokens)
+    if any(e.key==key for e in state.effects):raise MatchError('leader item key collision')
+    priority=add_effect(state.priority,leader.owner,key,expected_revision=state.priority.revision)
+    state=_set_player(state,replace(owner,resources=pool))
+    state=replace(state,priority=priority,effects=state.effects+(EffectSpec(key,leader.owner,steps,leader.instance_id),),revision=state.revision+1)
+    if payment.token_ids:state=_depart(state,set(payment.token_ids),'cost_payment')
+    return state
+
+
+def summon_leader(state, actor, payment, *, expected_revision):
+    _check(state,expected_revision);_leader_window(state,actor,main=True)
+    leader=next((l for l in state.leaders if l.owner==actor),None)
+    if leader is None or leader.location!='reserve' or leader.recovering or leader.pending_effect_id is not None:
+        raise MatchError('leader cannot be summoned now')
+    definition=_leader_definition(state,leader)
+    effect_id=state.priority.next_effect_id
+    state=_pay_leader_item(state,leader,f'leader-summon:{effect_id}',(),definition.summon_cost+2*leader.removals,payment)
+    state=_set_leader(state,replace(leader,pending_effect_id=effect_id))
+    state,_=_emit(state,'leader_summon_committed',leader.instance_id,str(effect_id))
+    return _quiescent(_stabilize(state,reset_priority=False))
+
+
+def activate_leader(state, actor, key, payment, *, target=None, expected_revision):
+    _check(state,expected_revision)
+    leader=next((l for l in state.leaders if l.owner==actor),None)
+    if leader is None:raise MatchError('leader unavailable')
+    definition=_leader_definition(state,leader)
+    ability=next((a for a in (definition.reserve_ability,definition.battle_ability) if a.key==key),None)
+    if ability is None or not leader_ability_available(state,leader,ability):raise MatchError('leader ability unavailable')
+    _leader_window(state,actor,main=ability.timing=='main')
+    steps=_bound_card_steps(state,actor,ability,target)
+    state=_pay_leader_item(state,leader,f'leader-effect:{state.priority.next_effect_id}',steps,ability.cost,payment)
+    if ability.exhaust_source:
+        state=replace(state,battlefield=tuple(replace(o,creature=replace(o.creature,exhausted=True)) if o.object_id==leader.instance_id else o for o in state.battlefield))
+    if ability.once_per_turn:
+        state=replace(state,action_uses=state.action_uses+((f'leader-ability:{leader.instance_id}:{ability.key}',state.turn.turn_id),))
+    state,_=_emit(state,'leader_ability',leader.instance_id,ability.key)
+    return _quiescent(_stabilize(state,reset_priority=False))
+
+
+def _cancel_leader_summon(state, effect_id):
+    leader=next((l for l in state.leaders if l.pending_effect_id==effect_id),None)
+    if leader is None:return state
+    state=_set_leader(state,replace(leader,pending_effect_id=None))
+    state,_=_emit(state,'leader_summon_cancelled',leader.instance_id,str(effect_id))
+    return state
+
+
+def _finish_leader_summon(state, effect_id):
+    if effect_id is None:return state
+    leader=next((l for l in state.leaders if l.pending_effect_id==effect_id),None)
+    if leader is None:return state
+    if _player(state,leader.owner).eliminated:return _cancel_leader_summon(state,effect_id)
+    definition=_leader_definition(state,leader)
+    obj=MatchObject(leader.instance_id,leader.owner,leader.owner,'leader',
+          Creature(leader.instance_id,leader.owner,definition.attack,definition.health,definition.health,attack_eligible=False,keywords=definition.keywords))
+    state=replace(state,battlefield=state.battlefield+(obj,))
+    state=_set_leader(state,replace(leader,location='battlefield',pending_effect_id=None))
+    state,_=_emit(state,'leader_summoned',leader.instance_id,definition.key)
     return state
