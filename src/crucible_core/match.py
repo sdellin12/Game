@@ -49,6 +49,11 @@ class DestroyCreature:
 
 
 @dataclass(frozen=True)
+class ReturnCreatureToHand:
+    target: str
+
+
+@dataclass(frozen=True)
 class GrantCapacity:
     target: str
     amount: int
@@ -230,7 +235,7 @@ def _steps_valid(steps, seats, objects):
             valid = _name(step.target) and _natural(step.amount) and step.duration in ('turn_end','next_start') and (step.anchor_player is None if step.duration=='turn_end' else step.anchor_player in seats)
         elif type(step) is NegateEffect:
             valid = type(step.effect_id) is int and step.effect_id>0
-        elif type(step) is DestroyCreature:
+        elif type(step) in (DestroyCreature,ReturnCreatureToHand):
             valid = _name(step.target)  # may be absent when an item resolves
         else:
             raise UnsupportedMatchRule('unregistered instruction type')
@@ -439,7 +444,7 @@ def _capture(state, sources, events):
     return replace(state,triggers=tuple(candidates),next_trigger_id=next_id)
 
 
-def _depart(state, ids, cause, *, genuine=False):
+def _depart(state, ids, cause, *, genuine=False, hand_ids=()):
     sources=state.battlefield
     events=[]
     for o in sources:
@@ -454,10 +459,25 @@ def _depart(state, ids, cause, *, genuine=False):
             state,_=_emit(state,'leader_returned',o.object_id,cause)
         elif o.kind not in ('creature_token','resource_token'):
             owner=_player(state,o.owner)
-            owner=replace(owner,cards=replace(owner.cards,discard=owner.cards.discard+(o.object_id,)))
+            zone='hand' if o.object_id in hand_ids else 'discard'
+            owner=replace(owner,cards=replace(owner.cards,**{zone:getattr(owner.cards,zone)+(o.object_id,)}))
             state=_set_player(state,owner)
+            if zone=='hand':state,_=_emit(state,'card_returned',o.object_id,cause)
     state=_capture(state,sources,events)
     return replace(state,battlefield=tuple(o for o in sources if o.object_id not in ids))
+
+
+def _return_creature_to_hand(state, target):
+    obj=next((o for o in state.battlefield if o.object_id==target and o.creature),None)
+    if obj is None:return state
+    # Structural attachments leave now, before a later instruction can draw/refill.
+    ids={target}
+    while True:
+        attached={o.object_id for o in state.battlefield if o.attached_to in ids}
+        if attached<=ids:break
+        ids.update(attached)
+    state=_depart(state,ids,'return_to_hand',hand_ids=(target,))
+    return _trim_durations(state)
 
 
 def _priority_after_cleanup(state):
@@ -611,6 +631,8 @@ def _run(state):
                 state=_cancel_leader_summon(state,item.effect_id)
                 state=replace(state,priority=replace(state.priority,chain=tuple(e for e in state.priority.chain if e!=item)))
                 state,_=_emit(state,'effect_negated',str(item.effect_id),'negation')
+        elif type(step) is ReturnCreatureToHand:
+            state=_return_creature_to_hand(state,step.target)
         else:  # validated DestroyCreature; absent targets do not cancel independent instructions
             obj=next((o for o in state.battlefield if o.object_id==step.target),None)
             if obj and obj.creature:
@@ -1035,20 +1057,20 @@ def _validate_card_definition(d):
             has_target=True;continue
         if type(step) is NegateEffect:
             raise UnsupportedMatchRule('negation requires a chosen effect target')
-        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature,GrantShield):
+        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,GrantResources,GrantCapacity,DestroyCreature,ReturnCreatureToHand,GrantShield):
             raise UnsupportedMatchRule('unsupported card instruction')
         if step.target=='$target':
-            expected='creature' if type(step) in (DestroyCreature,GrantShield) else 'player'
+            expected='creature' if type(step) in (DestroyCreature,ReturnCreatureToHand,GrantShield) else 'player'
             if d.target_kind!=expected:raise MatchError('card target mismatch')
             has_target=True
         elif step.target!='$controller':
             raise UnsupportedMatchRule('card targets must bind controller or the chosen target')
-        elif type(step) in (DestroyCreature,GrantShield):
+        elif type(step) in (DestroyCreature,ReturnCreatureToHand,GrantShield):
             raise MatchError('controller is not a creature')
         if type(step) is GrantShield:
             if step.duration not in ('turn_end','next_start') or (step.anchor_player is not None if step.duration=='turn_end' else step.anchor_player!='$controller'):
                 raise UnsupportedMatchRule('unsupported authored shield duration')
-        if type(step) is not DestroyCreature:
+        if type(step) not in (DestroyCreature,ReturnCreatureToHand):
             amount=step.count if type(step) is DrawCards else step.amount
             if not _natural(amount):raise MatchError('invalid card instruction quantity')
     if d.target_kind is None and d.target_relation!='any':raise MatchError('unused target relation')

@@ -21,24 +21,26 @@ from crucible_core.combat_flow import CombatFlow
 from crucible_core.durations import BoundaryCount, TimedEffect
 from crucible_core.leaders import LeaderAbility, LeaderDefinition, LeaderState
 from crucible_core.lobby import (LobbyState, LobbyPlayer, DeckSelection, Opening,
-    new_lobby, begin_opening, lock_redraw, validate_deck, _rules_hash)
+    new_lobby, begin_opening, lock_redraw, validate_deck)
 from crucible_core.match import (MatchState, MatchPlayer, MatchEvent, MatchResult, TriggerSpec,
     TriggerCandidate, Resolution, MatchObject, EffectSpec, ActionSpec, DamagePlayer,
-    HealPlayer, DrawCards, DestroyCreature, GrantCapacity, GrantResources, GrantShield,
+    HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, GrantCapacity, GrantResources, GrantShield,
     NegateEffect, validate_match, _steps_valid)
 from crucible_core.priority import PriorityState, PendingEffect
 from crucible_core.resources import ResourcePool, Payment
 from crucible_core.turns import DrawPlayer, TurnFlow, RefillPolicy, DrawState, _check_choice
 
 FORMAT='crucible-harness-private-save'
-VERSION=1
+VERSION=2
+# Increment when existing instructions/state/shuffle semantics become incompatible.
+COMPATIBILITY_VERSION=1
 MAX_BYTES=16*1024*1024
 MAX_DEPTH=64
 _RECORDS={c.__name__:c for c in (PracticePack,PackCard,ReserveIdentity,CardDefinition,CardInstance,PendingCard,
     Shield,Creature,Player,CombatState,Attack,CombatFlow,BoundaryCount,TimedEffect,LeaderAbility,LeaderDefinition,LeaderState,
     LobbyState,LobbyPlayer,DeckSelection,Opening,MatchState,MatchPlayer,MatchEvent,MatchResult,TriggerSpec,TriggerCandidate,
     Resolution,MatchObject,EffectSpec,ActionSpec,DamagePlayer,HealPlayer,DrawCards,DestroyCreature,GrantCapacity,
-    GrantResources,GrantShield,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
+    GrantResources,GrantShield,ReturnCreatureToHand,NegateEffect,PriorityState,PendingEffect,ResourcePool,Payment,DrawPlayer,TurnFlow,RefillPolicy,DrawState)}
 
 
 class SaveError(ValueError):
@@ -66,6 +68,11 @@ def runtime_fingerprint():
             data=marshal.dumps(code)
         digest.update(name.encode());digest.update(data)
     return digest.hexdigest()
+
+
+def python_runtime():
+    # stdlib shuffle behavior is not promised across Python minor releases.
+    return f'{sys.implementation.name}-{sys.version_info.major}.{sys.version_info.minor}'
 
 
 @lru_cache(maxsize=None)
@@ -129,12 +136,20 @@ def _read_envelope(path):
     if len(data)>MAX_BYTES:raise SaveError('Save file is too large')
     def invalid_number(value):raise SaveError('Nonfinite JSON number')
     doc=json.loads(data.decode('utf-8'),object_pairs_hook=_object,parse_constant=invalid_number)
+    if type(doc) is not dict or doc.get('format')!=FORMAT:raise SaveError('Not a Crucible private save')
+    version=doc.get('schema_version')
+    if type(version) is not int or version not in (1,VERSION):raise SaveError('Unsupported save version; original file was not changed')
     expected={'format','schema_version','runtime_hash','content_hash','payload','checksum'}
-    if type(doc) is not dict or set(doc)!=expected or doc['format']!=FORMAT:raise SaveError('Not a Crucible private save')
-    if type(doc['schema_version']) is not int or doc['schema_version']!=VERSION:raise SaveError('Unsupported save version; original file was not changed')
+    if version==VERSION:expected.update(('compatibility_version','python_runtime'))
+    if set(doc)!=expected:raise SaveError('Unknown or missing envelope fields')
+    if any(not _hash_value(doc[key]) for key in ('runtime_hash','content_hash','checksum')):raise SaveError('Invalid save fingerprint')
     checksum=doc['checksum'];body={k:v for k,v in doc.items() if k!='checksum'}
     if type(checksum) is not str or checksum!=hashlib.sha256(_canonical(body)).hexdigest():raise SaveError('Save checksum does not match')
     return doc,data
+
+
+def _hash_value(value):
+    return type(value) is str and len(value)==64 and all(c in '0123456789abcdef' for c in value)
 
 
 def _validate_pending(state):
@@ -178,7 +193,7 @@ def _validate_lobby(lobby, bots):
     if lobby.phase=='lobby':
         if lobby.opening or lobby.redraw_locks or lobby.redraw_counts or lobby.order or lobby.match is not None or lobby.rules_hash is not None or lobby.content_hash is not None:raise SaveError('Lobby contains premature match data')
         return
-    if lobby.phase not in ('opening','match') or lobby.rules_hash!=_rules_hash() or lobby.content_hash!=pack_hash(lobby.pack):raise SaveError('Frozen rules/content do not match this build')
+    if lobby.phase not in ('opening','match') or not _hash_value(lobby.rules_hash) or lobby.content_hash!=pack_hash(lobby.pack):raise SaveError('Invalid frozen rules/content provenance')
     base=replace(base,players=lobby.players,revision=lobby.revision)
     expected=begin_opening(base,lobby.players[0].player_id,expected_revision=base.revision)
     for item in lobby.redraw_locks:
@@ -196,12 +211,22 @@ def _validate_lobby(lobby, bots):
     validate_match(state);_validate_pending(state)
 
 
-def _write_atomic(path, data):
+def _publish_new(temp, path):
+    # Windows rename refuses an occupied destination; POSIX rename would replace it.
+    if os.name=='nt':os.rename(temp,path)
+    else:os.link(temp,path)
+
+
+def _write_atomic(path, data, *, replace_existing=True):
     temp=None
     try:
         with tempfile.NamedTemporaryFile(prefix='.'+path.name+'.',suffix='.tmp',dir=path.parent,delete=False) as stream:
             temp=Path(stream.name);stream.write(data);stream.flush();os.fsync(stream.fileno())
-        os.replace(temp,path);temp=None
+        if replace_existing:
+            os.replace(temp,path);temp=None
+        else:
+            # Publish complete bytes without replacing a concurrently created destination.
+            _publish_new(temp,path)
     finally:
         if temp is not None:temp.unlink(missing_ok=True)
 
@@ -214,7 +239,7 @@ def save_session(session, path):
         if session.runtime_hash!=current:raise SaveError('Runtime changed; retain the matching source/build before saving')
         bots=tuple(sorted(session.bots));lobby=session._lobby
         _validate_lobby(lobby,bots)
-        body={'format':FORMAT,'schema_version':VERSION,'runtime_hash':current,'content_hash':pack_hash(lobby.pack),
+        body={'format':FORMAT,'schema_version':VERSION,'compatibility_version':COMPATIBILITY_VERSION,'python_runtime':python_runtime(),'runtime_hash':current,'content_hash':pack_hash(lobby.pack),
               'payload':{'lobby':_encode(lobby),'bots':list(bots)}}
         data=json.dumps({**body,'checksum':hashlib.sha256(_canonical(body)).hexdigest()},sort_keys=True,indent=2,allow_nan=False).encode('utf-8')
         if len(data)>MAX_BYTES:raise SaveError('Snapshot exceeds save size limit')
@@ -231,20 +256,26 @@ def save_session(session, path):
         raise SaveError(f'Could not save this session: {exc}') from None
 
 
+def _session_from_document(doc):
+    if doc['schema_version']!=VERSION:raise SaveError('Version 1 needs explicit conversion: python -m crucible_play.migrate INPUT OUTPUT')
+    if type(doc['compatibility_version']) is not int or doc['compatibility_version']!=COMPATIBILITY_VERSION:
+        raise SaveError('Unsupported gameplay compatibility version; retain the original save/build')
+    if doc['python_runtime']!=python_runtime():raise SaveError('Save requires its matching Python implementation/major.minor version')
+    payload=doc['payload']
+    if type(payload) is not dict or set(payload)!={'lobby','bots'} or type(payload['bots']) is not list:raise SaveError('Invalid saved payload')
+    lobby=_decode(payload['lobby']);bots=tuple(payload['bots'])
+    if type(lobby) is not LobbyState or doc['content_hash']!=pack_hash(lobby.pack):raise SaveError('Content checksum mismatch')
+    _validate_lobby(lobby,bots)
+    from .session import HarnessSession
+    session=object.__new__(HarnessSession)
+    session._lobby=lobby;session.bots=frozenset(bots);session.runtime_hash=runtime_fingerprint();session.paused=True
+    return session
+
+
 def load_session(path):
     try:
         doc,_=_read_envelope(path)
-        current=runtime_fingerprint()
-        if doc['runtime_hash']!=current:raise SaveError('Save requires its matching game build/Python version; original file was not changed')
-        payload=doc['payload']
-        if type(payload) is not dict or set(payload)!={'lobby','bots'} or type(payload['bots']) is not list:raise SaveError('Invalid saved payload')
-        lobby=_decode(payload['lobby']);bots=tuple(payload['bots'])
-        if type(lobby) is not LobbyState or doc['content_hash']!=pack_hash(lobby.pack):raise SaveError('Content checksum mismatch')
-        _validate_lobby(lobby,bots)
-        from .session import HarnessSession
-        session=object.__new__(HarnessSession)
-        session._lobby=lobby;session.bots=frozenset(bots);session.runtime_hash=current;session.paused=True
-        return session
+        return _session_from_document(doc)
     except SaveError:raise
     except (OSError,ValueError,TypeError,AttributeError,KeyError,StopIteration,RecursionError) as exc:
         raise SaveError(f'Invalid or unreadable save: {exc}') from None

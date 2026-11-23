@@ -202,9 +202,9 @@ class SaveTests(unittest.TestCase):
             with self.assertRaises(SaveError):save_session(s,self.path)
             self.assertEqual(self.path.read_bytes(),original)
 
-    def test_unknown_schema_runtime_and_bad_checksum_reject_without_rewriting(self):
+    def test_unknown_schema_compatibility_and_bad_checksum_reject_without_rewriting(self):
         s=prepared();save_session(s,self.path);valid=self.path.read_bytes()
-        for edit in (lambda d:d.update(schema_version=999),lambda d:d.update(runtime_hash='0'*64)):
+        for edit in (lambda d:d.update(schema_version=999),lambda d:d.update(compatibility_version=999)):
             self.path.write_bytes(valid);self.rewrite(edit);bad=self.path.read_bytes()
             with self.assertRaises(SaveError):load_session(self.path)
             self.assertEqual(self.path.read_bytes(),bad)

@@ -322,6 +322,7 @@ class PlayWindow:
         if kind=='capacity':return f'Permanently add {amount} resource capacity for {who}; available at the next refill.'
         if kind=='resources':return f'{who.capitalize()} gain {amount} resources now.'
         if kind=='destroy':return f'Defeat {who}.'
+        if kind=='return_to_hand':return f"Return {who} to its owner's hand. Tokens disappear; leaders return to reserve."
         if kind=='negate':return 'Negate the chosen pending effect.' if step['effect_id']=='$target' else f"Negate pending effect #{step['effect_id']}."
         return kind
 

@@ -102,12 +102,12 @@ def _public_events(state):
     # Deliberately omit raw causes, private draw records and unknown future events.
     allowed={'damage','heal','required_draw','combat_damage','combat_miss','elimination','departure','defeat',
              'turn_end','turn_start','action_committed','concede_request','start_refill',
-             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
+             'attacks_declared','blockers_revealed','card_played','card_resolved','card_cancelled','card_returned','effect_negated','leader_summoned','leader_returned','leader_summon_cancelled','leader_ability','leader_summon_committed','duration_expired','prevention_granted','scheduled_boundary'}
     events=[]
     for event in state.events:
         if event.kind not in allowed:continue
         row={'event_id':event.event_id,'kind':event.kind,'subject':event.subject}
-        if event.kind=='card_played':row['card']=_card(state,event.subject)
+        if event.kind in ('card_played','card_returned'):row['card']=_card(state,event.subject)
         if event.kind=='scheduled_boundary' and event.cause in ('Start','End'):row['boundary']=event.cause
         if event.kind=='duration_expired':
             parts=event.cause.rsplit(':',2)
@@ -119,10 +119,11 @@ def _public_events(state):
 
 def _step(step):
     # Effect types are closed/validated by the coordinator; do not recursively dump.
-    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, GrantCapacity, GrantResources, NegateEffect, GrantShield
+    from .match import DamagePlayer, HealPlayer, DrawCards, DestroyCreature, ReturnCreatureToHand, GrantCapacity, GrantResources, NegateEffect, GrantShield
     if type(step) is GrantShield:return {'kind':'shield','target':step.target,'amount':step.amount,'duration':step.duration,'anchor_player':step.anchor_player}
     if type(step) is NegateEffect:return {'kind':'negate','effect_id':step.effect_id}
     if type(step) is DestroyCreature:return {'kind':'destroy','target':step.target}
+    if type(step) is ReturnCreatureToHand:return {'kind':'return_to_hand','target':step.target}
     labels={DamagePlayer:'damage',HealPlayer:'heal',DrawCards:'draw',GrantCapacity:'capacity',GrantResources:'resources'}
     if type(step) not in labels:raise MatchError('unsupported projected instruction')
     return {'kind':labels[type(step)],'target':step.target,'amount':step.count if type(step) is DrawCards else step.amount}

@@ -1,6 +1,6 @@
 """Versioned coverage for the internal coordinator, separate from combat-lab reports."""
 MATCH_COVERAGE = {
-    'version': 6,
+    'version': 7,
     'full_match_enabled': False,
     'implemented': (
         'priority-and-atomic-effects', 'required-draw-refill-and-recharge',
@@ -28,10 +28,12 @@ MATCH_COVERAGE = {
         'timed-creature-prevention-and-expiry-order', 'registered-expiration-consequences-and-terminal-gating',
         'versioned-private-local-save-load-and-paused-resume',
         'validated-snapshot-backups-and-atomic-replacement',
+        'compatible-private-save-contract-and-explicit-known-v1-converter',
+        'battlefield-creature-return-to-owner-hand-and-attachment-cleanup',
     ),
     'excluded': (
-        'cross-build-save-migrations-and-network-reconnect', 'network-session-authentication',
-        'advanced-zone-moves-exile-bounce-and-hand-transfers', 'multiple-targets-modes-x-discounts',
+        'unreviewed-build-save-migrations-and-network-reconnect', 'network-session-authentication',
+        'zone-moves-exile-deck-discard-recovery-and-hand-transfers', 'multiple-targets-modes-x-discounts',
         'authored-health-sacrifice-costs-and-replacements',
         'custom-leader-cost-formulas-and-both-location-ability-definitions',
         'transform-combine-and-continuous-stat-modifiers', 'continuous-stat-modifier-durations-and-custom-expiry-replacements',

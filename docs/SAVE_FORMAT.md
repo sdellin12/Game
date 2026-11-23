@@ -1,51 +1,73 @@
-# Private save format and rollback plan
-Version 1, implemented 2026-11-23. Applies only to the local play harness.
+# Private save format and rollback policy
+Schema v2 / gameplay compatibility 1, implemented 2026-11-23.
+Applies only to the local play harness; catalog and combat-lab formats are unchanged.
 
-## Before implementation: data/compatibility decision
-There is no existing match-save format to migrate. Keep the catalog, combat lab
-SQLite checkpoints and reports unchanged. Add a separate `.crucible.json` format
-and ignore saves/backups in Git. No autosave or automatic conversion is introduced.
-
+## Stored state and privacy
 A save holds the complete frozen LobbyState/MatchState plus computer roles,
 including opening locks, hidden zones, seeds/shuffle counters, priority/passes,
 resolving cursor/refill choice, combat locks/orders, leaders and duration clocks.
-Do not store the current human viewer or tentative UI selections. Files are private
+The current human viewer and tentative UI selections are omitted. Files are private
 plaintext snapshots, not public replays or encrypted/account-authenticated storage.
+Saves/backups are ignored by Git. There is no autosave or automatic conversion.
 
-## Version/validation policy
-- Envelope: fixed format ID, schema version 1, runtime fingerprint, frozen content
-  hash, payload and canonical SHA256 checksum. The checksum detects corruption;
-  it does not authenticate a file against intentional editing.
-- JSON only, explicit allowlisted dataclass/tuple/byte tags; never pickle or dynamic
-  imports selected by file content. Reject duplicate keys, unknown tags/fields,
-  nonfinite numbers, oversized files, deep nesting and invalid record field types.
-- Validate setup provenance/conservation and the engine's current state invariants
-  before installation. Definitions remain embedded/frozen rather than replaced
-  with the current default practice pack. Runtime/rules compatibility must match.
-- No previous version is assumed. Unknown/newer versions and incompatible builds
-  fail closed without rewriting files. A later converter needs an explicit schema
-  mapping, fixtures and new-output-file migration; retain the original save/build.
+## Schema and gameplay compatibility
+- Envelope: fixed format ID, schema version, gameplay compatibility version,
+  Python runtime, source runtime fingerprint, frozen content hash, payload and
+  canonical SHA256 checksum. The checksum detects corruption, not intentional editing.
+- Schema v2 uses `compatibility_version: 1`. Source runtime and frozen lobby rules
+  hashes record provenance; they no longer require identical engine source bytes.
+  Frozen definitions stay embedded rather than being replaced by the default pack.
+- A compatibility version promises unchanged interpretation of existing state,
+  instructions and shuffle algorithms. Additive instructions/UI changes may retain
+  it after archived old-save/next-command regression checks. Incompatible semantics
+  require a new compatibility version and an explicit reviewed converter.
+- Python implementation and major.minor version must match because shuffles use
+  the standard library. Source-build compatibility does not grant Python upgrades.
+- JSON uses explicit allowlisted dataclass/tuple/byte records, never pickle or
+  file-selected dynamic imports. Reject duplicate keys, unknown records/fields,
+  wrong field types, nonfinite numbers, oversized files and deep nesting.
+- Validate setup provenance/conservation, frozen content hashes and engine state
+  invariants before installing a candidate. Unknown schema/compatibility versions
+  fail closed without modifying the input or active session.
 
-## Durable write and rollback
-Validate/encode before filesystem changes. Write a temporary file in the target
-directory, flush/fsync and atomically replace. Before replacing an existing valid
-save, preserve its exact bytes in a uniquely named backup; never overwrite/delete
-older backups. Refuse non-save/corrupt destinations and symlink targets. A failed
-write leaves the previous save intact and cleans up only its own temporary file.
-No data migration is run on startup or on load. Rollback is source/build rollback
-plus opening the retained matching save/backup; do not edit stored fingerprints.
+## Explicit v1 conversion
+The migration/rollback design was recorded before schema changes. The converter
+supports the published 9b0f7f5 CPython 3.14 build: recorded deployed-workspace,
+Git LF and Git CRLF hashes only. Unknown v1 builds retain their original runtime.
+Only records that existed in that build may enter the v1 conversion path.
 
-## Resume behavior and verification
-Load into a separate candidate session first; a failed load preserves the current
-session. Restore paused, hide all private widgets and stop computer automation.
-Explicit Resume re-enables commands/computers; privacy handoff is still required.
-Save/load file pickers suspend computer stepping during the operation.
+From the Game repository directory:
+```powershell
+$env:PYTHONPATH='src'
+python -m crucible_play.migrate "old.crucible.json" "converted.crucible.json"
+```
+The converter checks checksum, source/rules provenance, payload, frozen content and
+state before publishing a separate v2 file. It preserves the original bytes and
+refuses occupied destinations, including the input and concurrently created files.
+Load the new file normally. Plain Load does not silently convert schema v1.
 
-18 persistence tests cover exact round trips at lobby/opening/priority/refill/combat locks/
-orders/trigger choices and duration boundaries; the same subsequent command must
-produce the same authoritative state after resume. They also cover unsupported schemas,
-corruption, wrong builds, unknown types, collection/card conservation, atomic-write
-failure and backups. Desktop tests cover paused loads, private UI reset, rejected
-loads and explicit resume. Fixtures are synthetic; no existing user data is used.
-Gameplay visual review verified the paused public table, resume, seat handoff,
-private hand/leader controls and corrected leader summon details.
+## Durable writes and rollback
+Regular saving validates/encodes first, writes a same-folder temporary file,
+flushes/fsyncs, and atomically replaces the destination. Before replacement, retain
+the exact previous valid envelope in a uniquely named backup; never overwrite/delete
+older backups. Refuse corrupt/non-save destinations and symlink targets.
+Conversion publishes a complete temporary file without replacing a destination
+(Windows non-replacing rename; POSIX exclusive hard link). Failed publication
+cleans up only its own temporary file. No startup data migration occurs.
+For rollback, retain original v1 files and the matching old build. V2 cannot be
+opened by the old v1 reader; never edit stored fingerprints to force compatibility.
+
+## Resume and evidence
+Load validates a separate candidate before asking to replace the current session.
+Restore paused, hide private widgets and stop computers. Explicit Resume enables
+commands/computers; private hands still require seat acknowledgement. File pickers
+suspend computer stepping.
+
+18 persistence tests cover exact round trips and same-next-command state across
+lobby/opening, priority, refill, combat locks/orders, trigger choices, leaders,
+durations and terminal states, plus corruption, size/type limits, backups and
+injected replacement failure. 10 migration tests use archived synthetic v1
+snapshots with original next-command results (priority, refill, private blockers),
+source/newline variants, unknown builds/versions, wrong Python, occupied/concurrent
+outputs and failed publication. Desktop tests cover paused loads and privacy reset.
+New return-to-hand instructions also round-trip in pending cards and refill cursors.
