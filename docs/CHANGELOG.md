@@ -273,3 +273,7 @@ Published 7b50db0 after reviewing authored documentation/intake guides, separati
 
 ## 2026-11-24 checkpoint before budget guard
 Repository audit and remaining-loss investigation were published through 564d131. Documentation handoff was generated; 444 tests passed. The sequencing-budget defect was isolated and a future family checklist prepared. Subsequent owner direction defers human testing until a usable app starts to take shape.
+
+## 2026-11-24 — First default match table
+
+Added a scrollable card table, fixed turn controls, player zones, private hand tiles, public combat/pending effects and history. Reused engine confirmations and choices; --debug-ui retains the developer layout. Hide/seat changes close private inspection dialogs. Five hidden Tk checks cover privacy, payment, priority/pause, scrolling and public creature/token/combat rendering. UI flow and card-design handoff updated; family testing remains deferred. No save, pack, bot-policy or art changes.

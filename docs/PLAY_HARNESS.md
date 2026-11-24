@@ -1,5 +1,5 @@
 # Local playable harness
-Updated 2026-11-23. This is a separate source launcher from the combat balance lab.
+Updated 2026-11-24. This is a separate source launcher from the combat balance lab.
 This remains an engineering harness. Family testing is deferred under
 [REQUIREMENTS.md](REQUIREMENTS.md); [FAMILY_PLAYTEST.md](FAMILY_PLAYTEST.md) is retained
 for the later usable-app milestone.
@@ -12,8 +12,12 @@ py -3 run_play.py
 ```
 
 For developer setup, `python run_play.py --hotseat --players 2` selects human seats
-directly; --players also accepts 3 or 4. This does not make the debug interface a
+directly; --players also accepts 3 or 4. This does not make the local interface a
 family-testing milestone. No deck or opening choice is committed by the launcher.
+
+Matches now use a scrollable card table with player zones, private hand tiles,
+combat/pending effects and fixed turn controls. See [MATCH_UI_FLOW.md](MATCH_UI_FLOW.md).
+`python run_play.py --debug-ui` retains the previous text/tab developer screen.
 
 No new runtime package is required. The existing portable Combat Lab executable
 has not been rebuilt with this harness. Closing a started local game asks for

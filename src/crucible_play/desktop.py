@@ -6,8 +6,9 @@ from .persistence import save_session, load_session, SaveError
 
 
 class PlayWindow:
-    def __init__(self, root, session=None):
+    def __init__(self, root, session=None, debug_ui=False):
         self.root=root
+        self.debug_ui=debug_ui
         self.session=session or HarnessSession(bots=('P2',))
         self.new_pack=self.session._lobby.pack
         self._bot_timer=None;self._bot_steps=0;self._bot_error=False
@@ -125,10 +126,16 @@ class PlayWindow:
         self.render();self._schedule_bots()
 
     def hide(self):
+        self.close_inspections()
         self.gate.hide();self.notice.set('Public view. Private cards are hidden.');self.render()
+
+    def close_inspections(self):
+        for child in self.root.winfo_children():
+            if isinstance(child,tk.Toplevel):child.destroy()
 
     def seat(self, actor):
         if actor in self.session.bots:return self.error('Computer hands stay private. Choose a human seat.')
+        self.close_inspections()
         self.gate.request(actor);self.notice.set(f'Pass the computer to {actor}. Private cards stay hidden until they continue.');self.render()
 
     def unlock(self):
@@ -211,6 +218,12 @@ class PlayWindow:
         return f"{name} | {card.get('kind','card')} | cost {card.get('cost',0)}{stats}"
 
     def render_match(self, view):
+        if not self.debug_ui:
+            from .match_screen import render_match
+            return render_match(self,view)
+        return self.render_match_debug(view)
+
+    def render_match_debug(self, view):
         turn=view['turn'];priority=view['priority']
         title=f"Turn {turn['turn_id']}  |  {turn['active_player']}  |  {turn['phase']}"
         if turn['recharge']:title+='  |  RECHARGE'
@@ -487,13 +500,14 @@ def main(argv=None):
     parser=argparse.ArgumentParser()
     parser.add_argument('--discard-package',action='store_true')
     parser.add_argument('--hotseat',action='store_true',help='start with human seats instead of computers')
+    parser.add_argument('--debug-ui',action='store_true',help='use the text/tab developer match screen')
     parser.add_argument('--players',type=int,choices=(2,3,4),default=2)
     args=parser.parse_args(argv)
     from crucible_content.practice import discard_draw_pack
     session=HarnessSession(tuple(f'Player {i+1}' for i in range(args.players)),
         pack=discard_draw_pack() if args.discard_package else None,
         bots=() if args.hotseat else tuple(f'P{i+1}' for i in range(1,args.players)))
-    root=tk.Tk();PlayWindow(root,session);root.mainloop()
+    root=tk.Tk();PlayWindow(root,session,debug_ui=args.debug_ui);root.mainloop()
 
 
 if __name__=='__main__':main()

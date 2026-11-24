@@ -238,3 +238,8 @@ are untested candidate content, not approved starter cards.
 Engine work has not changed card layouts or card information. Current engine
 status is maintained in PROJECT_STATE.md in the repository. Keep this document
 current when editing design files independently.
+
+2026-11-24 runtime update: the local match screen now presents engine metadata in
+readable hand/battlefield tiles. [MATCH_UI_FLOW.md](MATCH_UI_FLOW.md) documents the
+fields and boundaries. These tiles use no illustrations or unpublished editor
+assets; standard/full-art templates and their handoff remain independently editable.

@@ -26,6 +26,7 @@ Start with PROJECT_STATE.md and AI_HANDOFF.md. Product decisions and rules have 
 | [docs/FAMILY_PLAYTEST.md](FAMILY_PLAYTEST.md) | Current guide | Local family-playtest checklist |
 | [docs/FULL_MATCH_TIMING_SPEC.md](FULL_MATCH_TIMING_SPEC.md) | Plan/specification | Read status banner; future scope is not implemented scope |
 | [docs/Game_Lore.md](Game_Lore.md) | Current guide | Canonical lore |
+| [docs/MATCH_UI_FLOW.md](MATCH_UI_FLOW.md) | Current guide | Local match screen flow and presentation boundaries |
 | [docs/MODEL_WORKFLOW.md](MODEL_WORKFLOW.md) | Current guide | Working preferences |
 | [docs/PLAY_HARNESS.md](PLAY_HARNESS.md) | Current guide | Playable source harness |
 | [docs/PROJECT_STATE.md](PROJECT_STATE.md) | Current guide | Current checkpoint and next task |

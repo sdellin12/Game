@@ -3,17 +3,17 @@ Updated: 2026-11-24
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: exact follow-up budget guard; family testing deferred until a usable app takes shape.
+- Latest checkpoint: default match card table; fixed turn controls, private hand tiles and public player zones.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 450 Windows tests; 65 docs/links/versions pass; 89 Python sources parse; 72 fresh games complete.
+- Validation: 455 Windows tests; 5 match UI checks pass; 66 docs/links/versions pass; 91 Python sources parse.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
 Budgeted policy fixes both known losses; fresh case wins 6/18 vs baseline 4/18, with one regression; live bots stay baseline.
 Owner deferred human testing: REQUIREMENTS.md; FAMILY_PLAYTEST.md is a future checklist.
-Recommended next: usable match UI slice (readable cards/board and obvious actions), then revisit human readiness.
+Recommended next: lobby/opening guidance and combat card selection; MATCH_UI_FLOW.md owns UI scope/limits.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry

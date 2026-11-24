@@ -11,6 +11,7 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 CURRENT={'README.md':'Repository entry point','Game_Lore.md':'Pointer to canonical lore',
+    'docs/MATCH_UI_FLOW.md':'Local match screen flow and presentation boundaries',
     'docs/REPOSITORY_REVIEW.md':'Continuity audit findings and handoff limits',
     'docs/PROJECT_STATE.md':'Current checkpoint and next task','docs/AI_HANDOFF.md':'AI continuation guide',
     'docs/REQUIREMENTS.md':'Canonical product decisions','docs/RULES_DRAFT.md':'Canonical gameplay rules',

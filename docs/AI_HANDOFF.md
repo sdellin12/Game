@@ -31,6 +31,7 @@ Numeric card/refill costs remain test candidates where the canonical docs say so
 | Path | Responsibility |
 | --- | --- |
 | run_play.py / crucible_play.desktop | Local Tk hotseat/practice game |
+| src/crucible_play/match_screen.py / docs/MATCH_UI_FLOW.md | Default card table presentation and next UI slice |
 | run_desktop.py / crucible_lab | Combat-lab dashboard and single-combat replay |
 | run_lab.py / crucible_sim | Finite combat enumeration, groups, SQLite checkpoints, exports |
 | src/crucible_core/combat.py, combat_flow.py | Shared simultaneous damage and declaration kernel |

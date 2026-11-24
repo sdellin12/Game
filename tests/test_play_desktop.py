@@ -32,7 +32,7 @@ class HarnessWidgetTests(unittest.TestCase):
     def setUp(self):
         self.root=tk.Tk();self.root.withdraw()
         self.session=HarnessSession(seed=b'widget-test-seed-1234567890')
-        self.app=PlayWindow(self.root,self.session)
+        self.app=PlayWindow(self.root,self.session,debug_ui=True)
         self.root.update_idletasks()
 
     def tearDown(self):self.root.destroy()
