@@ -267,3 +267,6 @@ Matched package/control and baseline/aware study completed all 72 games; 437 tes
 
 ## 2026-11-23 checkpoint before continuity audit
 Sequencing audit restored the known P3 win; 72 fresh games completed, revised package case wins 11/18 versus baseline 9/18 with one remaining regression. 441 tests passed. The next authorized work was that remaining-loss investigation and a family playtest checklist, preceded by a full documentation/repository handoff review.
+
+## 2026-11-23 continuity audit checkpoint
+Published 7b50db0 after reviewing authored documentation/intake guides, separating historical plans, consolidating lore, recording local uncommitted design work and adding AI_HANDOFF plus a generated document index/documentation-only bundle. Audit checks passed for 60 documents and 88 Python sources; 443 Windows tests passed. Remaining authorized work was the five-run package-3/P3 policy-loss investigation and family-session checklist.

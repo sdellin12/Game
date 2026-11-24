@@ -64,3 +64,6 @@ playtest checklist follow this audit, with final status in PROJECT_STATE.md.
 Audit checkpoint: 443 Windows tests passed; sixty authored/intake documents checked,
 eighty-eight Python sources parsed, no local-link/entry/version errors. Launch and
 conversion --help commands also succeeded without starting a GUI or service.
+The subsequent five-run loss investigation and family checklist are now included
+in the generated index/handoff. Current whole-repository validation is owned by
+PROJECT_STATE.md; the audit checkpoint counts above remain its historical record.

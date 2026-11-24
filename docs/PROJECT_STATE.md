@@ -3,17 +3,17 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: repository/documentation continuity audit and scoped AI handoff.
+- Latest checkpoint: continuity audit, remaining policy-loss investigation and family-playtest checklist.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 443 Windows tests; docs/links/versions pass; 88 Python sources parse.
+- Validation: 444 Windows tests; 63 docs/links/versions pass; 88 Python sources parse; 5 follow-up runs complete.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Documentation audit is complete: REPOSITORY_REVIEW.md and AI_HANDOFF.md.
-Resume requested work: investigate package-3/four-player/P3 loss; prepare FAMILY_PLAYTEST.md.
-Revised remains experimental (fresh case wins 11/18 vs 9/18); live opponent unchanged.
+Audit and investigation complete: REPOSITORY_REVIEW.md, AI_HANDOFF.md, experiments/PACKAGE_FOLLOWUP.md.
+Family checklist ready: FAMILY_PLAYTEST.md; actual family observations remain pending.
+Next: exact post-payment follow-up affordability guard, then untouched seeds; live bots stay baseline.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry

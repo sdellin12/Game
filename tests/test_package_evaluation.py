@@ -62,3 +62,12 @@ class PackageEvaluationTests(unittest.TestCase):
             rows=json.loads(output.getvalue());self.assertTrue(all(r['result'] is None for r in rows))
             traces=json.loads(target.read_text());self.assertEqual(set(traces),{'baseline','revised'})
             self.assertTrue(all(traces.values()))
+
+    def test_revised_ablations_keep_creature_protection_and_disable_only_named_component(self):
+        from unittest.mock import patch
+        from crucible_play.package_opponent import choose_package_move
+        for policy,flag in (('revised-no-discard','discard_values'),('revised-no-guard','draw_guard'),('revised-no-setup','sequencing')):
+            with patch('crucible_play.package_opponent.choose_package_move',wraps=choose_package_move) as observer:
+                evaluate_game(policy=policy,limit=1)
+            self.assertTrue(observer.call_args.kwargs['preserve_creatures'])
+            self.assertIs(observer.call_args.kwargs[flag],False)

@@ -1,5 +1,6 @@
 # Local playable harness
 Updated 2026-11-23. This is a separate source launcher from the combat balance lab.
+For a first real household session, use [FAMILY_PLAYTEST.md](FAMILY_PLAYTEST.md).
 
 ## Launch
 From the Game repository directory, on Windows with Python/Tk installed:

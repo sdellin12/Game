@@ -167,6 +167,8 @@ Card wording, costs and the live opponent stay unchanged by that policy experime
 The creature-priority revision, one-component ablations and fresh-seed validation
 are documented in experiments/PACKAGE_REGRESSION.md. Historical `aware` and the
 new `revised` policy are separate variants; neither changes printed card text.
+The remaining sequencing-budget issue is documented in experiments/PACKAGE_FOLLOWUP.md;
+the family-session checklist is FAMILY_PLAYTEST.md. No family results are recorded yet.
 Give those files to another LLM with this document when exploring these cards.
 
 ## Capacity and live state
