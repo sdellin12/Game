@@ -281,3 +281,7 @@ Added a scrollable card table, fixed turn controls, player zones, private hand t
 ## 2026-11-24 — Guided setup and combat card selection
 
 Added a three-step lobby with readiness/deal gating, private opening replacement tiles and counts, plus card-based attacker/blocker targets and batch selection counts. Selections remain local until explicit confirmation; hiding clears tentative selections. Seven hidden Tk checks cover real setup/redraw/no-attack commands, assignment packets, paused controls, privacy and large-board geometry. Updated UI flow, launcher and card-design handoff. Existing debug controls remain available; no engine/save/art changes.
+
+## 2026-11-24 — Match navigation and payment review
+
+Added fixed table shortcuts with per-viewer location restoration, required-choice precedence and scoped wheel scrolling. Added private scrollable card review with available resources, explicit token consumption, exact payment/remaining-resource feedback and explicit target selection. Invalid, paused or stale reviews cannot submit; refresh closes stale dialogs. Six hidden Tk checks cover privacy/navigation, cancellation, controlled tokens, exact payment, explicit targeting and stale revision rejection. Updated card-design and AI flow docs; no engine/save/art changes.

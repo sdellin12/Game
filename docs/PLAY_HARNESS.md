@@ -17,6 +17,8 @@ family-testing milestone. No deck or opening choice is committed by the launcher
 
 Matches now use a scrollable card table with player zones, private hand tiles,
 combat/pending effects and fixed turn controls. See [MATCH_UI_FLOW.md](MATCH_UI_FLOW.md).
+Fixed shortcuts jump to hand, battlefield, required choice, effects or history and
+restore the selected location after refresh. The hand shortcut requires an acknowledged seat.
 `python run_play.py --debug-ui` retains the previous developer setup and text/tab match screen.
 
 No new runtime package is required. The existing portable Combat Lab executable
@@ -37,7 +39,10 @@ confirmation before discarding changes since your last save.
    player reveal together only after everyone confirms.
 5. Follow the priority/next-step message. Take that seat and Pass or respond.
    Ordinary plays happen in your Main phase. Inspect a hand card, choose its
-   target/payment and Confirm; Cancel keeps the tentative choice private.
+   target and exact payment, then Confirm. The review shows available resources,
+   consumed tokens, payment total and remaining ordinary resources. Targeted plays
+   require an explicit target; incomplete choices cannot confirm. Cancel changes
+   no game state.
 6. At Combat, select targets on eligible creature cards and confirm all attacks
    (leave every card on Stay back to confirm none). After responses, defenders
    assign cards to named incoming attackers and lock the whole batch privately.
@@ -50,7 +55,8 @@ confirmation before discarding changes since your last save.
 The default screen keeps the board, hand and public history in one scrollable
 table; separate tabs remain in --debug-ui. Hide private hand clears private
 widgets and tentative opening/combat selections immediately; changing seats
-requires another acknowledgement. Inspection dialogs also close on hide/seat change.
+requires another acknowledgement. Inspection dialogs also close on hide, seat
+change or view refresh. A stale review cannot submit against a newer revision.
 Canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation

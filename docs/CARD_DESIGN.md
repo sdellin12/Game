@@ -248,3 +248,8 @@ The same runtime tile presentation now supports private opening-hand replacement
 marks and attacker/blocker target selection. Selection controls sit beneath card
 information and submit only on confirmation; they add no fields to the card-face
 contract or print templates. See MATCH_UI_FLOW.md for implementation boundaries.
+
+Runtime review separates card information from payment/target controls: cost,
+available resources, consumed tokens, exact payment total and an explicit target
+are reviewed before confirmation. Fixed table shortcuts improve hand/board
+navigation without changing the standard/full-art templates or their data contract.

@@ -157,6 +157,7 @@ class PlayWindow:
 
     def render(self):
         # Destroy private widgets and tentative choices on every handoff/refresh.
+        if not self.debug_ui:self.close_inspections()
         for frame in (self.body,self.seatbar):
             for child in frame.winfo_children():child.destroy()
         view=self.session.view(self.gate.actor)
@@ -311,6 +312,7 @@ class PlayWindow:
         scrollbar.pack(side='right',fill='y');canvas.pack(side='left',fill='both',expand=True)
         canvas.configure(yscrollcommand=scrollbar.set)
         inner=ttk.Frame(canvas)
+        inner.scroll_canvas=canvas
         window=canvas.create_window(0,0,anchor='nw',window=inner)
         inner.bind('<Configure>',lambda event:canvas.configure(scrollregion=canvas.bbox('all')))
         canvas.bind('<Configure>',lambda event:canvas.itemconfigure(window,width=event.width))
@@ -385,6 +387,9 @@ class PlayWindow:
             ttk.Button(frame,text=label,command=lambda c=card:self.card_dialog(view,c,'leader_ability'),state='normal' if ability['available'] else 'disabled').pack(anchor='w',pady=2)
 
     def card_dialog(self, view, card, command='play_card'):
+        if not self.debug_ui:
+            from .confirmation import card_dialog
+            return card_dialog(self,view,card,command)
         popup=tk.Toplevel(self.root);popup.title('Confirm leader action' if command!='play_card' else 'Confirm card play');popup.transient(self.root);popup.grab_set()
         frame=ttk.Frame(popup,padding=18);frame.pack(fill='both',expand=True)
         ttk.Label(frame,text=self.label(card),wraplength=520).pack(anchor='w')

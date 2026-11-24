@@ -70,9 +70,19 @@ def render_match(app, view):
         ttk.Button(actions,text='Concede...',command=app.concede).pack(side='right')
     if view['result']:
         ttk.Label(app.body,text='Draw' if view['result']['kind']=='draw' else f"{view['result']['winner']} wins",style='Heading.TLabel').pack(anchor='w')
+    navigation=ttk.Frame(app.body);navigation.pack(fill='x',pady=4)
     table=app.scrollable(app.body)
+    anchors={'battlefield':table}
+    def jump(key):
+        if key not in anchors or not table.winfo_exists():return
+        table.update_idletasks()
+        table.scroll_canvas.yview_moveto(anchors[key].winfo_y()/max(1,table.winfo_height()) if anchors[key]!=table else 0)
+        app._match_focus=(actor,key)
+    for label,key,enabled in (('Go to battlefield','battlefield',True),('Go to hand','hand',bool(own)),('Go to choice','choice',bool(own and own['choice'])),('Go to effects','effects',True),('Go to history','history',True)):
+        ttk.Button(navigation,text=label,state='normal' if enabled else 'disabled',command=lambda k=key:jump(k)).pack(side='left',padx=(0,6))
     if own and own['choice']:
-        app.render_choice(section(table,'Your required choice'),view,own['choice'])
+        anchors['choice']=section(table,'Your required choice')
+        app.render_choice(anchors['choice'],view,own['choice'])
     combat=view.get('combat')
     if combat:
         panel=section(table,'Combat • '+combat['stage'].replace('_',' '))
@@ -83,13 +93,15 @@ def render_match(app, view):
             ttk.Label(panel,text=text,wraplength=850).pack(anchor='w')
         if combat['stage']=='blocking':ttk.Label(panel,text='Blocker choices stay private until all defenders confirm.').pack(anchor='w')
     chain=section(table,f"Pending effects ({len(view['chain'])})")
+    anchors['effects']=chain
     if not view['chain']:ttk.Label(chain,text='No effects waiting.').pack(anchor='w')
     for effect in reversed(view['chain']):
         ttk.Label(chain,text=f"{effect['controller']} • {effect.get('label',effect['effect_key'])} • #{effect['effect_id']}"+(' • resolving' if effect['resolving'] else ''),wraplength=850).pack(anchor='w')
         for step in effect['steps']:ttk.Label(chain,text=app.effect_text(step,view),wraplength=850).pack(anchor='w')
+    board=section(table,'Battlefield and players');anchors['battlefield']=board
     for player in view['players']:
         pid=player['player_id'];status='ELIMINATED' if player['eliminated'] else f"{player['health']}/{player['max_health']} life • {player['resources']['available']} resources • Hand {player['hand_count']} • Deck {player['deck_count']}"
-        zone=section(table,f"{pid}{' — YOU' if pid==actor else ''} | {status}")
+        zone=section(board,f"{pid}{' — YOU' if pid==actor else ''} | {status}")
         for leader in view.get('leaders',[]):
             if leader['owner']==pid:
                 ttk.Label(zone,text=f"Leader: {leader['name']} • {leader['location']} • Summon {leader['summon_cost']}"+(' • Recovering' if leader['recovering'] else ''),wraplength=850).pack(anchor='w')
@@ -97,6 +109,7 @@ def render_match(app, view):
         if objects:tiles(app,section(zone,'Battlefield'),view,objects)
         else:ttk.Label(zone,text='Battlefield empty').pack(anchor='w',pady=4)
     hand=section(table,'Your hand and actions' if own else 'Private hand hidden')
+    if own:anchors['hand']=hand
     if not own:ttk.Label(hand,text='Choose a seat and acknowledge the handoff to see your cards.').pack(anchor='w')
     else:
         if not own['choice'] and not view['result']:
@@ -112,9 +125,23 @@ def render_match(app, view):
     for card in view.get('exile',[]):ttk.Label(details,text=f"Exile • {card['owner']} • {app.label(card)}",wraplength=850).pack(anchor='w')
     for duration in view.get('durations',[]):ttk.Label(details,text=f"Expires: {duration['anchor_player']} {duration['boundary']} #{duration['occurrence']}",wraplength=850).pack(anchor='w')
     history=section(table,'Recent public history')
+    anchors['history']=history
     log=tk.Text(history,height=6,wrap='word',font=('Segoe UI',10))
     log.pack(fill='x')
     for event in view['events'][-30:]:
         who=app.session.card_name(event['card'].get('definition_key','Card')) if 'card' in event else app.public_name(view,event['subject'])
         log.insert('end',f"{event['event_id']}: {event['kind'].replace('_',' ')} • {who}\n")
     log.configure(state='disabled')
+    # Bind only this table's widgets, never other windows or the whole application.
+    def wheel(event):
+        units=-1 if getattr(event,'num',None)==4 else 1 if getattr(event,'num',None)==5 else -int(event.delta/120) if abs(event.delta)>=120 else (-1 if event.delta>0 else 1)
+        table.scroll_canvas.yview_scroll(units,'units')
+        return 'break'
+    def bind_wheel(widget):
+        if not isinstance(widget,(tk.Text,ttk.Combobox,ttk.Spinbox)):
+            for sequence in ('<MouseWheel>','<Button-4>','<Button-5>'):widget.bind(sequence,wheel)
+        for child in widget.winfo_children():bind_wheel(child)
+    bind_wheel(table)
+    focus=getattr(app,'_match_focus',(actor,'battlefield'))
+    key='choice' if own and own['choice'] else focus[1] if focus[0]==actor and focus[1] in anchors else 'battlefield'
+    jump(key)

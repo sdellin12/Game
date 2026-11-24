@@ -21,8 +21,9 @@ AI_HANDOFF.md maps the implemented source; REQUIREMENTS.md owns product intent.
 The local Python harness is currently an engineering tool. The next recommended
 product slice has begun with a scrollable card table, player zones and fixed turn
 controls, guided setup/opening and card-based attack/block selection
-(MATCH_UI_FLOW.md). Next improve hand/board navigation and payment/target
-confirmation, followed by a revisit of family-test readiness. The existing portable
+(MATCH_UI_FLOW.md), fixed table navigation and exact-payment/target review. Next
+improve required choices and damage/trigger ordering, then visual hierarchy,
+followed by a revisit of family-test readiness. The existing portable
 CrucibleLab executable is combat-only. Source-only package files and old builds
 are not an installer for the whole household product.
 
