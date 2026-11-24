@@ -1,0 +1,1488 @@
+"""Atomic typed-effect coordinator for a deliberately restricted match subset.
+
+Server-internal state only; views.py builds permitted client projections.
+Effects are registered immutable instructions, never arbitrary prose/callbacks.
+"""
+from dataclasses import dataclass, replace
+from .combat import Shield, Creature, CombatState, Player, resolve_combat, validate_state
+from .combat_flow import (CombatFlow, commit_attacks, begin_blocking, lock_blockers,
+                          required_orders, choose_order, resolve_committed, combat_view, validate_flow)
+from .durations import BoundaryCount, TimedEffect, initial_counts, expiry_rank
+from .leaders import LeaderAbility, LeaderDefinition, LeaderState
+from .cards import CardDefinition, CardInstance, PendingCard, TriggeredAbility
+from .resources import ResourcePool, Payment, validate_pool, start_resources, pay_resources
+from .priority import PriorityState, PendingEffect, add_effect, pass_priority, validate_priority
+from .turns import (DrawPlayer, TurnFlow, RefillPolicy, DrawState, begin_required_draw,
+                    accept_refill, decline_refill, begin_start_refill, open_turn, request_end_turn,
+                    _validate_player, _validate_turn, _validate_policy)
+
+
+class MatchError(ValueError):
+    pass
+
+
+class UnsupportedMatchRule(MatchError):
+    pass
+
+
+@dataclass(frozen=True)
+class DamagePlayer:
+    target: str
+    amount: int
+
+
+@dataclass(frozen=True)
+class HealPlayer:
+    target: str
+    amount: int
+
+
+@dataclass(frozen=True)
+class DrawCards:
+    target: str
+    count: int
+
+
+@dataclass(frozen=True)
+class DiscardThenDraw:
+    target: str
+    count: int
+
+
+@dataclass(frozen=True)
+class DestroyCreature:
+    target: str
+
+
+@dataclass(frozen=True)
+class ReturnCreatureToHand:
+    target: str
+
+
+@dataclass(frozen=True)
+class ExileCreature:
+    target: str
+
+
+@dataclass(frozen=True)
+class RecoverDiscardCard:
+    target: str
+
+
+@dataclass(frozen=True)
+class GrantCapacity:
+    target: str
+    amount: int
+
+
+@dataclass(frozen=True)
+class GrantResources:
+    target: str
+    amount: int
+
+
+@dataclass(frozen=True)
+class NegateEffect:
+    effect_id: int | str  # $target is permitted only in authored card/ability templates
+
+
+@dataclass(frozen=True)
+class GrantShield:
+    target: str
+    amount: int
+    duration: str = 'turn_end'
+    anchor_player: str | None = None
+
+
+@dataclass(frozen=True)
+class ActionSpec:
+    key: str
+    effect_key: str
+    source_id: str
+    resource_cost: int = 0
+    timing: str = 'main'
+    exhaust_source: bool = False
+    once_per_turn: bool = False
+
+
+@dataclass(frozen=True)
+class EffectSpec:
+    key: str
+    controller: str
+    steps: tuple
+    source_id: str | None = None
+
+
+@dataclass(frozen=True)
+class TriggerSpec:
+    event: str  # defeat, departure, turn_start/end, card_drawn/discarded
+    effect_key: str
+    watch: str = 'self'  # self or any
+    optional: bool = False
+
+
+@dataclass(frozen=True)
+class MatchObject:
+    object_id: str
+    owner: str
+    controller: str
+    kind: str  # creature, creature_token, permanent, resource_token
+    creature: Creature | None = None
+    attached_to: str | None = None
+    triggers: tuple[TriggerSpec, ...] = ()
+    resource_value: int = 1
+    capacity_bonus: int = 0
+
+
+@dataclass(frozen=True)
+class MatchPlayer:
+    cards: DrawPlayer
+    max_health: int = 30
+    eliminated: bool = False
+    causes: tuple[str, ...] = ()
+    resources: ResourcePool = ResourcePool()
+
+
+@dataclass(frozen=True)
+class MatchEvent:
+    event_id: int
+    kind: str
+    subject: str
+    cause: str
+
+
+@dataclass(frozen=True)
+class TriggerCandidate:
+    trigger_id: int
+    event_id: int
+    controller: str
+    source_id: str
+    effect_key: str
+    optional: bool = False
+    decision: bool | None = None
+
+
+@dataclass(frozen=True)
+class Resolution:
+    steps: tuple
+    index: int = 0
+    draw: DrawState | None = None
+    cleanup: bool = False
+    effect_id: int | None = None
+    controller: str | None = None
+    discard_request: int | None = None
+    discard_done: bool = False
+
+
+@dataclass(frozen=True)
+class MatchResult:
+    kind: str  # win or draw
+    winner: str | None = None
+
+
+@dataclass(frozen=True)
+class MatchState:
+    seat_order: tuple[str, ...]
+    players: tuple[MatchPlayer, ...]
+    battlefield: tuple[MatchObject, ...]
+    effects: tuple[EffectSpec, ...]
+    policy: RefillPolicy
+    turn: TurnFlow
+    priority: PriorityState | None
+    revision: int = 0
+    pending: Resolution | None = None
+    failed_draws: tuple[str, ...] = ()
+    destroyed: tuple[str, ...] = ()
+    concedes: tuple[str, ...] = ()
+    triggers: tuple[TriggerCandidate, ...] = ()
+    trigger_orders: tuple[tuple[str, tuple[int, ...]], ...] = ()
+    events: tuple[MatchEvent, ...] = ()
+    next_event_id: int = 1
+    next_trigger_id: int = 1
+    end_cleanup: tuple = ()  # registered expiration consequences for THIS turn
+    end_stage: str = 'none'  # none, triggers, discard, cleanup, done
+    discard_needed: int = 0
+    draw_records: tuple[DrawState, ...] = ()  # internal debug/replay; private card order!
+    result: MatchResult | None = None
+    actions: tuple[ActionSpec, ...] = ()
+    action_uses: tuple[tuple[str, int], ...] = ()
+    managed_turns: bool = False
+    starting_player: str | None = None
+    start_cleanup: tuple = ()
+    start_stage: str = 'pending'
+    combat: CombatFlow | None = None
+    card_definitions: tuple[CardDefinition, ...] = ()
+    card_instances: tuple[CardInstance, ...] = ()
+    pending_cards: tuple[PendingCard, ...] = ()
+    shuffle_seed: bytes | None = None
+    shuffle_counter: int = 0
+    leader_definitions: tuple[LeaderDefinition, ...] = ()
+    leaders: tuple[LeaderState, ...] = ()
+    boundary_counts: tuple[BoundaryCount, ...] = ()
+    durations: tuple[TimedEffect, ...] = ()
+    next_duration_id: int = 1
+    rotation_queue: tuple = ()
+    exiled: tuple[str, ...] = ()
+
+
+def _name(value):
+    return type(value) is str and bool(value.strip())
+
+
+def _natural(value):
+    return type(value) is int and value >= 0
+
+
+def _living(state):
+    return tuple(p.cards.player_id for p in state.players if not p.eliminated)
+
+
+def _player(state, player_id):
+    return next(p for p in state.players if p.cards.player_id == player_id)
+
+
+def _set_player(state, player):
+    return replace(state, players=tuple(player if p.cards.player_id == player.cards.player_id else p for p in state.players))
+
+
+def _steps_valid(steps, seats, objects):
+    if type(steps) is not tuple:
+        raise MatchError('effect steps must be a tuple')
+    for step in steps:
+        if type(step) in (DamagePlayer, HealPlayer, GrantCapacity, GrantResources):
+            valid = step.target in seats and _natural(step.amount)
+        elif type(step) in (DrawCards,DiscardThenDraw):
+            valid = step.target in seats and _natural(step.count)
+        elif type(step) is GrantShield:
+            valid = _name(step.target) and _natural(step.amount) and step.duration in ('turn_end','next_start') and (step.anchor_player is None if step.duration=='turn_end' else step.anchor_player in seats)
+        elif type(step) is NegateEffect:
+            valid = type(step.effect_id) is int and step.effect_id>0
+        elif type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard):
+            valid = _name(step.target)  # may be absent when an item resolves
+        else:
+            raise UnsupportedMatchRule('unregistered instruction type')
+        if not valid:
+            raise MatchError('invalid instruction target/quantity')
+
+
+def validate_match(state):
+    if type(state) is not MatchState or type(state.seat_order) is not tuple or not state.seat_order:
+        raise MatchError('expected match state with original seats')
+    if any(not _name(p) for p in state.seat_order) or len(set(state.seat_order)) != len(state.seat_order):
+        raise MatchError('invalid original seat order')
+    if any(type(value) is not tuple for value in (state.players,state.battlefield,state.effects)):
+        raise MatchError('match collections must be tuples')
+    if state.pending:
+        r=state.pending
+        if type(r) is not Resolution or type(r.index) is not int or not 0<=r.index<=len(r.steps) or (r.draw is not None and r.index==len(r.steps)):raise MatchError('invalid resolution cursor')
+        if type(r.discard_done) is not bool:raise MatchError('invalid discard continuation')
+        if r.discard_done and r.draw is None:raise MatchError('unpaused discard continuation')
+        if r.discard_request is not None or r.discard_done:
+            if type(r.index) is not int or not 0<=r.index<len(r.steps) or type(r.steps[r.index]) is not DiscardThenDraw:raise MatchError('discard cursor mismatch')
+            if r.discard_request is not None:
+                if type(r.discard_request) is not int or not 0<r.discard_request<state.next_event_id or r.discard_done or r.draw is not None or r.steps[r.index].target not in state.seat_order or not _player(state,r.steps[r.index].target).cards.hand:raise MatchError('invalid discard request')
+                if not any(e.event_id==r.discard_request and e.kind=='discard_choice' and e.subject==r.steps[r.index].target for e in state.events):raise MatchError('discard request event mismatch')
+        if r.draw and type(r.steps[r.index]) is DiscardThenDraw and not r.discard_done:raise MatchError('draw precedes required discard')
+    if any(type(p) is not MatchPlayer or type(p.cards) is not DrawPlayer for p in state.players):
+        raise MatchError('invalid player record')
+    if any(type(e) is not EffectSpec for e in state.effects) or any(type(o) is not MatchObject for o in state.battlefield):
+        raise MatchError('invalid effect/object record')
+    if tuple(p.cards.player_id for p in state.players) != state.seat_order:
+        raise MatchError('player records must preserve original seat order')
+    _validate_turn(state.turn); _validate_policy(state.policy)
+    if state.turn.active_player not in state.seat_order or not _natural(state.revision):
+        raise MatchError('invalid turn/revision')
+    ids = list(state.seat_order)
+    for p in state.players:
+        if type(p) is not MatchPlayer or type(p.eliminated) is not bool or type(p.max_health) is not int or p.max_health < 1:
+            raise MatchError('invalid player record')
+        validate_pool(p.resources)
+        _validate_player(p.cards, allow_nonpositive_health=True)
+        if p.cards.health > p.max_health:
+            raise MatchError('health exceeds maximum')
+        ids.extend(p.cards.deck + p.cards.discard + p.cards.hand)
+    definitions = {e.key:e for e in state.effects}
+    if len(definitions) != len(state.effects):
+        raise MatchError('duplicate registered effect key')
+    object_ids = {o.object_id for o in state.battlefield}
+    for e in state.effects:
+        if type(e) is not EffectSpec or not _name(e.key) or e.controller not in state.seat_order:
+            raise MatchError('invalid registered effect')
+        _steps_valid(e.steps,state.seat_order,object_ids)
+    _steps_valid(state.end_cleanup,state.seat_order,object_ids)
+    _steps_valid(state.start_cleanup,state.seat_order,object_ids)
+    if state.combat is not None:
+        validate_flow(state.combat,state.seat_order)
+        if state.combat.active_player!=state.turn.active_player or state.turn.phase not in ('Combat','MainAfter','End','Finished'):
+            raise MatchError('combat/turn mismatch')
+    if state.starting_player is not None and state.starting_player not in state.seat_order:
+        raise MatchError('invalid starting seat')
+    if (type(state.action_uses) is not tuple or any(type(u) is not tuple or len(u)!=2 or
+            type(u[0]) is not str or not _natural(u[1]) for u in state.action_uses)
+            or len(set(state.action_uses))!=len(state.action_uses)):
+        raise MatchError('invalid action usage records')
+    if type(state.managed_turns) is not bool or state.start_stage not in ('pending','cleanup','done'):
+        raise MatchError('invalid managed turn state')
+    if type(state.actions) is not tuple or any(type(a) is not ActionSpec for a in state.actions):
+        raise MatchError('invalid action registry')
+    if len({a.key for a in state.actions})!=len(state.actions):
+        raise MatchError('duplicate action key')
+    for a in state.actions:
+        if (not _name(a.key) or not _name(a.source_id) or a.effect_key not in definitions
+                or not _natural(a.resource_cost) or a.timing not in ('main','reaction')
+                or type(a.exhaust_source) is not bool or type(a.once_per_turn) is not bool):
+            raise UnsupportedMatchRule('unsupported action definition')
+    for o in state.battlefield:
+        if (type(o) is not MatchObject or not _name(o.object_id)
+                or o.owner not in state.seat_order or o.controller not in state.seat_order):
+            raise MatchError('invalid battlefield object')
+        if (not _natural(o.capacity_bonus) or type(o.resource_value) is not int or o.resource_value<1
+                or (o.kind!='resource_token' and o.resource_value!=1)):
+            raise MatchError('invalid capacity/token value')
+        if o.kind not in ('creature','creature_token','permanent','resource_token','leader'):
+            raise UnsupportedMatchRule('leader/combined/unknown object not covered')
+        if o.kind=='leader' and not any(l.instance_id==o.object_id for l in state.leaders):
+            raise UnsupportedMatchRule('leader requires a registered definition/state')
+        if o.kind in ('creature','creature_token','leader'):
+            if (type(o.creature) is not Creature or o.creature.instance_id != o.object_id
+                    or o.creature.controller != o.controller or type(o.creature.health) is not int):
+                raise MatchError('creature/object identity mismatch')
+            # Validate a positive-HP view; zero is only allowed transiently until cleanup.
+            validate_state(CombatState(tuple(Player(p) for p in state.seat_order),
+                                      (replace(o.creature,health=max(1,o.creature.health)),)))
+        elif o.creature is not None:
+            raise MatchError('non-creature cannot contain creature stats')
+        if o.attached_to is not None and (o.kind != 'permanent' or o.attached_to not in object_ids or o.attached_to == o.object_id):
+            raise MatchError('invalid structural attachment')
+        if type(o.triggers) is not tuple or len(set(o.triggers)) != len(o.triggers):
+            raise MatchError('invalid/duplicate trigger specs')
+        for t in o.triggers:
+            if (type(t) is not TriggerSpec or t.event not in ('defeat','departure','turn_end','turn_start','card_drawn','card_discarded')
+                    or t.watch not in ('self','any') or type(t.optional) is not bool or t.effect_key not in definitions
+                    or definitions[t.effect_key].controller != o.controller):
+                raise MatchError('invalid registered trigger')
+        ids.append(o.object_id)
+    if type(state.triggers) is not tuple or any(type(t) is not TriggerCandidate or type(t.optional) is not bool or (t.decision is not None and type(t.decision) is not bool) or (not t.optional and t.decision is not None) for t in state.triggers):raise MatchError('invalid trigger decision state')
+    if state.pending and any(t.decision is not None for t in state.triggers):raise MatchError('trigger decisions precede atomic completion')
+    if state.triggers and not state.pending and _next_optional_trigger(state) is None and not _trigger_order_waiting(state):raise MatchError('completed trigger group was not queued')
+    if state.trigger_orders and (state.pending or any(t.optional and t.decision is None for t in state.triggers)):raise MatchError('trigger order precedes atomic/optional completion')
+    ids.extend(c.card_id for c in state.pending_cards)
+    if type(state.exiled) is not tuple or any(not _name(i) for i in state.exiled):raise MatchError('invalid exile zone')
+    ids.extend(state.exiled)
+    _validate_durations(state)
+    _validate_leaders(state,ids)
+    _validate_card_state(state,ids)
+    if (state.shuffle_seed is not None and (type(state.shuffle_seed) is not bytes or len(state.shuffle_seed)<16)) or not _natural(state.shuffle_counter):
+        raise MatchError('invalid server shuffle state')
+    if len(set(ids)) != len(ids):
+        raise MatchError('instance IDs must be globally unique across players/zones/battlefield')
+    if state.priority is None and state.result is None and _living(state):
+        raise MatchError('surviving nonterminal state needs priority')
+    if state.result is not None:
+        alive=_living(state)
+        expected=MatchResult('draw') if not alive else MatchResult('win',alive[0])
+        if len(alive)>1 or state.result!=expected or state.pending or state.triggers or state.discard_needed or state.priority is not None:
+            raise MatchError('invalid terminal checkpoint')
+    if state.priority is not None:
+        validate_priority(state.priority)
+        if state.priority.seats != _living(state):
+            raise MatchError('priority seats must match surviving seats')
+        for effect in state.priority.chain + ((state.priority.resolving,) if state.priority.resolving else ()):
+            if effect.effect_key not in definitions or definitions[effect.effect_key].controller != effect.controller:
+                raise MatchError('pending item does not match registered controller')
+    if state.end_stage not in ('none','triggers','discard','cleanup','done') or not _natural(state.discard_needed):
+        raise MatchError('invalid boundary stage')
+
+
+def new_match(players, battlefield, effects, policy, *, active_player, phase='MainBefore', end_cleanup=(),
+              actions=(), managed_turns=False, start_cleanup=(), card_definitions=(), card_instances=(), shuffle_seed=None, leader_definitions=(), leaders=(), durations=()):
+    """Fixture/coordinator factory; no deck/lobby setup or full-match mode implied."""
+    if type(durations) is not tuple or any(type(d) is not TimedEffect for d in durations):raise MatchError('typed durations required')
+    seats=tuple(p.cards.player_id for p in players)
+    state=MatchState(seats,players,battlefield,effects,policy,TurnFlow(active_player,1,phase=phase),
+                     PriorityState(seats,active_player,active_player),end_cleanup=end_cleanup,actions=actions,managed_turns=managed_turns,
+                     starting_player=active_player,start_cleanup=start_cleanup,card_definitions=card_definitions,
+                     card_instances=card_instances,shuffle_seed=shuffle_seed,leader_definitions=leader_definitions,leaders=leaders,
+                     boundary_counts=initial_counts(seats,active_player,phase),durations=durations,
+                     next_duration_id=max((d.duration_id for d in durations),default=0)+1)
+    validate_match(state)
+    if any(p.eliminated or p.cards.health <= 0 for p in players):
+        raise MatchError('initial players must be alive')
+    if managed_turns and phase!='Start':
+        raise MatchError('managed matches begin at Start')
+    if managed_turns:return _begin_start(state)
+    if phase=='Start':
+        state,steps=_enter_boundary(state,active_player,'Start')
+        if steps:return _run(replace(state,pending=Resolution(steps,controller=active_player)))
+    return state
+
+
+def _check(state, revision):
+    validate_match(state)
+    if type(revision) is not int or revision != state.revision:
+        raise MatchError('stale match revision')
+    if state.result is not None:
+        raise MatchError('match already ended')
+
+
+def _blocked(state):
+    return (state.pending is not None or bool(state.triggers) or state.discard_needed > 0
+            or (state.combat is not None and state.combat.stage in ('blocking','ordering')))
+
+
+def queue_effect(state, actor, key, *, expected_revision):
+    """Internal commit for an already-authorized fixture effect, not card play legality."""
+    _check(state,expected_revision)
+    if _blocked(state) or state.priority is None:
+        raise MatchError('resolution/mandatory choice is pending')
+    e=next((e for e in state.effects if e.key==key),None)
+    if e is None or e.controller != actor or actor not in _living(state):
+        raise MatchError('unregistered or wrong-controller effect')
+    if e.source_id is not None and not any(o.object_id==e.source_id and o.controller==actor for o in state.battlefield):
+        raise MatchError('effect source is no longer controlled on battlefield')
+    if actor == state.turn.active_player and (state.turn.recharge or _player(state,actor).cards.end_turn_requested):
+        raise MatchError('active player cannot take voluntary actions while ending/Recharging')
+    p=add_effect(state.priority,actor,key,expected_revision=state.priority.revision)
+    return replace(state,priority=p,revision=state.revision+1)
+
+
+def request_match_end(state, actor, *, expected_revision):
+    """Record own-turn ending intent without truncating pending work."""
+    _check(state,expected_revision)
+    if actor != state.turn.active_player or actor not in _living(state):
+        raise MatchError('only the living active player can end their turn')
+    if state.combat is not None and state.combat.stage!='done':
+        raise MatchError('committed combat must finish before ending intent')
+    turn=request_end_turn(state.turn,expected_turn_id=state.turn.turn_id,expected_revision=state.turn.revision)
+    return _quiescent(replace(state,turn=turn,revision=state.revision+1))
+
+
+def pass_match(state, actor, *, expected_revision):
+    _check(state,expected_revision)
+    if _blocked(state) or state.priority is None:
+        raise MatchError('resolution/mandatory choice is pending')
+    p=pass_priority(state.priority,actor,expected_revision=state.priority.revision)
+    return _quiescent(replace(state,priority=p,revision=state.revision+1))
+
+
+def _emit(state, kind, subject, cause):
+    event=MatchEvent(state.next_event_id,kind,subject,cause)
+    return replace(state,events=state.events+(event,),next_event_id=state.next_event_id+1),event
+
+
+def _capture(state, sources, events):
+    candidates=list(state.triggers)
+    next_id=state.next_trigger_id
+    for event in events:
+        for source in sources:
+            for trigger in source.triggers:
+                own = source.controller==event.subject if event.kind in ('turn_end','turn_start','card_drawn','card_discarded') else source.object_id==event.subject
+                if trigger.event==event.kind and (trigger.watch=='any' or own):
+                    candidates.append(TriggerCandidate(next_id,event.event_id,source.controller,source.object_id,trigger.effect_key,trigger.optional))
+                    next_id+=1
+    return replace(state,triggers=tuple(candidates),next_trigger_id=next_id)
+
+
+def _observe_cards(state, kind, actor, count):
+    # Opt-in observer events preserve old saves' event/request IDs when no listener matches.
+    sources=state.battlefield
+    if not any(t.event==kind and (t.watch=='any' or o.controller==actor) for o in sources for t in o.triggers):return state
+    events=[]
+    for _ in range(count):
+        state,event=_emit(state,kind,actor,'observed_card_move');events.append(event)
+    return _capture(state,sources,events)
+
+
+def _depart(state, ids, cause, *, genuine=False, hand_ids=(), exile_ids=()):
+    sources=state.battlefield
+    events=[]
+    for o in sources:
+        if o.object_id not in ids:
+            continue
+        if genuine:
+            state,e=_emit(state,'defeat',o.object_id,cause);events.append(e)
+        state,e=_emit(state,'departure',o.object_id,cause);events.append(e)
+        if o.kind=='leader':
+            leader=next(l for l in state.leaders if l.instance_id==o.object_id)
+            state=_set_leader(state,replace(leader,location='reserve',removals=leader.removals+1,recovering=True,pending_effect_id=None))
+            state,_=_emit(state,'leader_returned',o.object_id,cause)
+        elif o.kind not in ('creature_token','resource_token'):
+            owner=_player(state,o.owner)
+            if o.object_id in exile_ids:
+                state=replace(state,exiled=state.exiled+(o.object_id,))
+                state,_=_emit(state,'card_exiled',o.object_id,cause)
+            else:
+                zone='hand' if o.object_id in hand_ids else 'discard'
+                owner=replace(owner,cards=replace(owner.cards,**{zone:getattr(owner.cards,zone)+(o.object_id,)}))
+                state=_set_player(state,owner)
+                if zone=='hand':state,_=_emit(state,'card_returned',o.object_id,cause)
+    state=_capture(state,sources,events)
+    return replace(state,battlefield=tuple(o for o in sources if o.object_id not in ids))
+
+
+def _move_creature(state, target, destination):
+    obj=next((o for o in state.battlefield if o.object_id==target and o.creature),None)
+    if obj is None:return state
+    # Structural attachments leave now, before a later instruction can draw/refill.
+    ids={target}
+    while True:
+        attached={o.object_id for o in state.battlefield if o.attached_to in ids}
+        if attached<=ids:break
+        ids.update(attached)
+    state=_depart(state,ids,destination,hand_ids=(target,) if destination=='return_to_hand' else (),
+                  exile_ids=(target,) if destination=='exile' else ())
+    return _trim_durations(state)
+
+
+def _priority_after_cleanup(state):
+    alive=_living(state)
+    if not alive:
+        return replace(state,priority=None,triggers=(),trigger_orders=())
+    active=state.turn.active_player
+    if active not in alive:
+        start=state.seat_order.index(active)
+        active=next(p for p in state.seat_order[start+1:]+state.seat_order[:start+1] if p in alive)
+    old=state.priority
+    chain=tuple(e for e in old.chain if e.controller in alive) if old else ()
+    p=PriorityState(alive,active,active,chain=chain,
+                    revision=old.revision+1 if old else 0,next_effect_id=old.next_effect_id if old else 1)
+    return replace(state,priority=p,triggers=tuple(t for t in state.triggers if t.controller in alive),trigger_orders=())
+
+
+def _stabilize(state, *, reset_priority=True):
+    state,overdue=_expire_durations(state)
+    if overdue:raise UnsupportedMatchRule('overdue expiration payload must be processed by its boundary')
+    if reset_priority and state.combat is not None and state.combat.stage in ('blocking','ordering'):
+        state=replace(state,combat=replace(state.combat,stage='attack_responses',locks=(),orders=()))
+    # Genuine defeats are recorded before elimination ownership cleanup.
+    defeated={o.object_id for o in state.battlefield if o.object_id in state.destroyed or (o.creature and o.creature.health<=0)}
+    if defeated:
+        state=_depart(state,defeated,'genuine_defeat',genuine=True)
+    losing={p.cards.player_id for p in state.players if not p.eliminated and
+            (p.cards.health<=0 or p.cards.player_id in state.failed_draws)}
+    # One recorded concession per safe boundary; terminal checks precede the next.
+    concession=state.concedes[:1]
+    losing.update(p for p in concession if not _player(state,p).eliminated)
+    for player_id in state.seat_order:
+        if player_id not in losing:
+            continue
+        p=_player(state,player_id)
+        causes=tuple(c for yes,c in ((p.cards.health<=0,'health'),(player_id in state.failed_draws,'failed_draw'),(player_id in concession,'concede')) if yes)
+        p=replace(p,eliminated=True,causes=causes)
+        state=_set_player(state,p)
+        state,_=_emit(state,'elimination',player_id,'+'.join(causes))
+    while True:
+        alive=_living(state)
+        ids={o.object_id for o in state.battlefield}
+        removed={o.object_id for o in state.battlefield if o.owner not in alive or o.controller not in alive
+                 or (o.attached_to is not None and o.attached_to not in ids)}
+        if not removed:
+            break
+        state=_depart(state,removed,'elimination_or_attachment_cleanup')
+    state=replace(state,failed_draws=(),destroyed=(),concedes=state.concedes[1:],
+                  discard_needed=0 if _player(state,state.turn.active_player).eliminated else state.discard_needed)
+    state=_trim_durations(state)
+    for card in state.pending_cards:
+        if _player(state,card.controller).eliminated:
+            state=_discard_pending_card(state,card,'card_cancelled')
+    for leader in state.leaders:
+        if leader.pending_effect_id is not None and _player(state,leader.owner).eliminated:
+            state=_cancel_leader_summon(state,leader.pending_effect_id)
+    if reset_priority:
+        state=_priority_after_cleanup(state)
+    return _flush_triggers(state)
+
+
+def _next_optional_trigger(state):
+    if state.pending or not state.priority:return None
+    seats=state.priority.seats;start=seats.index(state.priority.active_player)
+    for actor in seats[start:]+seats[:start]:
+        for candidate in state.triggers:
+            if candidate.controller==actor and candidate.optional and candidate.decision is None:return candidate
+    return None
+
+
+def choose_optional_trigger(state, actor, trigger_id, use, *, expected_revision):
+    _check(state,expected_revision);candidate=_next_optional_trigger(state)
+    if type(trigger_id) is not int or type(use) is not bool or candidate is None or candidate.controller!=actor or candidate.trigger_id!=trigger_id:
+        raise MatchError('wrong or absent optional trigger choice')
+    state=replace(state,triggers=tuple(replace(t,decision=use) if t.trigger_id==trigger_id else t for t in state.triggers),revision=state.revision+1)
+    return _quiescent(_flush_triggers(state))
+
+
+def _trigger_order_waiting(state):
+    if state.pending or not state.priority or _next_optional_trigger(state) is not None:return ()
+    seats=state.priority.seats;start=seats.index(state.priority.active_player);confirmed=dict(state.trigger_orders)
+    return tuple(p for p in seats[start:]+seats[:start] if sum(t.controller==p for t in state.triggers)>1 and p not in confirmed)
+
+
+def _flush_triggers(state):
+    if not state.triggers or state.pending or _next_optional_trigger(state) is not None:
+        return state
+    groups={}
+    for t in state.triggers:
+        groups.setdefault(t.controller,[]).append(t)
+    orders=dict(state.trigger_orders)
+    if any(len(group)>1 and controller not in orders for controller,group in groups.items()):
+        return state
+    if not any(t.decision is not False for t in state.triggers):return replace(state,triggers=(),trigger_orders=())
+    p=state.priority
+    start=p.seats.index(p.active_player)
+    seats=p.seats[start:]+p.seats[:start]
+    chain=list(p.chain);next_id=p.next_effect_id
+    for controller in seats:
+        candidates=groups.get(controller,[])
+        by_id={t.trigger_id:t for t in candidates if t.decision is not False}
+        order=orders.get(controller,tuple(by_id))
+        for trigger_id in order:
+            t=by_id[trigger_id]
+            chain.append(PendingEffect(next_id,controller,t.effect_key));next_id+=1
+    return replace(state,priority=replace(p,chain=tuple(chain),holder=p.active_player,passes=(),
+                   status='priority',revision=p.revision+1,next_effect_id=next_id),triggers=(),trigger_orders=())
+
+
+def choose_trigger_order(state, actor, order, *, expected_revision):
+    _check(state,expected_revision)
+    if state.pending or _next_optional_trigger(state) is not None:raise MatchError('finish atomic effects and optional decisions before ordering')
+    own=tuple(t.trigger_id for t in state.triggers if t.controller==actor and t.decision is not False)
+    if (type(order) is not tuple or any(type(i) is not int for i in order) or actor not in _trigger_order_waiting(state) or len(order)!=len(own) or set(order)!=set(own)
+            or actor in dict(state.trigger_orders)):
+        raise MatchError('invalid or already-confirmed trigger order')
+    state=replace(state,trigger_orders=state.trigger_orders+((actor,order),),revision=state.revision+1)
+    return _quiescent(_flush_triggers(state))
+
+
+def resolve_current(state, *, expected_revision):
+    _check(state,expected_revision)
+    if _blocked(state) or state.priority is None or state.priority.status!='resolving':
+        raise MatchError('no newly resolving effect')
+    effect=next(e for e in state.effects if e.key==state.priority.resolving.effect_key)
+    return _run(replace(state,pending=Resolution(effect.steps,effect_id=state.priority.resolving.effect_id,controller=effect.controller),revision=state.revision+1))
+
+
+def _record_draw(state, draw):
+    p=_player(state,draw.player.player_id)
+    state=_set_player(state,replace(p,cards=draw.player))
+    state=_observe_cards(state,'card_drawn',draw.player.player_id,max(0,len(draw.player.hand)-len(p.cards.hand)))
+    if draw.status=='needs_refill':
+        return replace(state,pending=replace(state.pending,draw=draw))
+    failures=state.failed_draws
+    if draw.status=='failed' and draw.player.player_id not in failures:
+        failures+= (draw.player.player_id,)
+    return replace(state,failed_draws=failures,draw_records=state.draw_records+(draw,),
+                   pending=replace(state.pending,index=state.pending.index+1,draw=None,discard_done=False))
+
+
+def _run(state):
+    while state.pending and state.pending.index<len(state.pending.steps):
+        if state.pending.draw is not None:
+            return state
+        step=state.pending.steps[state.pending.index]
+        if type(step) is DiscardThenDraw:
+            p=_player(state,step.target)
+            if p.eliminated or (not state.pending.discard_done and not p.cards.hand):
+                state=replace(state,pending=replace(state.pending,index=state.pending.index+1,discard_request=None,discard_done=False));continue
+            if not state.pending.discard_done:
+                if state.pending.discard_request is None:
+                    request=state.next_event_id
+                    state,_=_emit(state,'discard_choice',step.target,'required')
+                    state=replace(state,pending=replace(state.pending,discard_request=request))
+                if step.target in state.concedes:
+                    return choose_effect_discard(state,step.target,p.cards.hand[0],expected_request_id=state.pending.discard_request,expected_revision=state.revision)
+                return state
+            step=DrawCards(step.target,step.count)
+        if type(step) in (DamagePlayer,HealPlayer,DrawCards,GrantCapacity,GrantResources):
+            p=_player(state,step.target)
+            if p.eliminated:
+                state=replace(state,pending=replace(state.pending,index=state.pending.index+1));continue
+            if type(step) is DrawCards:
+                draw=begin_required_draw(p.cards,state.turn,step.count,state.policy,
+                        request_id=state.next_event_id,defer_health_check=True)
+                state,_=_emit(state,'required_draw',step.target,str(step.count))
+                if draw.status=='needs_refill' and step.target in state.concedes:
+                    draw=decline_refill(draw,expected_request_id=draw.request_id,expected_revision=draw.revision)
+                state=_record_draw(state,draw)
+                if state.pending.draw is not None:
+                    return state
+                continue
+            if type(step) in (GrantCapacity,GrantResources):
+                field='permanent_bonus' if type(step) is GrantCapacity else 'available'
+                pool=replace(p.resources,**{field:getattr(p.resources,field)+step.amount})
+                state=_set_player(state,replace(p,resources=pool))
+                state=replace(state,pending=replace(state.pending,index=state.pending.index+1))
+                continue
+            health=p.cards.health-step.amount if type(step) is DamagePlayer else min(p.max_health,p.cards.health+step.amount)
+            state=_set_player(state,replace(p,cards=replace(p.cards,health=health)))
+            state,_=_emit(state,'damage' if type(step) is DamagePlayer else 'heal',step.target,str(step.amount))
+        elif type(step) is GrantShield:
+            state=_grant_shield(state,step,state.pending.controller or state.turn.active_player)
+        elif type(step) is NegateEffect:
+            item=next((e for e in state.priority.chain if e.effect_id==step.effect_id),None) if state.priority else None
+            if item is not None:
+                card=next((c for c in state.pending_cards if c.effect_id==item.effect_id),None)
+                if card:state=_discard_pending_card(state,card,'card_cancelled')
+                state=_cancel_leader_summon(state,item.effect_id)
+                state=replace(state,priority=replace(state.priority,chain=tuple(e for e in state.priority.chain if e!=item)))
+                state,_=_emit(state,'effect_negated',str(item.effect_id),'negation')
+        elif type(step) is ReturnCreatureToHand:
+            state=_move_creature(state,step.target,'return_to_hand')
+        elif type(step) is ExileCreature:
+            state=_move_creature(state,step.target,'exile')
+        elif type(step) is RecoverDiscardCard:
+            card=next((c for c in state.card_instances if c.instance_id==step.target),None)
+            if card is not None:
+                owner=_player(state,card.owner)
+                if not owner.eliminated and card.instance_id in owner.cards.discard:
+                    state=_set_player(state,replace(owner,cards=replace(owner.cards,
+                        discard=tuple(i for i in owner.cards.discard if i!=card.instance_id),
+                        hand=owner.cards.hand+(card.instance_id,))))
+                    state,_=_emit(state,'card_recovered',card.instance_id,'discard_to_hand')
+        else:  # validated DestroyCreature; absent targets do not cancel independent instructions
+            obj=next((o for o in state.battlefield if o.object_id==step.target),None)
+            if obj and obj.creature:
+                state=replace(state,destroyed=state.destroyed+(obj.object_id,))
+        state=replace(state,pending=replace(state.pending,index=state.pending.index+1))
+    cleanup=state.pending.cleanup
+    state=_finish_pending_card(state,state.pending.effect_id)
+    state=_finish_leader_summon(state,state.pending.effect_id)
+    state=replace(state,pending=None)
+    if cleanup:
+        state=replace(state,end_stage='done')
+    state=_stabilize(state)
+    if state.start_stage=='cleanup':
+        return _finish_start(state)
+    return _quiescent(state)
+
+
+def choose_refill(state, actor, *, pay, shuffled_discard=(), expected_request_id, expected_revision):
+    _check(state,expected_revision)
+    draw=state.pending.draw if state.pending else None
+    if draw is None or draw.player.player_id!=actor or type(pay) is not bool or type(expected_request_id) is not int or expected_request_id!=draw.request_id:
+        raise MatchError('wrong or absent refill choice')
+    if pay:
+        draw=accept_refill(draw,shuffled_discard,expected_request_id=draw.request_id,expected_revision=draw.revision)
+    else:
+        draw=decline_refill(draw,expected_request_id=draw.request_id,expected_revision=draw.revision)
+    state=replace(state,revision=state.revision+1)
+    return _run(_record_draw(state,draw))
+
+
+def choose_effect_discard(state,actor,card_id,*,expected_request_id,expected_revision):
+    _check(state,expected_revision)
+    pending=state.pending
+    if pending is None or type(expected_request_id) is not int or pending.discard_request!=expected_request_id or pending.discard_done or pending.draw is not None:
+        raise MatchError('wrong or absent effect discard choice')
+    step=pending.steps[pending.index]
+    if type(step) is not DiscardThenDraw or step.target!=actor or type(card_id) is not str or card_id not in _player(state,actor).cards.hand:
+        raise MatchError('invalid effect discard actor/card')
+    p=_player(state,actor)
+    state=_set_player(state,replace(p,cards=replace(p.cards,hand=tuple(i for i in p.cards.hand if i!=card_id),discard=p.cards.discard+(card_id,))))
+    state,_=_emit(state,'card_effect_discarded',card_id,'hand_to_discard')
+    state=_observe_cards(state,'card_discarded',actor,1)
+    state=replace(state,pending=replace(pending,discard_request=None,discard_done=True),revision=state.revision+1)
+    return _run(state)
+
+
+def concede(state, actor, *, expected_revision):
+    _check(state,expected_revision)
+    if actor not in _living(state):
+        raise MatchError('player is not active')
+    if actor in state.concedes:
+        raise MatchError('concession already recorded')
+    state=replace(state,concedes=state.concedes+(actor,),revision=state.revision+1)
+    state,_=_emit(state,'concede_request',actor,'confirmed')
+    if state.pending or (state.priority and state.priority.status=='resolving'):
+        if state.pending and state.pending.discard_request is not None:
+            step=state.pending.steps[state.pending.index]
+            if step.target==actor:return _run(state)
+        if state.pending and state.pending.draw and state.pending.draw.player.player_id==actor:
+            draw=state.pending.draw
+            draw=decline_refill(draw,expected_request_id=draw.request_id,expected_revision=draw.revision)
+            return _run(_record_draw(state,draw))
+        return state
+    return _quiescent(_stabilize(state))
+
+
+def _quiescent(state):
+    if state.pending:
+        return state
+    if state.triggers or state.discard_needed or (state.priority and (state.priority.chain or state.priority.status=='resolving')):
+        return _quiescent(_stabilize(state)) if state.concedes else state
+    active=_player(state,state.turn.active_player)
+    # Empty-chain phase progression still needs every surviving seat to pass.
+    # Terminal checks have no extra empty-chain reaction window.
+    if len(_living(state))>1 and state.priority and state.priority.status!='closed':
+        return _quiescent(_stabilize(state)) if state.concedes else state
+    if state.rotation_queue:return _advance_rotation(state)
+    committed_combat=state.combat is not None and state.combat.stage!='done' and not active.eliminated
+    ending=active.eliminated or (not committed_combat and (active.cards.end_turn_requested or state.turn.end_requested or state.turn.phase in ('End','Finished')))
+    if ending and state.end_stage=='none':
+        state=replace(state,turn=replace(state.turn,phase='End',end_requested=True,revision=state.turn.revision+1),end_stage='triggers')
+        if not active.eliminated:
+            state,event=_emit(state,'turn_end',active.cards.player_id,'normal_end')
+            state=_flush_triggers(_capture(state,state.battlefield,(event,)))
+            if state.triggers or (state.priority and state.priority.chain):
+                return state
+    if ending and state.end_stage in ('triggers','discard'):
+        excess=max(0,len(active.cards.hand)-7) if not active.eliminated else 0
+        state=replace(state,end_stage='discard',discard_needed=excess)
+        if excess:
+            return state
+        state=replace(state,end_stage='cleanup')
+        state,expired=_enter_boundary(state,state.turn.active_player,'End')
+        steps=expired+state.end_cleanup
+        if steps:
+            return _run(replace(state,pending=Resolution(steps,cleanup=True,controller=state.turn.active_player)))
+        state=replace(state,end_stage='done',turn=replace(state.turn,phase='Finished',revision=state.turn.revision+1))
+    if ending and state.end_stage=='done' and not active.eliminated:
+        excess=max(0,len(active.cards.hand)-7)
+        if excess:
+            return replace(state,discard_needed=excess)
+    alive=_living(state)
+    if len(alive)<=1:
+        return replace(state,result=MatchResult('draw') if not alive else MatchResult('win',alive[0]),priority=None,concedes=())
+    if state.concedes:
+        return _quiescent(_stabilize(state))
+    if ending and state.end_stage=='done':
+        return _advance_rotation(replace(state,rotation_queue=_rotation_path(state,state.turn.active_player)))
+    if state.combat is not None and not ending:
+        if state.combat.stage=='attack_responses':
+            flow=begin_blocking(_combat_snapshot(state),state.combat)
+            return _open_final_if_ordered(replace(state,combat=flow))
+        if state.combat.stage=='final_responses':
+            result=resolve_committed(_combat_snapshot(state),state.combat)
+            state=_apply_combat_result(state,result)
+            state=replace(state,combat=replace(state.combat,stage='done'),
+                          turn=replace(state.turn,phase='MainAfter',revision=state.turn.revision+1))
+            return _quiescent(_stabilize(state))
+    if state.managed_turns and not ending:
+        return _advance_managed(state)
+    return state
+
+
+def choose_end_discards(state, actor, cards, *, expected_revision):
+    _check(state,expected_revision)
+    p=_player(state,state.turn.active_player)
+    if (actor!=p.cards.player_id or state.discard_needed<=0 or type(cards) is not tuple
+            or len(cards)!=state.discard_needed or len(set(cards))!=len(cards)
+            or any(card not in p.cards.hand for card in cards)):
+        raise MatchError('invalid end-hand-limit choice')
+    player=replace(p,cards=replace(p.cards,hand=tuple(c for c in p.cards.hand if c not in cards),discard=p.cards.discard+cards))
+    state=_set_player(state,player)
+    state=_flush_triggers(_observe_cards(state,'card_discarded',actor,len(cards)))
+    return _quiescent(replace(state,discard_needed=0,revision=state.revision+1))
+
+
+def resolve_combat_snapshot(state, attacks, challenge_orders=(), *, expected_revision):
+    """Atomic final-snapshot adapter, NOT full-match attack/block declaration windows."""
+    _check(state,expected_revision)
+    if state.managed_turns or state.combat is not None or state.turn.phase!='Combat' or _blocked(state) or state.priority is None or state.priority.chain or state.priority.status!='closed':
+        raise MatchError('combat snapshot requires Combat phase and a closed empty response window')
+    by_id={o.object_id:o for o in state.battlefield}
+    if type(attacks) is not tuple or any(a.attacker_id not in by_id or by_id[a.attacker_id].controller!=state.turn.active_player for a in attacks):
+        raise MatchError('combat attacks must belong to the active player')
+    snapshot=CombatState(tuple(Player(p.cards.player_id,p.cards.health) for p in state.players if not p.eliminated),
+                         tuple(o.creature for o in state.battlefield if o.creature))
+    result=resolve_combat(snapshot,attacks,challenge_orders)
+    return _quiescent(_stabilize(_apply_combat_result(replace(state,revision=state.revision+1),result)))
+
+
+def _combat_snapshot(state):
+    return CombatState(tuple(Player(p.cards.player_id,p.cards.health) for p in state.players if not p.eliminated),
+                       tuple(o.creature for o in state.battlefield if o.creature))
+
+
+def _apply_combat_result(state, result):
+    for p in result.state.players:
+        old=_player(state,p.player_id)
+        state=_set_player(state,replace(old,cards=replace(old.cards,health=p.health)))
+    survivors={c.instance_id:c for c in result.state.creatures}
+    battlefield=tuple(replace(o,creature=survivors.get(o.object_id,replace(o.creature,health=0))) if o.creature else o for o in state.battlefield)
+    state=replace(state,battlefield=battlefield)
+    for damage in result.events:
+        state,_=_emit(state,'combat_damage',damage.target_id,str(damage.health_damage))
+    for attacker in result.misses:
+        state,_=_emit(state,'combat_miss',attacker,'invalid_challenge_target')
+    return state
+
+
+def declare_match_attacks(state, actor, attacks, *, expected_revision):
+    _check(state,expected_revision)
+    if (actor not in _living(state) or actor!=state.turn.active_player or state.turn.phase!='Combat' or state.turn.recharge
+            or state.turn.end_requested or _blocked(state) or state.combat is not None
+            or state.priority is None or state.priority.status!='closed'):
+        raise MatchError('not a fresh closed Combat declaration boundary')
+    snapshot,flow=commit_attacks(_combat_snapshot(state),actor,attacks)
+    updated={c.instance_id:c for c in snapshot.creatures}
+    state=replace(state,battlefield=tuple(replace(o,creature=updated[o.object_id]) if o.creature else o for o in state.battlefield),
+                  combat=flow,revision=state.revision+1)
+    state,_=_emit(state,'attacks_declared',actor,str(len(attacks)))
+    return _priority_after_cleanup(state)
+
+
+def _open_final_if_ordered(state):
+    if state.combat.stage=='ordering' and not required_orders(_combat_snapshot(state),state.combat):
+        state=replace(state,combat=replace(state.combat,stage='final_responses'))
+        return _priority_after_cleanup(state)
+    return state
+
+
+def lock_match_blockers(state, actor, assignments, *, expected_revision):
+    _check(state,expected_revision)
+    if state.combat is None or state.pending or state.triggers:
+        raise MatchError('blocker batch unavailable')
+    flow=lock_blockers(_combat_snapshot(state),state.combat,actor,assignments)
+    state=replace(state,combat=flow,revision=state.revision+1)
+    if flow.stage=='ordering':
+        state,_=_emit(state,'blockers_revealed',state.turn.active_player,'all_defenders_locked')
+    return _open_final_if_ordered(state)
+
+
+def choose_match_combat_order(state, actor, subject, order, *, expected_revision):
+    _check(state,expected_revision)
+    if state.combat is None or state.pending or state.triggers:
+        raise MatchError('combat order unavailable')
+    flow=choose_order(_combat_snapshot(state),state.combat,actor,subject,order)
+    return _open_final_if_ordered(replace(state,combat=flow,revision=state.revision+1))
+
+
+def match_combat_view(state, viewer=None):
+    if viewer is not None and viewer not in _living(state):
+        raise MatchError('viewer is not an active player')
+    return combat_view(state.combat,viewer) if state.combat is not None else None
+
+
+def submit_action(state, actor, key, payment, *, expected_revision):
+    """Confirm a registered source ability and exact costs as one transaction."""
+    _check(state,expected_revision)
+    if _blocked(state) or state.priority is None or state.priority.status!='priority' or state.priority.holder!=actor:
+        raise MatchError('actor does not hold an actionable response window')
+    action=next((a for a in state.actions if a.key==key),None)
+    effect=next((e for e in state.effects if action and e.key==action.effect_key),None)
+    source=next((o for o in state.battlefield if action and o.object_id==action.source_id),None)
+    if action is None or effect.controller!=actor or source is None or source.controller!=actor or actor not in _living(state):
+        raise MatchError('unavailable action/source/controller')
+    active=actor==state.turn.active_player
+    if active and (state.turn.recharge or _player(state,actor).cards.end_turn_requested):
+        raise MatchError('active player is ending/Recharging')
+    if action.timing=='main' and (not active or state.turn.phase not in ('MainBefore','MainAfter')
+            or state.turn.end_requested or state.priority.chain):
+        raise MatchError('ordinary abilities require own Main with an empty chain')
+    if action.once_per_turn and (key,state.turn.turn_id) in state.action_uses:
+        raise MatchError('per-turn ability already used')
+    if action.exhaust_source and (source.creature is None or source.creature.exhausted or not source.creature.attack_eligible):
+        raise MatchError('source cannot pay exhaust cost')
+    if effect.source_id is not None and effect.source_id!=source.object_id:
+        raise MatchError('registered effect/source mismatch')
+    owner=_player(state,actor)
+    tokens=tuple((o.object_id,o.resource_value) for o in state.battlefield if o.kind=='resource_token' and o.controller==actor)
+    pool=pay_resources(owner.resources,action.resource_cost,payment,tokens)
+    # All checks precede the first replacement; rejected commands leave every ID intact.
+    priority=add_effect(state.priority,actor,effect.key,expected_revision=state.priority.revision)
+    state=_set_player(state,replace(owner,resources=pool))
+    if action.exhaust_source:
+        state=replace(state,battlefield=tuple(replace(o,creature=replace(o.creature,exhausted=True)) if o.object_id==source.object_id else o for o in state.battlefield))
+    state=replace(state,priority=priority,revision=state.revision+1,
+                  action_uses=state.action_uses+(((key,state.turn.turn_id),) if action.once_per_turn else ()))
+    if payment.token_ids:
+        state=_depart(state,set(payment.token_ids),'cost_payment')
+    state,_=_emit(state,'action_committed',actor,key)
+    return _quiescent(_stabilize(state,reset_priority=False))
+
+
+def _phase_window(state, phase):
+    turn=replace(state.turn,phase=phase,revision=state.turn.revision+1)
+    return _priority_after_cleanup(replace(state,turn=turn))
+
+
+def _begin_start(state):
+    if state.start_stage!='pending' or state.turn.phase!='Start':
+        raise MatchError('Start maintenance already applied')
+    state=replace(state,start_stage='cleanup')
+    state,expired=_enter_boundary(state,state.turn.active_player,'Start')
+    steps=expired+state.start_cleanup
+    if steps:
+        return _run(replace(state,pending=Resolution(steps,controller=state.turn.active_player)))
+    return _finish_start(state)
+
+
+def _finish_start(state):
+    active=_player(state,state.turn.active_player)
+    state=replace(state,start_stage='done',start_cleanup=())
+    if active.eliminated:
+        return _quiescent(state)
+    state=replace(state,leaders=tuple(replace(l,recovering=False) if l.owner==active.cards.player_id else l for l in state.leaders))
+    bonus=sum(o.capacity_bonus for o in state.battlefield if o.controller==active.cards.player_id)
+    active=replace(active,resources=start_resources(active.resources,bonus))
+    state=_set_player(state,active)
+    state=replace(state,battlefield=tuple(replace(o,creature=replace(o.creature,exhausted=False,
+                  attack_eligible=True,attack_used=False)) if o.controller==active.cards.player_id and o.creature else o
+                  for o in state.battlefield))
+    state,event=_emit(state,'turn_start',active.cards.player_id,str(active.resources.own_starts))
+    state=_capture(state,state.battlefield,(event,))
+    return _quiescent(_stabilize(state))
+
+
+def _advance_managed(state):
+    phase=state.turn.phase
+    active=_player(state,state.turn.active_player)
+    if phase=='Start':
+        if state.turn.recharge:
+            return _quiescent(replace(state,turn=replace(state.turn,end_requested=True)))
+        if not active.cards.deck:
+            draw=begin_start_refill(active.cards,state.turn,state.policy,request_id=state.next_event_id)
+            state,_=_emit(state,'start_refill',active.cards.player_id,'empty_deck')
+            state=replace(state,pending=Resolution((DrawCards(active.cards.player_id,0),)))
+            return _run(_record_draw(state,draw))
+        state=_phase_window(state,'Draw')
+        skip=len(state.seat_order)==2 and active.cards.player_id==state.starting_player and active.resources.own_starts==1
+        return _run(replace(state,pending=Resolution((DrawCards(active.cards.player_id,0 if skip else 1),))))
+    if phase=='Draw':
+        return _phase_window(state,'MainBefore')
+    if phase=='MainBefore':
+        return _phase_window(state,'Combat')
+    if phase=='Combat':
+        return state  # committed declaration workflow owns this phase
+    if phase=='MainAfter':
+        return _quiescent(replace(state,turn=replace(state.turn,end_requested=True)))
+    return state
+
+def _validate_card_state(state, zone_ids):
+    if any(type(c) is not tuple for c in (state.card_definitions,state.card_instances,state.pending_cards)):
+        raise MatchError('card collections must be tuples')
+    if any(type(c) is not CardDefinition for c in state.card_definitions) or any(type(c) is not CardInstance for c in state.card_instances) or any(type(c) is not PendingCard for c in state.pending_cards):
+        raise MatchError('invalid card record')
+    definitions={c.key:c for c in state.card_definitions}
+    instances={c.instance_id:c for c in state.card_instances}
+    if any(i not in instances for i in state.exiled):raise MatchError('exile requires registered ordinary card instances')
+    unregistered={o.object_id for o in state.battlefield if o.kind=='creature' and o.object_id not in instances}
+    steps=tuple(s for e in state.effects for s in e.steps)+state.start_cleanup+state.end_cleanup+tuple(s for d in state.durations for s in d.expiration_steps)
+    if any(type(s) is ExileCreature and s.target in unregistered for s in steps):raise UnsupportedMatchRule('exile target needs registered card metadata')
+    if len(definitions)!=len(state.card_definitions) or len(instances)!=len(state.card_instances):
+        raise MatchError('duplicate card definition/instance')
+    for d in definitions.values():
+        _validate_card_definition(d)
+    for c in instances.values():
+        if not _name(c.instance_id) or c.definition_key not in definitions or c.owner not in state.seat_order or zone_ids.count(c.instance_id)!=1:
+            raise MatchError('registered card must occupy exactly one zone')
+        for p in state.players:
+            if c.instance_id in p.cards.hand+p.cards.deck+p.cards.discard and c.owner!=p.cards.player_id:
+                raise MatchError('card in wrong owner zone')
+        obj=next((o for o in state.battlefield if o.object_id==c.instance_id),None)
+        if obj and (obj.owner!=c.owner or obj.kind!=definitions[c.definition_key].kind):
+            raise MatchError('battlefield card identity mismatch')
+        if obj and definitions[c.definition_key].triggered_abilities:
+            effects,triggers=_authored_trigger_parts(state,c,definitions[c.definition_key],obj.controller)
+            if any(e not in state.effects for e in effects) or any(t not in obj.triggers for t in triggers):raise MatchError('authored source missing its registered triggers')
+    live=state.priority.chain+((state.priority.resolving,) if state.priority.resolving else ()) if state.priority else ()
+    if any(type(c.effect_id) is not int or c.effect_id<1 for c in state.pending_cards) or len({c.effect_id for c in state.pending_cards})!=len(state.pending_cards):
+        raise MatchError('invalid/duplicate pending card effect ID')
+    for c in state.pending_cards:
+        if c.card_id not in instances or c.controller!=instances[c.card_id].owner or not any(e.effect_id==c.effect_id and e.controller==c.controller for e in live):
+            raise MatchError('pending card/item mismatch')
+        _authored_trigger_parts(state,instances[c.card_id],definitions[instances[c.card_id].definition_key],c.controller)
+
+
+def _bound_card_steps(state, actor, definition, target):
+    if definition.target_kind is None:
+        if target is not None:raise MatchError('card has no target')
+    elif definition.target_kind=='player':
+        if target not in _living(state):raise MatchError('invalid player target')
+        controller=target
+    elif definition.target_kind=='creature':
+        obj=next((o for o in state.battlefield if o.object_id==target and o.creature is not None),None)
+        if obj is None:raise MatchError('invalid creature target')
+        controller=obj.controller
+    elif definition.target_kind=='discard':
+        card=next((c for c in state.card_instances if c.instance_id==target),None)
+        if card is None or card.owner!=actor or target not in _player(state,actor).cards.discard:
+            raise MatchError('choose a registered card in your own discard')
+        controller=card.owner
+    else:
+        if type(target) is not str or not target.isascii() or not target.isdecimal():raise MatchError('invalid effect target')
+        item=next((e for e in state.priority.chain if e.effect_id==int(target)),None)
+        if item is None:raise MatchError('effect target unavailable')
+        controller=item.controller
+    if definition.target_kind is not None:
+        if (definition.target_relation=='friendly' and controller!=actor) or (definition.target_relation=='enemy' and controller==actor):
+            raise MatchError('target relation is not permitted')
+    steps=[]
+    for step in definition.steps:
+        if type(step) is NegateEffect:
+            steps.append(NegateEffect(int(target)))
+        else:
+            steps.append(replace(step,target=actor if step.target=='$controller' else target,
+                                 **({'anchor_player':actor} if type(step) is GrantShield and step.anchor_player=='$controller' else {})))
+    return tuple(steps)
+
+
+def play_card(state, actor, card_id, payment, *, target=None, expected_revision):
+    _check(state,expected_revision)
+    if _blocked(state) or state.priority is None or state.priority.status!='priority' or state.priority.holder!=actor or actor not in _living(state):
+        raise MatchError('no playable priority window')
+    player=_player(state,actor)
+    card=next((c for c in state.card_instances if c.instance_id==card_id),None)
+    if card is None or card.owner!=actor or card_id not in player.cards.hand:
+        raise MatchError('card unavailable')
+    definition=next(d for d in state.card_definitions if d.key==card.definition_key)
+    _authored_trigger_parts(state,card,definition,actor)
+    active=actor==state.turn.active_player
+    if active and (state.turn.recharge or player.cards.end_turn_requested):raise MatchError('active turn restricted')
+    if definition.kind!='reaction' and (not active or state.turn.phase not in ('MainBefore','MainAfter') or state.turn.end_requested or state.priority.chain):
+        raise MatchError('ordinary card requires own empty-chain Main')
+    steps=_bound_card_steps(state,actor,definition,target)
+    tokens=tuple((o.object_id,o.resource_value) for o in state.battlefield if o.kind=='resource_token' and o.controller==actor)
+    pool=pay_resources(player.resources,definition.cost,payment,tokens)
+    key=f'card:{state.priority.next_effect_id}'
+    if any(e.key==key for e in state.effects):raise MatchError('reserved card effect key collision')
+    priority=add_effect(state.priority,actor,key,expected_revision=state.priority.revision)
+    pending=PendingCard(card_id,priority.chain[-1].effect_id,actor)
+    player=replace(player,resources=pool,cards=replace(player.cards,hand=tuple(i for i in player.cards.hand if i!=card_id)))
+    state=_set_player(state,player)
+    state=replace(state,priority=priority,effects=state.effects+(EffectSpec(key,actor,steps),),
+                  pending_cards=state.pending_cards+(pending,),revision=state.revision+1)
+    if payment.token_ids:state=_depart(state,set(payment.token_ids),'cost_payment')
+    state,_=_emit(state,'card_played',card_id,actor)
+    return _quiescent(_stabilize(state,reset_priority=False))
+
+
+def _discard_pending_card(state, pending, event):
+    card=next(c for c in state.card_instances if c.instance_id==pending.card_id)
+    owner=_player(state,card.owner)
+    state=_set_player(state,replace(owner,cards=replace(owner.cards,discard=owner.cards.discard+(card.instance_id,))))
+    state=replace(state,pending_cards=tuple(c for c in state.pending_cards if c!=pending))
+    state,_=_emit(state,event,card.instance_id,'pending_to_discard')
+    return state
+
+
+def _trigger_key(identity, key):return f'trigger:{len(identity)}:{identity}:{key}'
+
+
+def _authored_trigger_parts(state, card, definition, controller):
+    effects=[];triggers=[]
+    for ability in definition.triggered_abilities:
+        key=_trigger_key(card.instance_id,ability.key)
+        effect=EffectSpec(key,controller,tuple(replace(s,target=controller) for s in ability.steps),card.instance_id)
+        existing=next((e for e in state.effects if e.key==key),None)
+        if existing is not None and existing!=effect:raise MatchError('authored trigger registry collision')
+        effects.append(effect);triggers.append(TriggerSpec(ability.event,key,ability.watch,ability.optional))
+    return tuple(effects),tuple(triggers)
+
+
+def _finish_pending_card(state, effect_id):
+    pending=next((c for c in state.pending_cards if c.effect_id==effect_id),None)
+    if pending is None:return state
+    card=next(c for c in state.card_instances if c.instance_id==pending.card_id)
+    definition=next(d for d in state.card_definitions if d.key==card.definition_key)
+    if definition.kind in ('action','reaction') or _player(state,pending.controller).eliminated:
+        return _discard_pending_card(state,pending,'card_resolved')
+    creature=None
+    if definition.kind=='creature':
+        creature=Creature(card.instance_id,pending.controller,definition.attack,definition.health,definition.health,
+                          attack_eligible=False,keywords=definition.keywords)
+    effects,triggers=_authored_trigger_parts(state,card,definition,pending.controller)
+    obj=MatchObject(card.instance_id,card.owner,pending.controller,definition.kind,creature,triggers=triggers,capacity_bonus=definition.capacity_bonus)
+    known={e.key for e in state.effects}
+    state=replace(state,battlefield=state.battlefield+(obj,),effects=state.effects+tuple(e for e in effects if e.key not in known),pending_cards=tuple(c for c in state.pending_cards if c!=pending))
+    state,_=_emit(state,'card_resolved',card.instance_id,'pending_to_battlefield')
+    return state
+
+
+def _validate_card_definition(d):
+    if type(d.triggered_abilities) is not tuple or any(type(a) is not TriggeredAbility for a in d.triggered_abilities):raise MatchError('invalid authored trigger collection')
+    if d.triggered_abilities and d.kind!='permanent':raise UnsupportedMatchRule('authored triggers currently require a permanent')
+    keys=[]
+    for a in d.triggered_abilities:
+        if (not _name(a.key) or a.key in keys or a.event not in ('card_drawn','card_discarded') or a.watch!='self' or type(a.optional) is not bool
+                or type(a.steps) is not tuple or not a.steps or any(type(s) not in (GrantResources,HealPlayer,GrantCapacity) or s.target!='$controller' or not _natural(s.amount) or s.amount==0 for s in a.steps)):
+            raise UnsupportedMatchRule('unsupported authored trigger')
+        keys.append(a.key)
+    if (not _name(d.key) or d.kind not in ('creature','permanent','action','reaction') or not _natural(d.cost)
+            or not _natural(d.attack) or not _natural(d.health) or not _natural(d.capacity_bonus)
+            or type(d.steps) is not tuple or type(d.keywords) is not tuple
+            or d.target_kind not in (None,'player','creature','effect','discard') or d.target_relation not in ('any','friendly','enemy')):
+        raise UnsupportedMatchRule('unsupported card definition')
+    if d.kind=='creature':
+        if d.health<1 or d.steps or d.target_kind is not None or d.capacity_bonus:
+            raise UnsupportedMatchRule('creature entry abilities not supported')
+        validate_state(CombatState((Player('template-owner'),),(Creature('template-creature','template-owner',d.attack,d.health,d.health,keywords=d.keywords),)))
+    elif d.attack or d.health or d.keywords:
+        raise MatchError('noncreature stats/keywords')
+    if d.kind=='permanent' and (d.steps or d.target_kind is not None):
+        raise UnsupportedMatchRule('permanent entry abilities not supported')
+    if d.kind in ('action','reaction') and d.capacity_bonus:
+        raise MatchError('only permanents may grant ongoing capacity here')
+    has_target=False
+    for step in d.steps:
+        if type(step) is DiscardThenDraw and step.target!='$controller':raise MatchError('discard outlet requires controller')
+        if type(step) is NegateEffect and step.effect_id=='$target':
+            if d.target_kind!='effect':raise MatchError('effect target mismatch')
+            has_target=True;continue
+        if type(step) is NegateEffect:
+            raise UnsupportedMatchRule('negation requires a chosen effect target')
+        if type(step) not in (DamagePlayer,HealPlayer,DrawCards,DiscardThenDraw,GrantResources,GrantCapacity,DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard,GrantShield):
+            raise UnsupportedMatchRule('unsupported card instruction')
+        if step.target=='$target':
+            expected='discard' if type(step) is RecoverDiscardCard else 'creature' if type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature,GrantShield) else 'player'
+            if d.target_kind!=expected:raise MatchError('card target mismatch')
+            has_target=True
+        elif step.target!='$controller':
+            raise UnsupportedMatchRule('card targets must bind controller or the chosen target')
+        elif type(step) in (DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard,GrantShield):
+            raise MatchError('controller is not a card/creature target')
+        if type(step) is RecoverDiscardCard and d.target_relation!='friendly':raise MatchError('recovery requires your own discard')
+        if type(step) is GrantShield:
+            if step.duration not in ('turn_end','next_start') or (step.anchor_player is not None if step.duration=='turn_end' else step.anchor_player!='$controller'):
+                raise UnsupportedMatchRule('unsupported authored shield duration')
+        if type(step) not in (DestroyCreature,ReturnCreatureToHand,ExileCreature,RecoverDiscardCard):
+            amount=step.count if type(step) in (DrawCards,DiscardThenDraw) else step.amount
+            if not _natural(amount):raise MatchError('invalid card instruction quantity')
+    if d.target_kind is None and d.target_relation!='any':raise MatchError('unused target relation')
+    if has_target!=(d.target_kind is not None):raise MatchError('unused/missing target declaration')
+
+def _set_leader(state, leader):
+    return replace(state,leaders=tuple(leader if l.instance_id==leader.instance_id else l for l in state.leaders))
+
+
+def _leader_definition(state, leader):
+    return next(d for d in state.leader_definitions if d.key==leader.definition_key)
+
+
+def _validate_leaders(state, zone_ids):
+    if type(state.leader_definitions) is not tuple or type(state.leaders) is not tuple or any(type(d) is not LeaderDefinition for d in state.leader_definitions) or any(type(l) is not LeaderState for l in state.leaders):
+        raise MatchError('invalid leader records')
+    definitions={d.key:d for d in state.leader_definitions}
+    if len(definitions)!=len(state.leader_definitions) or len({l.instance_id for l in state.leaders})!=len(state.leaders) or len({l.owner for l in state.leaders})!=len(state.leaders):
+        raise MatchError('duplicate leader definition/owner/instance')
+    if set(definitions)&{d.key for d in state.card_definitions}:raise MatchError('leader and ordinary card definitions require distinct keys')
+    for d in definitions.values():
+        if not _name(d.key) or not _name(d.name) or not _name(d.color) or not _natural(d.summon_cost):raise MatchError('invalid leader definition')
+        validate_state(CombatState((Player('owner'),),(Creature('leader','owner',d.attack,d.health,d.health,keywords=d.keywords),)))
+        if type(d.reserve_ability) is not LeaderAbility or type(d.battle_ability) is not LeaderAbility:raise MatchError('invalid leader abilities')
+        if d.reserve_ability.key==d.battle_ability.key:raise UnsupportedMatchRule('separate reserve/battle ability keys required')
+        for location,ability in (('reserve',d.reserve_ability),('battlefield',d.battle_ability)):
+            if (type(ability) is not LeaderAbility or not _name(ability.key) or ability.timing not in ('main','reaction')
+                    or type(ability.exhaust_source) is not bool or type(ability.once_per_turn) is not bool
+                    or (location=='reserve' and ability.exhaust_source)):
+                raise UnsupportedMatchRule('unsupported leader ability')
+            _validate_card_definition(CardDefinition(ability.key,'reaction' if ability.timing=='reaction' else 'action',ability.cost,ability.steps,
+                                                    target_kind=ability.target_kind,target_relation=ability.target_relation))
+    live=state.priority.chain+((state.priority.resolving,) if state.priority.resolving else ()) if state.priority else ()
+    pending=[]
+    for l in state.leaders:
+        if (not _name(l.instance_id) or l.owner not in state.seat_order or l.definition_key not in definitions
+                or l.location not in ('reserve','battlefield') or not _natural(l.removals) or type(l.recovering) is not bool
+                or any(c.instance_id==l.instance_id for c in state.card_instances)):
+            raise MatchError('invalid outside-deck leader state')
+        obj=next((o for o in state.battlefield if o.object_id==l.instance_id),None)
+        if l.location=='battlefield':
+            if obj is None or obj.kind!='leader' or obj.owner!=l.owner or obj.controller!=l.owner or l.recovering or l.pending_effect_id is not None:
+                raise MatchError('leader battlefield/control mismatch')
+        else:
+            if obj is not None:raise MatchError('reserved leader cannot occupy battlefield')
+            zone_ids.append(l.instance_id)
+        if l.pending_effect_id is not None:
+            if (type(l.pending_effect_id) is not int or l.location!='reserve' or l.recovering or
+                    not any(e.effect_id==l.pending_effect_id and e.controller==l.owner and e.effect_key==f'leader-summon:{l.pending_effect_id}' for e in live)):
+                raise MatchError('invalid pending leader summon')
+            pending.append(l.pending_effect_id)
+    if len(set(pending))!=len(pending) or set(pending)&{c.effect_id for c in state.pending_cards}:raise MatchError('duplicate pending leader item')
+
+
+def leader_ability_available(state, leader, ability):
+    if leader.owner not in _living(state) or leader.recovering:return False
+    definition=_leader_definition(state,leader)
+    if ability!=(definition.reserve_ability if leader.location=='reserve' else definition.battle_ability):return False
+    key=f'leader-ability:{leader.instance_id}:{ability.key}'
+    if ability.once_per_turn and (key,state.turn.turn_id) in state.action_uses:return False
+    if ability.exhaust_source:
+        obj=next((o for o in state.battlefield if o.object_id==leader.instance_id),None)
+        if obj is None or obj.creature.exhausted or not obj.creature.attack_eligible:return False
+    return True
+
+
+def _leader_window(state, actor, *, main):
+    if (_blocked(state) or state.priority is None or state.priority.status!='priority' or state.priority.holder!=actor
+            or actor not in _living(state)):
+        raise MatchError('leader action requires priority')
+    if actor==state.turn.active_player and (state.turn.recharge or _player(state,actor).cards.end_turn_requested):raise MatchError('active turn restricted')
+    if main and (actor!=state.turn.active_player or state.turn.phase not in ('MainBefore','MainAfter') or state.turn.end_requested or state.priority.chain):
+        raise MatchError('leader action requires own empty-chain Main')
+
+
+def _pay_leader_item(state, leader, key, steps, cost, payment):
+    owner=_player(state,leader.owner)
+    tokens=tuple((o.object_id,o.resource_value) for o in state.battlefield if o.kind=='resource_token' and o.controller==leader.owner)
+    pool=pay_resources(owner.resources,cost,payment,tokens)
+    if any(e.key==key for e in state.effects):raise MatchError('leader item key collision')
+    priority=add_effect(state.priority,leader.owner,key,expected_revision=state.priority.revision)
+    state=_set_player(state,replace(owner,resources=pool))
+    state=replace(state,priority=priority,effects=state.effects+(EffectSpec(key,leader.owner,steps,leader.instance_id),),revision=state.revision+1)
+    if payment.token_ids:state=_depart(state,set(payment.token_ids),'cost_payment')
+    return state
+
+
+def summon_leader(state, actor, payment, *, expected_revision):
+    _check(state,expected_revision);_leader_window(state,actor,main=True)
+    leader=next((l for l in state.leaders if l.owner==actor),None)
+    if leader is None or leader.location!='reserve' or leader.recovering or leader.pending_effect_id is not None:
+        raise MatchError('leader cannot be summoned now')
+    definition=_leader_definition(state,leader)
+    effect_id=state.priority.next_effect_id
+    state=_pay_leader_item(state,leader,f'leader-summon:{effect_id}',(),definition.summon_cost+2*leader.removals,payment)
+    state=_set_leader(state,replace(leader,pending_effect_id=effect_id))
+    state,_=_emit(state,'leader_summon_committed',leader.instance_id,str(effect_id))
+    return _quiescent(_stabilize(state,reset_priority=False))
+
+
+def activate_leader(state, actor, key, payment, *, target=None, expected_revision):
+    _check(state,expected_revision)
+    leader=next((l for l in state.leaders if l.owner==actor),None)
+    if leader is None:raise MatchError('leader unavailable')
+    definition=_leader_definition(state,leader)
+    ability=next((a for a in (definition.reserve_ability,definition.battle_ability) if a.key==key),None)
+    if ability is None or not leader_ability_available(state,leader,ability):raise MatchError('leader ability unavailable')
+    _leader_window(state,actor,main=ability.timing=='main')
+    steps=_bound_card_steps(state,actor,ability,target)
+    state=_pay_leader_item(state,leader,f'leader-effect:{state.priority.next_effect_id}',steps,ability.cost,payment)
+    if ability.exhaust_source:
+        state=replace(state,battlefield=tuple(replace(o,creature=replace(o.creature,exhausted=True)) if o.object_id==leader.instance_id else o for o in state.battlefield))
+    if ability.once_per_turn:
+        state=replace(state,action_uses=state.action_uses+((f'leader-ability:{leader.instance_id}:{ability.key}',state.turn.turn_id),))
+    state,_=_emit(state,'leader_ability',leader.instance_id,ability.key)
+    return _quiescent(_stabilize(state,reset_priority=False))
+
+
+def _cancel_leader_summon(state, effect_id):
+    leader=next((l for l in state.leaders if l.pending_effect_id==effect_id),None)
+    if leader is None:return state
+    state=_set_leader(state,replace(leader,pending_effect_id=None))
+    state,_=_emit(state,'leader_summon_cancelled',leader.instance_id,str(effect_id))
+    return state
+
+
+def _finish_leader_summon(state, effect_id):
+    if effect_id is None:return state
+    leader=next((l for l in state.leaders if l.pending_effect_id==effect_id),None)
+    if leader is None:return state
+    if _player(state,leader.owner).eliminated:return _cancel_leader_summon(state,effect_id)
+    definition=_leader_definition(state,leader)
+    obj=MatchObject(leader.instance_id,leader.owner,leader.owner,'leader',
+          Creature(leader.instance_id,leader.owner,definition.attack,definition.health,definition.health,attack_eligible=False,keywords=definition.keywords))
+    state=replace(state,battlefield=state.battlefield+(obj,))
+    state=_set_leader(state,replace(leader,location='battlefield',pending_effect_id=None))
+    state,_=_emit(state,'leader_summoned',leader.instance_id,definition.key)
+    return state
+
+def _boundary_value(state, player, boundary):
+    record=next(b for b in state.boundary_counts if b.player_id==player)
+    return record.starts if boundary=='Start' else record.ends
+
+
+def _validate_durations(state):
+    if type(state.boundary_counts) is not tuple or any(type(b) is not BoundaryCount for b in state.boundary_counts) or tuple(b.player_id for b in state.boundary_counts)!=state.seat_order:
+        raise MatchError('invalid original-seat boundary clocks')
+    if any(not _natural(b.starts) or not _natural(b.ends) or not b.ends<=b.starts<=b.ends+1 for b in state.boundary_counts):
+        raise MatchError('invalid boundary counts')
+    if type(state.durations) is not tuple or not _natural(state.next_duration_id) or state.next_duration_id<1:
+        raise MatchError('invalid duration registry')
+    ids=[]
+    for d in state.durations:
+        if (type(d) is not TimedEffect or type(d.duration_id) is not int or not 0<d.duration_id<state.next_duration_id
+                or d.controller not in state.seat_order or d.anchor_player not in state.seat_order or d.boundary not in ('Start','End')
+                or type(d.occurrence) is not int or d.occurrence<1 or type(d.expiration_steps) is not tuple):
+            raise MatchError('invalid typed duration')
+        if d.occurrence<=_boundary_value(state,d.anchor_player,d.boundary) and state.pending is None:
+            raise MatchError('overdue duration requires an in-progress atomic effect')
+        _steps_valid(d.expiration_steps,state.seat_order,())
+        if any(type(s) is GrantShield for s in d.expiration_steps):raise UnsupportedMatchRule('nested timed grants in registered expiration payloads need separate coverage')
+        if d.shield_id is not None:
+            obj=next((o for o in state.battlefield if o.object_id==d.target_id and o.creature),None)
+            if obj is None or not any(s.shield_id==d.shield_id and s.expiry_rank==expiry_rank(state.seat_order,d) for s in obj.creature.shields):
+                raise MatchError('timed prevention must reference its current shield')
+        elif d.target_id is not None:raise MatchError('duration target requires a shield reference')
+        ids.append(d.duration_id)
+    if len(ids)!=len(set(ids)):raise MatchError('duplicate duration ID')
+    if type(state.rotation_queue) is not tuple or any(type(q) is not tuple or len(q)!=2 or q[0] not in state.seat_order or q[1] not in ('Start','End','Turn') for q in state.rotation_queue):
+        raise MatchError('invalid skipped-seat boundary queue')
+
+
+def _remove_duration_records(state, records):
+    ids={d.duration_id for d in records};shields={(d.target_id,d.shield_id) for d in records if d.shield_id is not None}
+    battlefield=tuple(replace(o,creature=replace(o.creature,shields=tuple(s for s in o.creature.shields if (o.object_id,s.shield_id) not in shields))) if o.creature else o for o in state.battlefield)
+    return replace(state,durations=tuple(d for d in state.durations if d.duration_id not in ids),battlefield=battlefield)
+
+
+def _expire_durations(state):
+    due=tuple(d for d in state.durations if _boundary_value(state,d.anchor_player,d.boundary)>=d.occurrence)
+    if not due:return state,()
+    state=_remove_duration_records(state,due)
+    for d in due:state,_=_emit(state,'duration_expired',str(d.duration_id),f'{d.anchor_player}:{d.boundary}:{d.occurrence}')
+    return state,tuple(step for d in due for step in d.expiration_steps)
+
+
+def _enter_boundary(state, player, boundary):
+    field='starts' if boundary=='Start' else 'ends'
+    counts=tuple(replace(b,**{field:getattr(b,field)+1}) if b.player_id==player else b for b in state.boundary_counts)
+    state=replace(state,boundary_counts=counts)
+    state,_=_emit(state,'scheduled_boundary',player,boundary)
+    return _expire_durations(state)
+
+
+def _trim_durations(state):
+    alive=_living(state)
+    removed=[]
+    for d in state.durations:
+        obj=next((o for o in state.battlefield if o.object_id==d.target_id and o.creature),None)
+        if d.controller not in alive or (d.shield_id is not None and (obj is None or not any(s.shield_id==d.shield_id for s in obj.creature.shields))):removed.append(d)
+    return _remove_duration_records(state,removed)
+
+
+def _grant_shield(state, step, controller):
+    obj=next((o for o in state.battlefield if o.object_id==step.target and o.creature),None)
+    if obj is None or controller not in _living(state) or not step.amount:return state
+    anchor=state.turn.active_player if step.duration=='turn_end' else step.anchor_player
+    boundary='End' if step.duration=='turn_end' else 'Start'
+    occurrence=_boundary_value(state,anchor,boundary)+(0 if boundary=='End' and state.end_stage in ('cleanup','done') else 1)
+    duration_id=state.next_duration_id
+    existing={s.shield_id for o in state.battlefield if o.creature for s in o.creature.shields}
+    while f'timed:{duration_id}' in existing:duration_id+=1
+    shield_id=f'timed:{duration_id}'
+    duration=TimedEffect(duration_id,controller,anchor,boundary,occurrence,obj.object_id,shield_id)
+    shield=Shield(shield_id,step.amount,expiry_rank(state.seat_order,duration))
+    state=replace(state,durations=state.durations+(duration,),next_duration_id=duration_id+1,
+                  battlefield=tuple(replace(o,creature=replace(o.creature,shields=o.creature.shields+(shield,))) if o.object_id==obj.object_id else o for o in state.battlefield))
+    state,_=_emit(state,'prevention_granted',obj.object_id,str(step.amount))
+    return state
+
+
+def _rotation_path(state, after):
+    index=state.seat_order.index(after);queue=[]
+    for seat in state.seat_order[index+1:]+state.seat_order[:index+1]:
+        if seat in _living(state):return tuple(queue)+((seat,'Turn'),)
+        queue.extend(((seat,'Start'),(seat,'End')))
+    return tuple(queue)
+
+
+def _advance_rotation(state):
+    while state.rotation_queue:
+        seat,kind=state.rotation_queue[0]
+        state=replace(state,rotation_queue=state.rotation_queue[1:])
+        if kind=='Turn':
+            alive=_living(state)
+            if len(alive)<=1:
+                return replace(state,result=MatchResult('draw') if not alive else MatchResult('win',alive[0]),priority=None,rotation_queue=())
+            if seat not in alive:
+                state=replace(state,rotation_queue=((seat,'Start'),(seat,'End'))+_rotation_path(state,seat));continue
+            p=_player(state,seat);cards,turn=open_turn(p.cards,turn_id=state.turn.turn_id+1)
+            state=_set_player(state,replace(p,cards=cards))
+            state=replace(state,turn=turn,end_stage='none',end_cleanup=(),combat=None,start_stage='pending',start_cleanup=(),action_uses=())
+            state=_priority_after_cleanup(state)
+            if state.managed_turns:return _begin_start(state)
+            state,steps=_enter_boundary(state,seat,'Start')
+            return _run(replace(state,pending=Resolution(steps,controller=seat))) if steps else state
+        # This is a scheduled dead seat boundary, not a turn for that player.
+        if state.turn.phase=='Finished':state=replace(state,turn=replace(state.turn,phase='End',revision=state.turn.revision+1))
+        state,steps=_enter_boundary(state,seat,kind)
+        if steps:return _run(replace(state,pending=Resolution(steps,controller=state.turn.active_player)))
+    return _quiescent(state)

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="1050" viewBox="0 0 750 1050" role="img" aria-labelledby="card-title card-description">
+<title id="card-title">Brace for Impact — standard</title>
+<desc id="card-description">Reaction. Gold. Design example, not balanced game content.</desc>
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#8ebbb8"/><stop offset="1" stop-color="#173e49"/></linearGradient><linearGradient id="shade" x2="0" y2="1"><stop stop-color="#102832" stop-opacity=".94"/><stop offset=".5" stop-color="#102832" stop-opacity=".1"/><stop offset="1" stop-color="#102832" stop-opacity=".92"/></linearGradient><clipPath id="trim"><rect width="750" height="1050" rx="36"/></clipPath><clipPath id="art-window"><rect x="30" y="166" width="690" height="559" rx="17"/></clipPath></defs>
+<g font-family="Arial" clip-path="url(#trim)">
+<rect x="0" y="0" width="750" height="1050" rx="0" fill="#132f3c" />
+<rect x="16" y="16" width="718" height="1018" rx="26" fill="#e5d9bc" />
+<rect x="25" y="25" width="700" height="1000" rx="22" fill="#f6f0df" />
+<g id="artwork" data-slot="artwork" clip-path="url(#art-window)">
+<g transform="translate(0 105) scale(1 0.86000)"><rect x="0" y="0" width="750" height="1050" rx="0" fill="#8ebbb8" /><circle cx="540" cy="290" r="210" fill="#f4d98f" opacity=".25"/><path d="M0 590 Q180 410 400 570 T750 490 V1050 H0Z" fill="#355d62"/><path d="M0 660 Q220 520 400 660 T750 600 V1050 H0Z" fill="#1d414b"/><g transform="translate(375 420)" stroke="#173746" stroke-width="10" stroke-linejoin="round"><path d="M-130-30 L-145-135 L-55-84 Q0-108 55-84 L145-135 L130-30 V85 Q0 155-130 85Z" fill="#d9e3da"/><path d="M-112-52 L-120-105 L-76-78 M112-52 L120-105 L76-78" stroke="#b18748" fill="none"/><path d="M-108 18 Q0-46 108 18 V80 Q0 130-108 80Z" fill="#eebc6e" stroke="none"/><ellipse cx="-57" cy="0" rx="17" ry="24" fill="#173746" stroke="none"/><ellipse cx="57" cy="0" rx="17" ry="24" fill="#173746" stroke="none"/><path d="M-18 42 L0 55 L18 42 M0 55 V75" fill="none"/><path d="M-40 210 L-87 155 L-80 101 M40 210 L87 155 L80 101" fill="#a9c5bd"/><circle cy="156" r="27" fill="#9b6b20" stroke="#f8dda0"/></g></g></g>
+<rect x="13" y="13" width="724" height="1024" rx="29" fill="none" stroke="#9b6b20" stroke-width="10"/>
+<rect x="25" y="25" width="700" height="125" rx="20" fill="#132f3c" />
+<rect x="25" y="149" width="700" height="6" rx="0" fill="#9b6b20" />
+<g id="identity" data-slot="name-color-type">
+<text x="45" y="78" font-size="36" fill="#fff4d8" font-weight="700" font-family="Georgia">Brace for Impact</text>
+<text x="45" y="112" font-size="18" fill="#cadbd7" font-weight="700" letter-spacing="1.1">REACTION</text>
+<text x="46" y="143" font-size="15" fill="#fff1cc" font-weight="700" >GOLD · COOPERATION</text>
+</g>
+<g id="access-cost" data-slot="access">
+<rect x="605" y="35" width="103" height="103" rx="18" fill="#9b6b20" stroke="#f0d79d" stroke-width="2"/>
+<text x="656" y="59" font-size="14" fill="#fff4d8" font-weight="700" text-anchor="middle">PLAY</text>
+<text x="656" y="110" font-size="36" fill="#ffffff" font-weight="700" text-anchor="middle">2</text>
+</g>
+<rect x="155" y="693" width="440" height="29" rx="10" fill="#173441" />
+<text x="375" y="713" font-size="12" fill="#eff2de" font-weight="700" text-anchor="middle" letter-spacing="1.3">ILLUSTRATION PLACEHOLDER · REPLACEABLE ART</text>
+<g id="rules-panel" data-slot="traits-abilities">
+<rect x="30" y="745" width="690" height="185" rx="18" fill="#f7f1df" stroke="#9b6b20" stroke-width="2"/>
+<text x="52" y="776" font-size="23" fill="#19343d" font-weight="400" >Give a creature you control 3 prevention until this</text>
+<text x="52" y="803" font-size="23" fill="#19343d" font-weight="400" >turn ends.</text>
+<text x="52" y="830" font-size="20" fill="#19343d" font-weight="400" >Only after attacks are declared and before combat damage.</text>
+</g>
+<g id="live-status" data-slot="statuses">
+</g>
+<g id="stats" data-slot="creature-stats">
+</g>
+<text x="375" y="978" font-size="19" fill="#36535a" font-weight="700" text-anchor="middle" letter-spacing="2">THE CRUCIBLE</text>
+<text x="375" y="1005" font-size="11" fill="#52686a" font-weight="700" text-anchor="middle" letter-spacing="1">ILLUSTRATIVE CONTENT · REACTION</text>
+</g></svg>

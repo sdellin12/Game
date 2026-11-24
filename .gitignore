@@ -8,3 +8,6 @@ lab-runs/
 
 .venv-build/
 *.spec
+
+# Private local play snapshots and retained backups
+*.crucible.json*

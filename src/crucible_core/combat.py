@@ -144,6 +144,10 @@ def resolve_combat(
     Lethal players are reported, not cleaned up/declared winners: full-match
     elimination, response and trigger processing are outside this kernel.
     """
+    return _resolve_damage(state, attacks, challenge_orders)
+
+
+def _validate_assignments(state, attacks, challenge_orders=(), *, require_fresh=True):
     validate_state(state)
     if type(attacks) is not tuple or type(challenge_orders) is not tuple:
         raise CombatError("combat commands must be tuples")
@@ -159,7 +163,7 @@ def resolve_combat(
         if a.attacker_id not in by_id or a.attacker_id in attackers:
             raise CombatError("missing or duplicate attacker")
         c = by_id[a.attacker_id]
-        if c.exhausted or not c.attack_eligible or c.attack_used:
+        if require_fresh and (c.exhausted or not c.attack_eligible or c.attack_used):
             raise CombatError("attacker cannot attack")
         if acting_controller is None:
             acting_controller = c.controller
@@ -171,12 +175,12 @@ def resolve_combat(
         if a.challenge_target is not None:
             if not isinstance(a.challenge_target, str) or not a.challenge_target:
                 raise CombatError("invalid Challenge target ID")
-            if "challenge" not in c.keywords or a.blockers or a.was_blocked:
+            if (require_fresh and "challenge" not in c.keywords) or a.blockers or a.was_blocked:
                 raise CombatError("Challenge requires permission and no blockers")
             if a.challenge_target in player_ids:
                 raise CombatError("Challenge targets creatures, not players")
             target = by_id.get(a.challenge_target)
-            if target is not None and target.controller != a.target_player:
+            if require_fresh and target is not None and target.controller != a.target_player:
                 raise CombatError("Challenge target belongs to another controller")
             groups.setdefault(a.challenge_target, []).append(a.attacker_id)
         for blocker_id in a.blockers:
@@ -195,6 +199,13 @@ def resolve_combat(
             raise CombatError("Challenge order must contain every challenger once")
         orders[target_id] = order
 
+    return by_id, player_ids, attackers, groups, orders
+
+
+def _resolve_damage(state, attacks, challenge_orders=(), *, require_fresh=True):
+    """Shared damage kernel; committed-flow callers already paid attack usage."""
+    by_id, player_ids, attackers, groups, orders = _validate_assignments(
+        state, attacks, challenge_orders, require_fresh=require_fresh)
     events: list[DamageEvent] = []
     damage: dict[str, int] = {}
     shields_after: dict[str, tuple[Shield, ...]] = {}
@@ -260,7 +271,7 @@ def resolve_combat(
         else:
             survivors.append(replace(
                 c, health=hp, shields=shields_after.get(c.instance_id, c.shields),
-                exhausted=c.exhausted or c.instance_id in attackers,
+                exhausted=c.exhausted or (require_fresh and c.instance_id in attackers),
                 attack_used=c.attack_used or c.instance_id in attackers,
             ))
     players = tuple(replace(p, health=max(0, p.health - player_damage[p.player_id]))

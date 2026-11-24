@@ -12,9 +12,11 @@ Targets/modes/X/costs selected and locked at confirmation; pay before responses.
 Sacrifice as cost immediate, cannot rescue afterward; counts defeat. Negating effect doesn't undo payment. Exile/bounce/shuffle aren't defeat. Effects may explicitly prevent beforehand or recover afterward.
 
 ## Responses, abilities and triggers
-Reaction card class uses normal resources at response opportunities incl own turn. Newest pending first, reopen response after each resolution. Everyone passes/responds in fixed order; chosen autopass settings allowed, optional pause with no legal card to avoid timing leaks; no timers. Precise priority holder/reset order still needs written implementation spec.
+Reaction card class uses normal resources at response opportunities incl own turn. Newest pending first, reopen response after each resolution. Everyone passes/responds in fixed order; chosen autopass settings allowed, optional pause with no legal card to avoid timing leaks; no timers. Approved priority: active player starts a window; after a new item priority goes to the next active seat after its controller; all-seat consecutive passes resolve one newest item; after resolution priority resets to the active seat (or next surviving seat). New items clear passes. See FULL_MATCH_TIMING_SPEC.md for the approved sequence.
 Abilities manual activation, legal highlights/prompts with preview; no automated spending. Reusable when legally able to pay, unless stated limit/timing. Exhaust-cost creature ability waits like attack unless haste-like permission; non-exhaust abilities can act immediately if legal. Temporary haste grants eligibility only, not ready/extra attack. Source leaving doesn't cancel already-pending ability.
-Triggered effects mandatory unless may; autoqueue mandatory, optional Use/Skip. Suggest own simultaneous trigger order with Confirm/Adjust; suggestion uses authorized information. Across-player simultaneous trigger ordering unresolved.
+Triggered effects mandatory unless may; autoqueue mandatory, optional Use/Skip. Suggest own simultaneous trigger order with Confirm/Adjust; suggestion uses authorized information. Approved cross-controller order: active seat first then surviving seats in turn order, appending each controller's chosen oldest-to-newest group; the last group resolves first.
+Optional triggers collect private Use/Skip decisions only after the current atomic effect finishes, in active-player then surviving turn order. Each decision is final; no responses or trigger-order confirmation interleave. After all optional decisions finish, order only accepted/mandatory triggers. Each controller with multiple originally captured triggers confirms that order even if zero or one remains, so this step does not reveal Use/Skip outcomes. Waiting seats, not choice outcomes, are public until effects queue. Skipping never reverses the triggering event, costs or draw penalty, and opens no new play/activation window. Concessions still use safe-boundary elimination; eliminated players' choices/effects cancel.
+Draw triggers count each card actually drawn, including partial draws before a refill choice; failed/zero draws add none. Hand-discard triggers count each card discarded from hand. Played cards finishing into discard, battlefield departures and recovery are not hand discards. Capture these triggers when the move happens, then resolve them after the current atomic effect or confirmed discard batch; draw identities remain private. End cleanup rechecks the hand limit after triggered effects finish.
 Negation selective/expensive, broad negate rare; no automatic numerical price. Paid costs and activation limits spent if negated. Transform/control/combine/separate don't reset spent inherited uses. Per-turn distinct from once between own starts, explicit card wording; exact identity mapping across distinct form abilities needs engine spec.
 Invalid targets fail if none valid, no refund; independent effect portions resolve where possible (custom rule, not wholesale import of Magic). Spell/ability semantics structured, not generated prose.
 Effect-copy rules reserved future starter scope: inherits X without payment, original targets unless explicit retarget, independent of original negation, not card play. Newly created creature-copy tokens distinct.
@@ -26,7 +28,23 @@ Attacker chooses blocker order; automatic smallest lethal raw allocations throug
 Breakthrough: excess raw attack after lethal allocations to all blockers hits defending player. Without it no excess hits player. Attack stays blocked after blockers removed; only Breakthrough carries through even when none remain. Multiplier bonus never becomes extra player damage.
 Challenge: qualified creature chooses enemy creature instead of player, same declaration/combat and normal attack use; no intervening blockers, retaliation simultaneous, no player overflow/Breakthrough and no exhausted-blocker penalty. Reactions before damage. Missing target -> miss, spent attack/exhaustion, no retarget. Challenged creature cannot also block. Multiple challengers combine damage; target retaliates once distributing by its controller's order. Multiple fights/source order needs engine-ready sequence.
 Assistance ordinarily defense for oneself; special cards enable helping another, recipient may decline. Gold benefits bounded, meaningful help; no reward from empty offers/loops.
-Damage zero after prevention does not trigger dealt-damage; attack triggers independent. After current effect/combat atomic resolution, <=0 defeated before new responses; simultaneous defeated creatures deal their damage and witness applicable simultaneous defeat triggers.
+Damage zero after prevention does not trigger dealt-damage; attack triggers independent. Player health is checked after the whole resolving effect: damage followed by healing inside that same effect may leave a surviving player; a later effect cannot revive an eliminated player. After current effect/combat atomic resolution, <=0 defeated before new responses; simultaneous defeated creatures deal their damage and witness applicable simultaneous defeat triggers.
+
+## Card play zones - approved 2026-11-22
+Confirmed hand cards become public pending cards alongside their effects. Actions
+and Reactions enter their owners' discard after resolution or negation, so a card
+cannot refill itself during its own effect. Creature/persistent cards enter the
+battlefield only on resolution. Cancelled pending cards go to owners' discard.
+Exile is a separate public zone: ordinary exiled cards retain their owners and
+stay outside discard/refill unless an effect explicitly moves them elsewhere.
+Exiled card identities remain public after their owner is eliminated. Exiling
+a creature discards its attachments to their owners; token/leader replacements
+follow the existing token and leader removal rules.
+Discard-to-hand recovery chooses a card in your own discard at confirmation and
+checks that it is still there when the instruction resolves. The recovered card
+is publicly identified and enters your hand; playing it requires a separate legal
+play and payment. Recovery does not use exile, pending cards, or eliminated players'
+cards. A missing recovery target does not cancel independent effect instructions.
 
 ## Healing/protection/upgrades
 Healing stops max; unused excess no benefit unless explicit. No initial overheal, future expensive effects deferred. Player max30 initially, healing very rare/expensive except dedicated style; creature healing separate.
@@ -55,19 +73,92 @@ Every removal recovery until own next start; outside abilities disabled and resu
 Transform changes don't reset spent limits. Leader special reserve replacement doesn't make every removal a defeat: actual removal reason needed for triggers.
 
 ## Permanent elimination (supersedes ALL revival history)
-30HP; health<=0, failed required draw, or concede removes permanently. No player revival. After valid pending effects/cleanup last active wins, simultaneous all-out draw. Need exact terminal checkpoint ordering specified alongside trigger queue; do not award winner midway through simultaneous processing.
+30HP; health<=0, unrecovered failed required draw, or concede removes permanently. No player revival. After valid pending effects/cleanup last active wins, simultaneous all-out draw. Use the reviewed atomic terminal checkpoints alongside the trigger queue; do not award winner midway through simultaneous processing.
 All battlefield objects controller owns/controls cleared: ordinary nontoken cards to owners' discard, resource/creature tokens disappear, leaders reserve (no ordinary play after eliminated); cards OWNED by eliminated player elsewhere also leave play. Borrowed creatures they control go owners' discard, same for concede. Exact handling combined cross-owner components remains gap.
 Their pending actions/ongoing effects removed, paid costs stay spent. Surviving players' pending effects resolve if valid. Eliminated controller ordinary triggers removed, explicit elimination exceptions only. Surviving departure triggers applicable; cleanup is departure not defeat/sacrifice. Actual same-event creature lethal defeats still genuine.
 Own-turn elimination: finish current effect/defeat processing, other valid pending effects, skip remaining phases, cleanup expirations then advance; skipped End phase triggers don't occur.
 Previously-created permanent capacity remains recorded but unusable after permanent elimination. No continuation/refill/recovery due eliminated skipped seat. Temporary until-next-start effects from surviving sources referencing eliminated turns require bounded expiry convention; prior next scheduled seat expiry rule is historical baseline to formalize.
-Spectate public only, emoji yes; no private opponent info. No parent approval needed concede, confirmation prevents mistap. Disconnect is pause/reconnect, not elimination.
+Spectate public only, emoji yes; no private opponent info. No parent approval needed concede, confirmation prevents mistap. Confirmed concessions wait for the current atomic effect to finish, then process at a safe boundary in recorded request order. Disconnect is pause/reconnect, not elimination.
 
 ## Remaining engineering specifications, not more micro-interview
-- Priority order/reset, simultaneous cross-controller triggers and source attribution.
-- Atomic defeat/terminal checkpoints, multi-draw and simultaneous player/creature defeat.
-- Challenge/group combat interactions and deterministic damage/prevention allocation, tie ordering.
+The restricted coordinator implements priority, atomic boundaries, draw/refill,
+combat and trigger fixtures. Current implementation/exclusion ownership is
+`src/crucible_core/coverage.py`; this rules document also describes future scope.
 - Combined upgrade HP/compatibility/order, effect links/cross-owner cleanup.
 - Zero-cost/repeat triggers/rounding loops; explicit card bounds, no arbitrary unmarked runtime rule.
 - Mechanics coverage manifest: unimplemented rules fail validation; partial simulator never reports full rules coverage.
 - Costs beyond initial profiles, ability budgets, vulnerability roster and starter packs remain tests/proposals.
-Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. A combat-only subset now has exact fixtures and finite encounter enumeration; no full-match balance simulation or family testing performed. See COMBAT_LAB_QUICKSTART.md for implemented coverage and explicit experimental assumptions.
+Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. The combat lab and restricted full-match policy studies have exact fixtures and local computation; no recorded family playtest or general-balance result is claimed. See COMBAT_LAB_QUICKSTART.md for implemented coverage and explicit experimental assumptions.
+
+
+## Timing specification: approved portions and remaining proposals
+[FULL_MATCH_TIMING_SPEC.md](FULL_MATCH_TIMING_SPEC.md) proposes concrete priority,
+trigger, atomicity, elimination and combat-window sequencing with acceptance
+fixtures. Priority/reset, cross-controller trigger order, whole-effect player-health checks and safe-boundary concession were approved by Steve in Codex on 2026-11-22. Remaining proposed defaults are not confirmed gameplay rules. Review/approval
+is required before enabling the remaining unsupported mechanics; current approved rules remain
+unchanged.
+
+
+Approved boundary sequencing (2026-11-22): Start expires next-start effects, resets
+usage/readies, recovers leaders, grows/refills resources, then handles Start
+triggers. End resolves triggers/responses, enforces seven cards, then expires
+effects and handles their consequences before advancing. Durations anchored to
+an eliminated seat expire at its next original scheduled boundary without
+executing that seat's turn, refill or recovery. See FULL_MATCH_TIMING_SPEC.md.
+
+
+## Approved blocker disclosure and deck-refill design intent (2026-11-22)
+Multiplayer defenders select/lock complete blocker assignments privately; reveal
+them together after every required defender locks, then choose damage orders and
+open the final reaction window. Explicit no-block choices are part of the lock
+batch. There is no timer and no early disclosure to later defenders.
+
+A costly fixed-life payment to shuffle discard/graveyard cards back into the deck
+is requested. Repeat use should require a deliberately life-generating deck.
+Timing is approved below; cost and advanced repeat/bypass interactions are not
+yet adopted. See DECK_REFILL_DESIGN.md for evaluation and implementation gates. No free automatic
+reshuffle or player revival is approved; the paid draw-time exception below applies. Player max30 and no
+player revival remain unchanged.
+
+
+## Approved deck exhaustion / Recharge revision
+Before a required empty-deck draw fails, offer a valid fixed-life refill. Draw
+available cards first; successful refill completes remaining required draws.
+Declining/unavailable payment/refill makes that required draw fail and eliminates
+the player at atomic cleanup. Finish the current effect before turn progression.
+Own-turn deck depletion ends that turn after current/pending work; an empty next
+Start offers paid refill and then ends that turn with no normal draw/Main/Combat.
+An own-turn refill ends only the current turn. Off-turn refill leaves the active
+turn intact and makes the affected player's next turn Recharge: automatic Start
+and End/mandatory effects, no normal draw or voluntary plays/abilities/Combat.
+Blocking/reactions work normally on other players' turns. Explicit future mechanics
+may bypass the penalty. Cost20 is only a test candidate; repeat-penalty stacking
+and bypass interactions still need specification. See DECK_REFILL_DESIGN.md.
+
+## Discard-then-draw Actions
+1. Confirm/pay the ordinary resource cost and put the Action publicly pending.
+   The pending Action is not in hand and cannot be its own discard choice.
+2. Opponents respond normally before resolution. Negating the Action prevents
+   its instructions; payment stays spent. There is no separate discard cost.
+3. On resolution, if the controller has a hand card, privately choose exactly one
+   from the current hand. Require the correct actor, request/revision and current
+   hand membership. Do not pre-lock a card at play time or expose tentative choices.
+4. Commit the chosen card publicly to its owner's discard, capture actual hand-
+   discard triggers, then draw two. The discard is mandatory when possible; there
+   is no optional cancellation or response between that discard and the draws.
+5. If no hand card exists at this instruction, discard nothing and skip both draws.
+   Playing the Action as the last hand card is legal but produces no draw/reward.
+   This is a failed conditional instruction, not a failed required draw.
+6. Complete required draws under the existing paid-refill/Recharge rules. A freshly
+   discarded card can be in the refill pool; the still-pending Action cannot.
+   Keep the completed-discard gate and draw cursor across any private choice/refill
+   pause. Never discard or draw twice after load/retry. Finish later instructions
+   and pending-card movement at the engine's existing atomic boundaries.
+7. Captured discard/draw triggers wait for atomic completion, including refill
+   decisions, before optional choices/order/priority. Existing End cleanup still
+   checks the actual hand. Ordinary Action movement to discard is not a hand discard.
+
+For example, with a five-card hand, playing Insight leaves four, discarding leaves
+three, and two completed draws return the hand to five. Battery captures one
+discard reward, Well one optional capacity reward, and Lantern two optional draw
+rewards. No source can contribute resources to the initial cost from future rewards.

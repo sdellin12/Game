@@ -63,3 +63,38 @@ class DesktopControlTests(unittest.TestCase):
                 self.assertIsNone(window.report)
             finally:
                 root.destroy()
+
+    def test_desktop_passes_selected_group_condition(self):
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            root = tk.Tk(); root.withdraw()
+            window = LabWindow(root)
+            try:
+                window.checkpoint.set(str(Path(directory) / 'jobs.sqlite'))
+                window.experiment.set('groups'); window.budget.set('1')
+                window.condition.set('wounded'); window.limit.set('2')
+                window.start(); self.wait(root, window)
+                self.assertTrue(window.report.is_file())
+                record = json.loads((window.report.parent / 'results.jsonl').read_text().splitlines()[0])
+                self.assertTrue(all(c['health'] == 1 for c in record['input']['state']['creatures']))
+                self.assertIn('all creatures at 1 HP', record['input']['name'])
+            finally:
+                root.destroy()
+
+    def test_desktop_mixed_subset_selection_reaches_worker(self):
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            root = tk.Tk(); root.withdraw()
+            window = LabWindow(root)
+            try:
+                window.checkpoint.set(str(Path(directory) / 'jobs.sqlite'))
+                window.experiment.set('groups'); window.budget.set('1')
+                window.condition.set('mixed'); window.attack_mode.set('subsets'); window.limit.set('2')
+                window.start(); self.wait(root, window)
+                self.assertTrue(window.report.is_file())
+                records = [json.loads(line) for line in (window.report.parent / 'results.jsonl').read_text().splitlines()]
+                self.assertEqual(records[0]['input']['attacks'], [])
+                self.assertTrue(records[1]['input']['attacks'])
+                self.assertIn('mixed board variant', records[0]['input']['name'])
+            finally:
+                root.destroy()

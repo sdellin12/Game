@@ -1,7 +1,11 @@
 # The Crucible — Confirmed Requirements
-Consolidated 2026-11-22 from the current design conversation. This document and RULES_DRAFT.md supersede historical ANSWERS.md, DISCOVERY.md and obsolete proposals. Numeric values are playtest candidates, not verified balance. A combat-only core/CLI now exists; full matches and the family app remain unimplemented. See COMBAT_LAB_QUICKSTART.md and experiments/FIRST_COMBAT_SLICE.md.
+Consolidated 2026-11-22 from the current design conversation. This document and RULES_DRAFT.md supersede historical ANSWERS.md, DISCOVERY.md and obsolete proposals. Numeric values are playtest candidates, not verified balance. A combat lab and restricted local full-match practice harness are implemented. The networked household product remains future work. PROJECT_STATE.md owns current implementation and validation; product requirements below are not a feature-completion claim.
 
 ## Experience and scope
+Owner direction 2026-11-24: defer human/family testing until the app starts to take
+shape as a usable game. The current rules harness is too difficult for that purpose.
+Use automated checks for now; do not make a debug-harness session the next family task.
+
 Original local household multiplayer card battler for adults and children, typically four players; 40–60 minute familiar-play target. Android phones/tablets, older iPads, Google TV and Roku public displays remain required for the first completed game. Installed/packaged clients preferred; secure iPad home-screen web app acceptable under existing Screen Time browser restrictions, weekly native reinstalls accepted fallback. Actual iPad models/OS and installation feasibility remain untested. Home network only initially; automatic discovery with manual address fallback. Linux authoritative server; Windows PC artwork worker. No timers or response countdowns initially; allow future extension.
 
 Creative themes independent of mechanics/color. Cartoon-style content, no realistic gore or swearing; future maturity levels deferred. Researchers discover across realities in The Crucible; Relic-Ring stable arena, Ring-Keepers, Vanguard Cores and 40 Sparks. Lore must not imply defeated cards/resources automatically recycle. Player revival has been scrapped; leader recovery remains.
@@ -28,7 +32,7 @@ Reading level affects explanations, never rules or strength. Setting accessible 
 Lobby requires legal confirmed deck, selected leader and ready status for everyone before host starts. Deck/leader selections visible openly in lobby, card lists private unless deliberately shared. Changes clear readiness; match start freezes choices/rules/definitions/cosmetics.
 Five opening cards; one free selective redraw: set rejected cards aside, draw replacements, shuffle rejected back. Choices private; replacement counts revealed only once all lock. Starting player and fixed order revealed after redraw (leaders already visible).
 One draw at each own turn start; first player skips first draw in duel only. Seven-card end-turn limit, legal plays before ending then discard excess. Discard does not normally reshuffle.
-30 player health initial; failed required draw or health <=0 permanently eliminates. Empty deck alone does not; milling supported. No player revival or final revival windows. Last active wins after pending valid effects/cleanup; simultaneous all-out is draw.
+30 player health initial; an unrecovered failed required draw or health <=0 permanently eliminates. Empty deck alone does not eliminate; the approved Recharge extension below can end an own turn. Milling supported. No player revival or final revival windows. Last active wins after pending valid effects/cleanup; simultaneous all-out is draw.
 
 ## Gameplay detail
 RULES_DRAFT.md is the consolidated mechanics reference: attack/health only with persistent wounds, exhausted blocking, Challenge, Breakthrough, phases, costs/response chain, leaders, transformation/combine, tokens, upgrades and elimination. Old flat defense/full bypass and all player-revival rules are superseded.
@@ -70,7 +74,35 @@ Persistent profiles, device remembers last with easy switch. Active-match switch
 Any player requests pause; host/adult approves/resumes; inspect/TTS while paused, game actions stop. No timers. Disconnect auto-pause, state/hand restored, host resumes; designated adult takeover. Concede confirmation, no parent approval. Cancel freely before confirmation; committed actions no general undo.
 Automatic durable save after committed actions/pending responses, adult Pause and exit; exact recovery paused. Midnight local America/New_York backup on days with gameplay or saved changes; retain seven daily plus four weekly, deduplicate unchanged art. Keep live artwork library independently of backup rotation. Separate-drive destination advisable but unselected.
 Server authorizes private projections; never send hidden cards to TV then conceal visually. Device trust/PIN/transport/storage design still needs implementation review.
-Future scope: timers, two colors, remote/visitor/TV editing, maturity levels, Pierce, effect-copy cards after starter phase, deeper card packs. No implementation/deployment or paid service authorized by planning alone.
+Future scope: timers, two colors, remote/visitor/TV editing, maturity levels, Pierce, effect-copy cards after starter phase, deeper card packs. Planning alone does not authorize deployment or purchases; later development authorization is recorded in the current project checkpoint.
 
 ## Balance lab request
-User wants rigorous local computation instead of spending AI tokens per test. Build-plan direction: reusable game rules engine -> headless automated runner -> simple desktop dashboard; mobile report companion later candidate. Desktop preferred PC compute; no runtime LLM dependency. Export CSV/JSON/readable HTML, replay seeds/logs, batch scenarios/full matches as coverage grows. Compare multiple policies (straight attack for youngest, defensive, resource-aware, stronger later); identify policy weakness vs deck weakness. Use summaries/outlier replays for AI analysis, not bulk raw logs. No simulations have run. Current explicit task: sync decisions to GitHub, then expert subagents plan tester architecture/statistics/UX/implementation; not implement yet.
+User wants rigorous local computation instead of spending AI tokens per test. Build-plan direction: reusable game rules engine -> headless automated runner -> simple desktop dashboard; mobile report companion later candidate. Desktop preferred PC compute; no runtime LLM dependency. Export CSV/JSON/readable HTML, replay seeds/logs, batch scenarios/full matches as coverage grows. Compare multiple policies (straight attack for youngest, defensive, resource-aware, stronger later); identify policy weakness vs deck weakness. Use summaries/outlier replays for AI analysis, not bulk raw logs. The lab, local match harness and seeded policy studies now run locally. The original planning-only request is historical; current work is in PROJECT_STATE.md.
+
+
+## Deck-refill extension requested 2026-11-22
+Add a costly fixed-life trade to reshuffle discard/graveyard into the deck. Repeat
+use should need deliberate life-gain support. Draw-time refill/turn-loss/Recharge timing is approved below; exact life cost
+remains provisional (DECK_REFILL_DESIGN.md). This is an explicit exception
+to the ordinary non-reshuffling discard rule, not a free automatic recycle.
+Simultaneous private blocker locking/reveal is approved for multiplayer defense.
+
+
+Deck-refill timing now approved: finish remaining required draws after valid
+paid discard refill; eliminate if no accepted valid refill can complete a required
+draw. Own-turn exhaustion/refill ends the current turn; an empty next Start offers
+refill and then ends that turn. Off-turn refill causes a full next-turn Recharge
+with Start/End maintenance but no normal draw, voluntary play/abilities or Combat.
+Ordinary off-turn blocking/reactions remain. No additional next-turn penalty for
+an own-turn refill. Recharge lore is Vanguard Core stabilization. Exact fixed
+life cost is not adopted; evaluate with the lost-turn cost included.
+
+
+## Card-face information contract approved 2026-11-22
+CARD_INFORMATION_CONTRACT.md is the shared baseline for standard and full-art
+cards: name, color/Generic identity, type/role, play/access information, artwork
+and applicable rules content. Creature stats, traits, leader/location abilities,
+forms and unusual costs appear when relevant. Live instance overlays are separate
+from base definitions. Cosmetics preserve all gameplay information. Filled
+CARD_CONTENT_EXAMPLES.md entries are template candidates, not approved/balanced
+starter content. No catalog schema or renderer implementation is implied.

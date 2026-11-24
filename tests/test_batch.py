@@ -120,3 +120,37 @@ class BatchTests(unittest.TestCase):
             self.assertEqual(progress['pending_combats'], 18)
             self.assertEqual(progress['recorded_attempts'], 0)
             self.assertEqual(progress['run_status'], 'cancelled')
+
+
+    def test_condition_checkpoint_mismatch_preserves_results(self):
+        from crucible_sim.groups import group_scenarios
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'run.sqlite'
+            baseline = list(group_scenarios(1))
+            first = run_batch(path, 2, scenarios=baseline)
+            with self.assertRaises(CombatError):
+                run_batch(path, 2, scenarios=list(group_scenarios(1, 'exhausted')))
+            resumed = run_batch(path, 2, scenarios=baseline)
+            self.assertEqual(resumed[:2], first)
+            self.assertEqual(len(resumed), 4)
+
+    def test_matrix_rejects_group_condition_before_creating_checkpoint(self):
+        from crucible_sim.cli import main
+        import contextlib, io
+        with tempfile.TemporaryDirectory() as directory, contextlib.redirect_stderr(io.StringIO()):
+            root = Path(directory)
+            self.assertEqual(main(['batch', '--condition', 'shielded', '--checkpoint',
+                str(root / 'jobs.sqlite'), '--output', str(root / 'out')]), 2)
+            self.assertFalse((root / 'jobs.sqlite').exists())
+
+    def test_subset_checkpoint_cannot_resume_as_all_attack(self):
+        from crucible_sim.groups import group_scenarios
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'jobs.sqlite'
+            inputs = list(group_scenarios(1, 'mixed', 'subsets'))
+            first = run_batch(path, 3, scenarios=inputs)
+            with self.assertRaises(CombatError):
+                run_batch(path, 1, scenarios=list(group_scenarios(1, 'mixed', 'all')))
+            resumed = run_batch(path, 1000, scenarios=inputs)
+            self.assertEqual(resumed[:3], first)
+            self.assertEqual(resumed, [run_scenario(s) for s in inputs])

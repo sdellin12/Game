@@ -18,7 +18,7 @@
 ## 4. Vanguard Cores, Sparks, Leaders & Elimination
 * **40 Sparks per Deck:** Each Leader's **Vanguard Core** sheds **40 glowing Sparks**—matching the 40-card deck. When a creature is played, Sparks weave into the form; when a creature is knocked out, its Sparks unravel visually; its card follows the normal discard rules. This does not refund resources or return cards to the deck. The discovery remains in the shared catalog.
 * **Leader Retreats & Resummoning:** A Leader anchors their squad in the Relic-Ring. If knocked out, they pull back outside the ring to recover, requiring a higher cost to resummon back into the fight.
-* **Player Elimination:** A Researcher whose health reaches zero or who fails a required draw leaves that match permanently, but can spectate and cheer with reactions. Player revival is not part of the current game. Leader retreat and resummoning remain separate mechanics.
+* **Player Elimination:** A Researcher whose health reaches zero or who has an unrecovered failed required draw leaves that match permanently, but can spectate and cheer with reactions. Player revival is not part of the current game. Leader retreat and resummoning remain separate mechanics.
 
 ## 5. Ten Color Sparks & Tactical Edge
 * **Accessible Baseline + Tactical Edge:** In the initial version, all ten colors share a welcoming, competitive baseline so players aren't locked into rigid archetypes on day one. Each color provides a distinct **tactical edge** and signature flavor while keeping room for varied builds and future expansion:
@@ -26,7 +26,7 @@
   * **Orange (Daring):** High-risk, high-reward swings backed by contingency/recovery lines.
   * **White (Discipline):** Formation defense, coordinated blocks, and disciplined counterstrikes.
   * **Green (Resilience):** Stat growth, enduring boards, and healing/recovery.
-  * **Gold (Cooperation):** Protecting allies, lending assistance, and earning bonuses for helpful and straight-up/honest play rather than messy side-deals.
+  * **Gold (Cooperation):** Protecting self and allies, lending accepted assistance, and rewarding real help. Tactical mechanics do not judge whether real speech is honest.
   * **Blue (Insight):** Anticipation, timing windows, information advantage, and answering threats.
   * **Purple (Cunning):** Disrupting opponent plans and milling (moving cards from an opponent's deck to their discard pile).
   * **Black (Ambition):** Paying real costs (life, cards, board pieces, or resources) for heavy power spikes.
@@ -38,3 +38,18 @@
   1. **The Pull:** Vanguard Cores hum as rifts open, drawing Researchers into **The Crucible** amid an unexplained shattering of the Prime Matrix.
   2. **The Relic-Ring:** Reveals the stone-and-metal colosseum, silent **Ring-Keepers**, and the conqueror scouting realms.
   3. **Sparks & Retreat:** Shows a Vanguard Core shedding **40 Sparks**, defeated creatures unraveling, knocked-out Leaders retreating before escalating resummons, and eliminated Researchers watching from outside the ring. Setup intros are optional future production; combat animations remain brief and nonblocking.
+
+
+## Recharge (working name)
+A Researcher's Vanguard Core can spend their life energy to gather unraveled
+Sparks from the discard and rebuild its card supply. The Core then needs time to
+stabilize. Recharging during the Researcher's own turn uses the rest of that turn;
+recharging during another Researcher's turn means resting on the next own turn.
+Automatic Start/End maintenance still occurs during a Recharge turn, and existing
+creatures can defend while the Researcher can react on opponents' turns.
+
+Child-facing explanation: "Your Core needs a recharge. Spend life to rebuild your
+deck, finish your draws, then rest." This recovers eligible discarded cards, not
+eliminated players. It does not refund resource costs, restore cards from exile,
+or grant free automatic reshuffles. Exact life price remains a balance candidate;
+DECK_REFILL_DESIGN.md defines the approved timing and implementation gates.

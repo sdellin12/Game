@@ -59,9 +59,10 @@ abilities to its candidates. Exact fixture tests cover special interactions.
 
 ## Explicit limitations and experimental defaults
 
-- Not yet implemented: full matches, bots, reactions/triggers, leaders, resources,
-  forms/combination, player shields, elimination cleanup, multiprocessing,
-  resumable jobs, desktop GUI or a packaged Windows executable.
+- This combat-only input/export path does not run turn/deck/leader/trigger logic.
+  A restricted local match harness implements those separately in PLAY_HARNESS.md.
+  Resumable lab jobs, desktop inspection and the Windows lab bundle are implemented
+  below; multiprocessing and full household-client delivery remain future work.
 - Lethal-player IDs are diagnostic only; the combat kernel never declares a winner.
 - All damage resolves from the same pre-damage snapshot. Each creature belongs
   to one group; several challengers can share one target.
@@ -75,9 +76,9 @@ abilities to its candidates. Exact fixture tests cover special interactions.
   uses its old target ID. Both rules have exact regression tests.
 - Replay requires the same engine file hash. It detects edited results and
   record-count mismatches; hashes are reproducibility checks, not signatures.
-- First exporter is synchronous/in-memory. Large-scale job scheduling and atomic
-  checkpoints come in the next runner stage; interrupted exports aren't completed
-  runs and must be rerun into a new directory.
+- The direct exporter is synchronous/in-memory. The bounded checkpoint runner
+  below preserves completed jobs and resumes them; an interrupted direct export
+  is not a completed run and must be rerun into a new directory.
 
 ## Tests
 
@@ -272,3 +273,45 @@ build and inspect its reports with that same build. Keep old source/build copies
 for old replays. Never edit hashes to force compatibility. Checkpoint schema is
 unchanged. The app is unsigned, with no installer or automatic updates. It was
 tested on this Windows machine, not a clean machine without Python installed.
+
+
+## Group condition presets and joint outcomes
+
+Choose a Group condition in the desktop, or use the CLI:
+
+```powershell
+py -3 run_lab.py groups --budget 2 --condition exhausted --output lab-runs/exhausted-2
+py -3 run_lab.py batch --experiment groups --budget 2 --condition shielded --checkpoint lab-runs/shielded.sqlite --limit 100 --output lab-runs/shielded-part-1
+```
+
+- `baseline`: existing full-health ready groups, no shields (default; unchanged).
+- `wounded`: every creature starts at 1 current HP with original maximum HP.
+- `exhausted`: full health; every defender exhausted, attackers ready.
+- `shielded`: full health and ready; each defender has 2 numeric prevention.
+
+These are deliberately separate sensitivity presets, not all combinations of
+individual statuses. All creatures attack as before; optional attack subsets
+remain outside this enumerator. Conditions require the groups experiment.
+Resume with the same condition, budget and checkpoint; a changed condition
+rejects against the pinned inputs. Existing baseline checkpoints remain readable.
+
+Comparison JSON and expandable HTML now retain joint `(player damage, attacker
+losses, defender losses)` outcomes with encounter counts and example job IDs.
+Counts are enumerated assignments, not probabilities. Search an ID in the replay
+inspector to inspect an actual outcome. A partial report only describes completed
+jobs; there is no guarantee that its ranges or outcomes cover all choices.
+
+## Optional attacks and mixed boards
+
+Both group commands accept `--attack-mode subsets` to enumerate every attacker
+subset, including none. Default `all` preserves the earlier inputs/checkpoints.
+Use `--condition mixed` (budgets1–2 only) to vary each attacker independently
+between full/1 HP and each defender between full/1 HP, exhausted, or shielded2.
+Duplicate creature states are removed. No individual exhausted+wounded+shielded
+cross-product is claimed. Mixed budget2 with attack subsets has 35,058 encounters;
+use bounded batches/checkpoints instead of a single large export when convenient.
+
+The desktop exposes these options. No-attack comparison rows are included with
+zero outcomes; boards are oriented by the first listed seat rather than claiming
+an active attacker. Existing scenario schemas and checkpoint tables are unchanged.
+See [the first-run walkthrough](DESKTOP_WALKTHROUGH.md) for a 27-encounter example.

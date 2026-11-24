@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "crucible-balance-lab"
 version = "0.1.0"
-description = "Deterministic, combat-only balance experiments for The Crucible"
+description = "Local combat experiments and practice rules harness for The Crucible"
 requires-python = ">=3.11"
 dependencies = []
 
@@ -14,6 +14,7 @@ crucible-sim = "crucible_sim.cli:main"
 
 [project.gui-scripts]
 crucible-lab = "crucible_lab.desktop:main"
+crucible-play = "crucible_play.desktop:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

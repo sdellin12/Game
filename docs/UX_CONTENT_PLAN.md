@@ -1,5 +1,5 @@
 # Family UX and Artwork Contracts
-Updated 2026-11-22. Accepted behavior is consolidated in REQUIREMENTS.md; mechanics in RULES_DRAFT.md. No UI implemented.
+Updated 2026-11-22. Accepted behavior is consolidated in REQUIREMENTS.md; mechanics in RULES_DRAFT.md. The household/device flows below remain product scope; the local Tk lab/practice interfaces are implemented separately in PLAY_HARNESS.md.
 
 ## Destinations
 Home/Profile, Decks, Theme Creator, Card Catalog, Artwork Library, Learn/Practice, Match, Settings and cosmetic shop. Adult controls secondary with PIN; device pairing/revocation required. Last profile remembered; adult entry protected, active-match switching controlled.
@@ -20,3 +20,18 @@ Profile/device/session/role; card definition/draft/published variant/character; 
 Immutable mechanical identity separate from artwork, character name and singleton validation. Catalog archive not normal deletion; shared original administration adult-only. Rewards ledger deduplicates event/achievement to prevent reconnect/replay payouts.
 Save each committed action incl pending chain, resume paused. Midnight local active-day backups seven daily/four weekly; live art survives rotation.
 See tester plan for independent simulation data; simulation never writes family achievements or currency.
+
+
+## Shared card information contract (approved 2026-11-22)
+See [CARD_INFORMATION_CONTRACT.md](CARD_INFORMATION_CONTRACT.md) for the approved
+standard/full-art content matrix, conditional creature/leader/form fields, live
+state overlays and accessibility acceptance examples. It specifies information,
+not a fixed template design. Full art must preserve the same gameplay content.
+No renderer, catalog schema or template asset is changed by this proposal.
+
+[CARD_CONTENT_EXAMPLES.md](CARD_CONTENT_EXAMPLES.md) supplies illustrative filled
+content for template work; it does not publish new mechanics or balanced cards.
+
+[Card Design v1](CARD_DESIGN.md) now maps the approved information contract to
+editable standard/full-art SVG layouts, paired previews and an offline gallery.
+These design assets are separate from production match-client implementation.

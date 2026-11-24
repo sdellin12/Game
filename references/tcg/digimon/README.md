@@ -9,4 +9,4 @@ Basic evolution chains, inherited abilities, DNA digivolution examples and relat
 - https://world.digimoncard.com/rule/
 
 ## Upload here
-Save rules_YYYY-MM-DD.pdf/txt, cards.csv/json, decks.md, rulings.md and/or source-links.md in this folder. Include source, revision/date and card IDs. See ../README.md. No full dataset is required and none has been imported yet.
+Save rules_YYYY-MM-DD.pdf/txt, cards.csv/json, decks.md, rulings.md and/or source-links.md in this folder. Include source, revision/date and card IDs. See ../README.md. No full dataset is required. DIGIMON-general_rule.pdf is present. These files remain reference-only, not automatically imported game definitions.
