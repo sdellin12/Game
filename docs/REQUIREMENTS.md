@@ -2,6 +2,10 @@
 Consolidated 2026-11-22 from the current design conversation. This document and RULES_DRAFT.md supersede historical ANSWERS.md, DISCOVERY.md and obsolete proposals. Numeric values are playtest candidates, not verified balance. A combat lab and restricted local full-match practice harness are implemented. The networked household product remains future work. PROJECT_STATE.md owns current implementation and validation; product requirements below are not a feature-completion claim.
 
 ## Experience and scope
+Owner direction 2026-11-24: defer human/family testing until the app starts to take
+shape as a usable game. The current rules harness is too difficult for that purpose.
+Use automated checks for now; do not make a debug-harness session the next family task.
+
 Original local household multiplayer card battler for adults and children, typically four players; 40–60 minute familiar-play target. Android phones/tablets, older iPads, Google TV and Roku public displays remain required for the first completed game. Installed/packaged clients preferred; secure iPad home-screen web app acceptable under existing Screen Time browser restrictions, weekly native reinstalls accepted fallback. Actual iPad models/OS and installation feasibility remain untested. Home network only initially; automatic discovery with manual address fallback. Linux authoritative server; Windows PC artwork worker. No timers or response countdowns initially; allow future extension.
 
 Creative themes independent of mechanics/color. Cartoon-style content, no realistic gore or swearing; future maturity levels deferred. Researchers discover across realities in The Crucible; Relic-Ring stable arena, Ring-Keepers, Vanguard Cores and 40 Sparks. Lore must not imply defeated cards/resources automatically recycle. Player revival has been scrapped; leader recovery remains.

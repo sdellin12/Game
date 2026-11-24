@@ -22,7 +22,7 @@ CURRENT={'README.md':'Repository entry point','Game_Lore.md':'Pointer to canonic
     'docs/FAMILY_PLAYTEST.md':'Local family-playtest checklist','tests/fixtures/README.md':'Synthetic compatibility fixture provenance'}
 PLANS={'docs/BUILD_PLAN.md','docs/ARCHITECTURE_PROPOSAL.md','docs/BALANCE_TESTER_PLAN.md','docs/UX_CONTENT_PLAN.md','docs/FULL_MATCH_TIMING_SPEC.md','docs/DECK_REFILL_DESIGN.md'}
 HISTORY={'docs/ANSWERS.md','docs/DISCOVERY.md','docs/CHANGELOG.md'}
-GENERATED={'DISCARD_PACKAGE_ECONOMY.md','PACKAGE_ABLATION.md','PACKAGE_COMPARISON.md','PACKAGE_FRESH_COMPARISON.md','PACKAGE_FOLLOWUP_ABLATION.md'}
+GENERATED={'DISCARD_PACKAGE_ECONOMY.md','PACKAGE_ABLATION.md','PACKAGE_COMPARISON.md','PACKAGE_FRESH_COMPARISON.md','PACKAGE_FOLLOWUP_ABLATION.md','PACKAGE_BUDGET_COMPARISON.md'}
 
 
 def documents(root=ROOT):

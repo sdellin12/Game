@@ -20,7 +20,10 @@ python scripts/audit_docs.py --write-index --bundle
 This checks authored-document links/entry points and creates an ignored documentation
 ZIP with a hash manifest. It does not publish private saves or local artwork.
 
-## Try the local playable harness
+## Run the local engineering harness
+
+This is for developer checks. Family-testing timing is deferred in the requirements;
+the next product milestone is a usable match experience.
 
 ```powershell
 py -3 run_play.py

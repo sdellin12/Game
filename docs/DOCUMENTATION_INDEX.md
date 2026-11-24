@@ -49,6 +49,8 @@ Start with PROJECT_STATE.md and AI_HANDOFF.md. Product decisions and rules have 
 | [docs/experiments/OPPONENT_TACTICS.md](experiments/OPPONENT_TACTICS.md) | Experiment evidence | Checkpoint-specific results; PROJECT_STATE.md owns current status |
 | [docs/experiments/OPTIONAL_TRIGGERS.md](experiments/OPTIONAL_TRIGGERS.md) | Experiment evidence | Checkpoint-specific results; PROJECT_STATE.md owns current status |
 | [docs/experiments/PACKAGE_ABLATION.md](experiments/PACKAGE_ABLATION.md) | Generated experiment table | Use the named generator; retain historical inputs |
+| [docs/experiments/PACKAGE_BUDGET.md](experiments/PACKAGE_BUDGET.md) | Experiment evidence | Checkpoint-specific results; PROJECT_STATE.md owns current status |
+| [docs/experiments/PACKAGE_BUDGET_COMPARISON.md](experiments/PACKAGE_BUDGET_COMPARISON.md) | Generated experiment table | Use the named generator; retain historical inputs |
 | [docs/experiments/PACKAGE_COMPARISON.md](experiments/PACKAGE_COMPARISON.md) | Generated experiment table | Use the named generator; retain historical inputs |
 | [docs/experiments/PACKAGE_FOLLOWUP.md](experiments/PACKAGE_FOLLOWUP.md) | Experiment evidence | Checkpoint-specific results; PROJECT_STATE.md owns current status |
 | [docs/experiments/PACKAGE_FOLLOWUP_ABLATION.md](experiments/PACKAGE_FOLLOWUP_ABLATION.md) | Generated experiment table | Use the named generator; retain historical inputs |

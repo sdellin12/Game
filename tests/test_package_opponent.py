@@ -5,7 +5,7 @@ from crucible_content.practice import discard_draw_pack
 from crucible_core.match import MatchObject
 from crucible_core.combat import Creature
 from crucible_core.views import project_match
-from crucible_play.package_opponent import choose_package_move,choose_revised_move
+from crucible_play.package_opponent import choose_package_move,choose_revised_move,choose_budgeted_move,_payable_followup
 from test_commands_cards_views import fixture,instances,command
 
 
@@ -38,6 +38,43 @@ class PackageOpponentTests(unittest.TestCase):
         s=policy_fixture(('beacon-02','proposal-scrapyard-insight','proposal-deep-archive'))
         move=choose_revised_move(project_match(s,'A'));self.assertEqual(move[1]['card_id'],'beacon-02')
         command(s,'A',move[0],**move[1])
+
+    def test_budgeted_setup_cannot_spend_the_known_draw_payment(self):
+        for available,expected in ((5,'spell-04'),(6,'beacon-01')):
+            s=policy_fixture(('beacon-01','spell-04','proposal-deep-archive'))
+            p=s.players[0];s=replace(s,players=(replace(p,resources=replace(p.resources,available=available)),)+s.players[1:])
+            view=project_match(s,'A');move=choose_budgeted_move(view)
+            self.assertEqual(move[1]['card_id'],expected);command(s,'A',move[0],**move[1])
+            self.assertEqual(view,project_match(s,'A'))
+
+    def test_spent_token_is_removed_and_future_refunds_are_not_counted(self):
+        from crucible_play.opponent import exact_payment
+        s=policy_fixture(('beacon-01','spell-04'));p=s.players[0]
+        s=replace(s,players=(replace(p,resources=replace(p.resources,available=2)),)+s.players[1:],
+            battlefield=s.battlefield+(MatchObject('token','A','A','resource_token',resource_value=2),))
+        view=project_match(s,'A');setup=view['you']['hand'][0];payment=exact_payment(view,4)
+        self.assertEqual(payment,{'ordinary':2,'token_ids':['token']})
+        self.assertFalse(_payable_followup(view,setup,payment))
+        extra=MatchObject('extra','A','A','resource_token',resource_value=2)
+        s=replace(s,battlefield=s.battlefield+(extra,));view=project_match(s,'A')
+        self.assertTrue(_payable_followup(view,view['you']['hand'][0],exact_payment(view,4)))
+        move=choose_budgeted_move(view);command(s,'A',move[0],**move[1])
+
+    def test_outlet_needs_fodder_after_setup_but_unsafe_draw_can_be_fodder(self):
+        s=policy_fixture(('beacon-02','proposal-scrapyard-insight'))
+        view=project_match(s,'A');self.assertFalse(_payable_followup(view,view['you']['hand'][0],{'ordinary':4,'token_ids':[]}))
+        s=policy_fixture(('beacon-02','proposal-scrapyard-insight','proposal-deep-archive'),deck=2)
+        p=s.players[0];s=replace(s,players=(replace(p,resources=replace(p.resources,available=6)),)+s.players[1:])
+        view=project_match(s,'A');self.assertTrue(_payable_followup(view,view['you']['hand'][0],{'ordinary':4,'token_ids':[]}))
+        s=policy_fixture(('beacon-01','proposal-scrapyard-insight','proposal-deep-archive'),deck=2)
+        p=s.players[0];s=replace(s,players=(replace(p,resources=replace(p.resources,available=6)),)+s.players[1:])
+        view=project_match(s,'A');move=choose_budgeted_move(view)
+        self.assertEqual(move[1]['card_id'],'beacon-01');command(s,'A',move[0],**move[1])
+
+    def test_budgeted_preserves_creature_deployment_and_other_seat_boundaries(self):
+        s=policy_fixture(('beacon-02','proposal-scrapyard-insight','unit-18'))
+        move=choose_budgeted_move(project_match(s,'A'));self.assertEqual(move[1]['card_id'],'unit-18')
+        command(s,'A',move[0],**move[1]);self.assertIsNone(choose_budgeted_move(project_match(s,'B')))
 
     def test_early_creature_is_kept_before_engine(self):
         for board in (0,1):

@@ -482,11 +482,18 @@ class PlayWindow:
             ttk.Button(frame,text='Confirm this order',command=lambda:self.send('combat_order',subject=current['subject'],order=items) if kind=='combat_order' else self.send('trigger_order',order=items)).pack(anchor='w',pady=6)
 
 
-def main():
+def main(argv=None):
     import argparse
-    parser=argparse.ArgumentParser();parser.add_argument('--discard-package',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--discard-package',action='store_true')
+    parser.add_argument('--hotseat',action='store_true',help='start with human seats instead of computers')
+    parser.add_argument('--players',type=int,choices=(2,3,4),default=2)
+    args=parser.parse_args(argv)
     from crucible_content.practice import discard_draw_pack
-    root=tk.Tk();PlayWindow(root,HarnessSession(pack=discard_draw_pack(),bots=('P2',)) if args.discard_package else None);root.mainloop()
+    session=HarnessSession(tuple(f'Player {i+1}' for i in range(args.players)),
+        pack=discard_draw_pack() if args.discard_package else None,
+        bots=() if args.hotseat else tuple(f'P{i+1}' for i in range(1,args.players)))
+    root=tk.Tk();PlayWindow(root,session);root.mainloop()
 
 
 if __name__=='__main__':main()

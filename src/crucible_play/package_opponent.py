@@ -22,8 +22,28 @@ def _keep_value(card,view):
     return 10 if card.get('kind')=='reaction' else max(0,8-cost)
 
 
-def choose_package_move(view,*,discard_values=True,draw_guard=True,sequencing=True,preserve_creatures=False):
+def _payable_followup(view,setup,payment):
+    """Only current money, unspent owned tokens and known hand cards; no refunds."""
+    actor=view['you']['player_id'];spent=set(payment['token_ids'])
+    hand=[c for c in view['you']['hand'] if c['instance_id']!=setup['instance_id']]
+    players=[dict(p,resources=dict(p['resources'],available=p['resources']['available']-payment['ordinary'])) if p['player_id']==actor else p for p in view['players']]
+    after=dict(view,players=players,you=dict(view['you'],hand=hand),
+        battlefield=[o for o in view['battlefield'] if o['instance_id'] not in spent])
+    for card in hand:
+        steps=card.get('steps',[])
+        outlet=any(s['kind']=='discard_then_draw' for s in steps)
+        if setup['definition_key']=='beacon-01':useful=_draw_count(card)>0
+        else:useful=outlet
+        if not useful or (outlet and len(hand)<2):continue
+        me=next(p for p in players if p['player_id']==actor)
+        if _draw_count(card)>me['deck_count']:continue
+        if targets(after,card) and exact_payment(after,card['cost']) is not None:return True
+    return False
+
+
+def choose_package_move(view,*,discard_values=True,draw_guard=True,sequencing=True,preserve_creatures=False,followup_budget=False):
     own=view.get('you')
+    unfiltered=view
     if not own or view.get('result'):return None
     choice=own['choice']
     if discard_values and choice and choice['kind'] in ('effect_discard','end_discard'):
@@ -63,6 +83,7 @@ def choose_package_move(view,*,discard_values=True,draw_guard=True,sequencing=Tr
         if not score:continue
         options=targets(view,card);payment=exact_payment(view,card['cost'])
         if not options or payment is None:continue
+        if followup_budget and key in PAYOFFS and not _payable_followup(unfiltered,card,payment):continue
         args={'card_id':card['instance_id'],'payment':payment}
         if card.get('target_kind'):args['target']=options[0]
         candidates.append((-score,card['cost'],card['instance_id'],args))
@@ -72,3 +93,8 @@ def choose_package_move(view,*,discard_values=True,draw_guard=True,sequencing=Tr
 def choose_revised_move(view):
     """Retain package sequencing without displacing affordable creature deployment."""
     return choose_package_move(view,preserve_creatures=True)
+
+
+def choose_budgeted_move(view):
+    """Preserve creatures and require payoff setup plus a payable known follow-up."""
+    return choose_package_move(view,preserve_creatures=True,followup_budget=True)

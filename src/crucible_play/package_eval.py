@@ -13,7 +13,7 @@ from .opponent import choose_move
 PAYOFFS=('beacon-01','beacon-02','beacon-03')
 PACKAGE_KEYS=('proposal-scrapyard-insight','proposal-surveyors-notes','proposal-deep-archive')
 POLICIES=('baseline','aware','aware-no-discard','aware-no-guard','aware-no-setup','revised',
-    'revised-no-discard','revised-no-guard','revised-no-setup')
+    'revised-no-discard','revised-no-guard','revised-no-setup','budgeted')
 
 
 def study_content():
@@ -42,8 +42,9 @@ def evaluate_game(players=2,seed='package-1',seat='P1',deck='package',policy='ba
     if type(players) is not int or players not in (2,3,4) or seat not in tuple(f'P{i+1}' for i in range(players)) or deck not in ('control','package') or policy not in POLICIES or type(limit) is not int or limit<1:raise ValueError('Invalid package comparison settings')
     experimental=choose_move
     if policy!='baseline':
-        from .package_opponent import choose_package_move,choose_revised_move
-        if policy=='revised':experimental=choose_revised_move
+        from .package_opponent import choose_package_move,choose_revised_move,choose_budgeted_move
+        if policy=='budgeted':experimental=choose_budgeted_move
+        elif policy=='revised':experimental=choose_revised_move
         else:
             flags={'aware':{},'aware-no-discard':{'discard_values':False},'aware-no-guard':{'draw_guard':False},'aware-no-setup':{'sequencing':False},
                 'revised-no-discard':{'preserve_creatures':True,'discard_values':False},

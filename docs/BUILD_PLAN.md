@@ -15,10 +15,12 @@ AI_HANDOFF.md maps the implemented source; REQUIREMENTS.md owns product intent.
 | Standard/full-art templates | Published v1 baseline plus active local edits | Verify/share the intended design snapshot |
 | Local card editor/art helpers | Present as uncommitted local work at audit | Separate source review, tracking and reproducible handoff |
 | Household server and device clients | Future | Real-device installation, pairing, privacy, reconnect and TV checks |
-| Family playtest | Pending actual family session | Checklist, observations, pacing and comprehension evidence |
+| Family playtest | Deferred until a usable app takes shape | Follow owner timing in REQUIREMENTS.md; future checklist retained |
 | Catalog, creator, progression and complete delivery | Future | Household persistence, artwork queue and all product acceptance checks |
 
-The local Python harness is the current playtest route; the existing portable
+The local Python harness is currently an engineering tool. The next recommended
+product slice is a usable match screen with readable cards/board and clear actions,
+followed by a revisit of family-test readiness. The existing portable
 CrucibleLab executable is combat-only. Source-only package files and old builds
 are not an installer for the whole household product.
 

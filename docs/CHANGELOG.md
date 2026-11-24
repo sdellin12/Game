@@ -270,3 +270,6 @@ Sequencing audit restored the known P3 win; 72 fresh games completed, revised pa
 
 ## 2026-11-23 continuity audit checkpoint
 Published 7b50db0 after reviewing authored documentation/intake guides, separating historical plans, consolidating lore, recording local uncommitted design work and adding AI_HANDOFF plus a generated document index/documentation-only bundle. Audit checks passed for 60 documents and 88 Python sources; 443 Windows tests passed. Remaining authorized work was the five-run package-3/P3 policy-loss investigation and family-session checklist.
+
+## 2026-11-24 checkpoint before budget guard
+Repository audit and remaining-loss investigation were published through 564d131. Documentation handoff was generated; 444 tests passed. The sequencing-budget defect was isolated and a future family checklist prepared. Subsequent owner direction defers human testing until a usable app starts to take shape.

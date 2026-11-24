@@ -1,6 +1,8 @@
 # Local playable harness
 Updated 2026-11-23. This is a separate source launcher from the combat balance lab.
-For a first real household session, use [FAMILY_PLAYTEST.md](FAMILY_PLAYTEST.md).
+This remains an engineering harness. Family testing is deferred under
+[REQUIREMENTS.md](REQUIREMENTS.md); [FAMILY_PLAYTEST.md](FAMILY_PLAYTEST.md) is retained
+for the later usable-app milestone.
 
 ## Launch
 From the Game repository directory, on Windows with Python/Tk installed:
@@ -8,6 +10,10 @@ From the Game repository directory, on Windows with Python/Tk installed:
 ```powershell
 py -3 run_play.py
 ```
+
+For developer setup, `python run_play.py --hotseat --players 2` selects human seats
+directly; --players also accepts 3 or 4. This does not make the debug interface a
+family-testing milestone. No deck or opening choice is committed by the launcher.
 
 No new runtime package is required. The existing portable Combat Lab executable
 has not been rebuilt with this harness. Closing a started local game asks for

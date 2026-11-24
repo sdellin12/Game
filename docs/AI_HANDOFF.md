@@ -20,7 +20,7 @@
 | Current checkpoint, tests and next work | PROJECT_STATE.md |
 | Card face/layout contract | CARD_INFORMATION_CONTRACT.md and CARD_DESIGN.md |
 | Current experiments and their limits | Named experiment note and generated table |
-| First human-session preparation | FAMILY_PLAYTEST.md (observations still pending) |
+| Future human-session preparation | FAMILY_PLAYTEST.md; timing deferred under REQUIREMENTS.md |
 | World and terminology | docs/Game_Lore.md; root Game_Lore.md is a pointer |
 
 Rules may describe future mechanics. Implementation coverage is deliberately

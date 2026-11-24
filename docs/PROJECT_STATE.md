@@ -1,19 +1,19 @@
 # The Crucible - Resume Here
-Updated: 2026-11-23
+Updated: 2026-11-24
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: continuity audit, remaining policy-loss investigation and family-playtest checklist.
+- Latest checkpoint: exact follow-up budget guard; family testing deferred until a usable app takes shape.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 444 Windows tests; 63 docs/links/versions pass; 88 Python sources parse; 5 follow-up runs complete.
+- Validation: 450 Windows tests; 65 docs/links/versions pass; 89 Python sources parse; 72 fresh games complete.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Audit and investigation complete: REPOSITORY_REVIEW.md, AI_HANDOFF.md, experiments/PACKAGE_FOLLOWUP.md.
-Family checklist ready: FAMILY_PLAYTEST.md; actual family observations remain pending.
-Next: exact post-payment follow-up affordability guard, then untouched seeds; live bots stay baseline.
+Budgeted policy fixes both known losses; fresh case wins 6/18 vs baseline 4/18, with one regression; live bots stay baseline.
+Owner deferred human testing: REQUIREMENTS.md; FAMILY_PLAYTEST.md is a future checklist.
+Recommended next: usable match UI slice (readable cards/board and obvious actions), then revisit human readiness.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry

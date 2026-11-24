@@ -1,6 +1,9 @@
 # Family playtest checklist — local prototype
 
-Status: prepared for a real session; no family observations are recorded yet.
+Status: deferred by owner direction on 2026-11-24. This is a future checklist,
+not a request to test the current debug harness. No family observations are recorded.
+The canonical timing decision is in REQUIREMENTS.md. Revisit this checklist once
+the app has a usable core match flow; use automated verification in the meantime.
 Use the current source checkout and [PLAY_HARNESS.md](PLAY_HARNESS.md) for controls.
 This tests one-PC Tk hotseat/practice, not phone/iPad/TV clients, network pairing,
 automatic server saves, TTS/hints, currency or the card creator. Those product
