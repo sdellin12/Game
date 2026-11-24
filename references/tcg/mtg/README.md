@@ -9,4 +9,4 @@ Cost1–6 plain creatures; aggressive and defensive bodies; counterspells; prote
 - https://magic.wizards.com/en/rules
 
 ## Upload here
-Save rules_YYYY-MM-DD.pdf/txt, cards.csv/json, decks.md, rulings.md and/or source-links.md in this folder. Include source, revision/date and card IDs. See ../README.md. No full dataset is required and none has been imported yet.
+Save rules_YYYY-MM-DD.pdf/txt, cards.csv/json, decks.md, rulings.md and/or source-links.md in this folder. Include source, revision/date and card IDs. See ../README.md. No full dataset is required. Rules PDF, mtg_DB.sql, compressed Oracle/ruling exports and generated Markdown are present. These files remain reference-only, not automatically imported game definitions.

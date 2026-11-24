@@ -18,7 +18,7 @@
 ## 4. Vanguard Cores, Sparks, Leaders & Elimination
 * **40 Sparks per Deck:** Each Leader's **Vanguard Core** sheds **40 glowing Sparks**—matching the 40-card deck. When a creature is played, Sparks weave into the form; when a creature is knocked out, its Sparks unravel visually; its card follows the normal discard rules. This does not refund resources or return cards to the deck. The discovery remains in the shared catalog.
 * **Leader Retreats & Resummoning:** A Leader anchors their squad in the Relic-Ring. If knocked out, they pull back outside the ring to recover, requiring a higher cost to resummon back into the fight.
-* **Player Elimination:** A Researcher whose health reaches zero or who fails a required draw leaves that match permanently, but can spectate and cheer with reactions. Player revival is not part of the current game. Leader retreat and resummoning remain separate mechanics.
+* **Player Elimination:** A Researcher whose health reaches zero or who has an unrecovered failed required draw leaves that match permanently, but can spectate and cheer with reactions. Player revival is not part of the current game. Leader retreat and resummoning remain separate mechanics.
 
 ## 5. Ten Color Sparks & Tactical Edge
 * **Accessible Baseline + Tactical Edge:** In the initial version, all ten colors share a welcoming, competitive baseline so players aren't locked into rigid archetypes on day one. Each color provides a distinct **tactical edge** and signature flavor while keeping room for varied builds and future expansion:
@@ -26,7 +26,7 @@
   * **Orange (Daring):** High-risk, high-reward swings backed by contingency/recovery lines.
   * **White (Discipline):** Formation defense, coordinated blocks, and disciplined counterstrikes.
   * **Green (Resilience):** Stat growth, enduring boards, and healing/recovery.
-  * **Gold (Cooperation):** Protecting allies, lending assistance, and earning bonuses for helpful and straight-up/honest play rather than messy side-deals.
+  * **Gold (Cooperation):** Protecting self and allies, lending accepted assistance, and rewarding real help. Tactical mechanics do not judge whether real speech is honest.
   * **Blue (Insight):** Anticipation, timing windows, information advantage, and answering threats.
   * **Purple (Cunning):** Disrupting opponent plans and milling (moving cards from an opponent's deck to their discard pile).
   * **Black (Ambition):** Paying real costs (life, cards, board pieces, or resources) for heavy power spikes.

@@ -1,6 +1,8 @@
 # Discovery Interview
 
-Status: ready for Q01. Ask one question per turn. Answers may reorder this queue. Ask targeted clarification when an answer leaves consequential uncertainty. Questions below are prompts, not requirements. No answers recorded yet.
+Archive: original interview queue. Discovery was completed and later decisions
+superseded prompts below. Do not restart this queue or apply its old process
+instructions; read PROJECT_STATE.md for current work.
 
 ## Consolidated queue
 Q01. Describe the ideal moment in a match: what happens that makes your family laugh, cheer, or say 'that was awesome'?

@@ -36,7 +36,7 @@ file-selected imports. Reject duplicate keys, wrong types, nonfinite values,
 oversized/deep files, unknown records/versions, invalid ownership/conservation,
 inconsistent bindings and impossible decision states before installing a candidate.
 
-## V5 plan and mapping
+## Legacy conversion to v6 and historical v5 defaults
 The migration/rollback plan and v4 mandatory-source fixtures were recorded before
 model changes. V5 adds optional=False to TriggeredAbility and TriggerSpec; captured
 TriggerCandidate gains optional=False and decision=None. No MatchState fields change.
@@ -56,6 +56,7 @@ Apply only the relevant defaults:
 - V1-v3 CardDefinition gains empty triggered_abilities; preserve v4/v5 authored lists.
 - V1-v4 TriggeredAbility/TriggerSpec records gain optional=False; preserve v5 values.
 - V1-v4 TriggerCandidate records gain optional=False and decision=None; preserve v5 decisions.
+- V1-v5 Resolution gains discard_request=None and discard_done=False.
 - Preserve every other field, including names, effects, seeds, event/request IDs,
   revisions, locks, cursors, captured candidates and ordering confirmations.
 

@@ -16,8 +16,7 @@ Do not regenerate these from the schema-v3 runtime.
 commands before adding the recovery instruction: exile plus interrupted refill, and
 an Unravel chain with nested counters. Generated from the 1864642 state/engine with
 the subsequent view-only nested-chain policy fix. No state layout changed. These
-fixtures originally checked direct native-v3 compatibility. V4 now requires explicit
-conversion with empty trigger defaults. Do not regenerate these archived inputs.
+fixtures originally checked direct native-v3 compatibility. Current Load requires explicit conversion under docs/SAVE_FORMAT.md. Do not regenerate these archived inputs.
 
 `save_v3_before_authored_triggers.json.gz` is a synthetic d36da74 observer/refill
 snapshot with two captured triggers, frozen content hash and the original next
@@ -28,3 +27,10 @@ empty authored-trigger defaults while preserving that hash/cursor/candidate set.
 fields existed: a partial draw/refill and a discard-order choice, with content hashes
 and original next-command results. V5 conversion preserves the v4 abilities, adds
 mandatory False/None defaults and never retrofits the new pack-v8 "may" wording.
+
+`save_v5_before_reward_types.json.gz` preserves a native-v5 partially decided
+optional-trigger group and exact next-command result. `save_v5_before_discard_refill.json.gz`
+preserves a native-v5 interrupted refill and its original continuation. V6 conversion
+adds only discard continuation defaults while preserving v5 choices and content hashes.
+These are synthetic regression inputs, not user saves; never regenerate them from
+current models. Current native-v6 roundtrips are exercised in test_effect_discard.py.

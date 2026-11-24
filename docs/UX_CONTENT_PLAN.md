@@ -1,5 +1,5 @@
 # Family UX and Artwork Contracts
-Updated 2026-11-22. Accepted behavior is consolidated in REQUIREMENTS.md; mechanics in RULES_DRAFT.md. No UI implemented.
+Updated 2026-11-22. Accepted behavior is consolidated in REQUIREMENTS.md; mechanics in RULES_DRAFT.md. The household/device flows below remain product scope; the local Tk lab/practice interfaces are implemented separately in PLAY_HARNESS.md.
 
 ## Destinations
 Home/Profile, Decks, Theme Creator, Card Catalog, Artwork Library, Learn/Practice, Match, Settings and cosmetic shop. Adult controls secondary with PIN; device pairing/revocation required. Last profile remembered; adult entry protected, active-match switching controlled.

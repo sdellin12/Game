@@ -81,21 +81,21 @@ Previously-created permanent capacity remains recorded but unusable after perman
 Spectate public only, emoji yes; no private opponent info. No parent approval needed concede, confirmation prevents mistap. Confirmed concessions wait for the current atomic effect to finish, then process at a safe boundary in recorded request order. Disconnect is pause/reconnect, not elimination.
 
 ## Remaining engineering specifications, not more micro-interview
-- Implement approved priority/reset and cross-controller trigger order; precise event/source attribution still needs implementation fixtures.
-- Atomic defeat/terminal checkpoints, multi-draw and simultaneous player/creature defeat.
-- Challenge/group combat interactions and deterministic damage/prevention allocation, tie ordering.
+The restricted coordinator implements priority, atomic boundaries, draw/refill,
+combat and trigger fixtures. Current implementation/exclusion ownership is
+`src/crucible_core/coverage.py`; this rules document also describes future scope.
 - Combined upgrade HP/compatibility/order, effect links/cross-owner cleanup.
 - Zero-cost/repeat triggers/rounding loops; explicit card bounds, no arbitrary unmarked runtime rule.
 - Mechanics coverage manifest: unimplemented rules fail validation; partial simulator never reports full rules coverage.
 - Costs beyond initial profiles, ability budgets, vulnerability roster and starter packs remain tests/proposals.
-Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. A combat-only subset now has exact fixtures and finite encounter enumeration; no full-match balance simulation or family testing performed. See COMBAT_LAB_QUICKSTART.md for implemented coverage and explicit experimental assumptions.
+Use meaningful test fixtures and specialist recommendations; ask user only consequential experience/rule tradeoffs. The combat lab and restricted full-match policy studies have exact fixtures and local computation; no recorded family playtest or general-balance result is claimed. See COMBAT_LAB_QUICKSTART.md for implemented coverage and explicit experimental assumptions.
 
 
 ## Timing specification: approved portions and remaining proposals
 [FULL_MATCH_TIMING_SPEC.md](FULL_MATCH_TIMING_SPEC.md) proposes concrete priority,
 trigger, atomicity, elimination and combat-window sequencing with acceptance
 fixtures. Priority/reset, cross-controller trigger order, whole-effect player-health checks and safe-boundary concession were approved by Steve in Codex on 2026-11-22. Remaining proposed defaults are not confirmed gameplay rules. Review/approval
-is required before enabling a full-match engine; current combat rules above remain
+is required before enabling the remaining unsupported mechanics; current approved rules remain
 unchanged.
 
 

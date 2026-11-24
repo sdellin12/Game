@@ -6,6 +6,11 @@ RULES_DRAFT.md remain canonical. The rules explicitly left several sequencing
 choices open; recommendations below fill those gaps for review, not silently as
 accepted rules. No dependency on another TCG's timing system is implied.
 
+Current implementation note: the restricted coordinator, private projections,
+costs, combat, triggers and local saves now exist. The foundation/review records
+at the end are historical checkpoints. Current gaps are in
+`src/crucible_core/coverage.py`; canonical decisions are in RULES_DRAFT.md.
+
 ## Confirmed constraints
 
 - Fixed turn order, Start -> Draw -> Main -> Combat -> Main -> End; no timers.
@@ -311,7 +316,7 @@ does not additionally penalize the following turn. DECK_REFILL_DESIGN.md superse
 the previous Main-only refill proposal and unconditional failed-draw recommendation.
 
 
-## Implemented foundation (not a full-match engine)
+## Historical priority-foundation checkpoint
 `crucible_core.priority` now implements immutable response-window state, revision-
 checked add/pass transitions, exactly-one-item resolution handoff, active-player
 priority reset and ordered post-resolution trigger batches. Window reopen retains
@@ -323,7 +328,7 @@ items before using the internal finish-resolution transition. Combat-lab coverag
 and report claims remain combat-only.
 
 
-## Turn/draw foundation implemented (still not full-match coverage)
+## Historical turn/draw-foundation checkpoint
 crucible_core.turns now models pure turn-flow and required-draw/refill choices with
 explicit experimental policy parameters and recorded shuffle permutations. It
 emits failure/end/Recharge intent for a future atomic match coordinator; it does

@@ -1,5 +1,5 @@
 # Current architecture status — 2026-11-22
-The implementation stack below remains a proposal with historical platform-source findings, not a freshly verified compatibility guarantee. REQUIREMENTS.md and RULES_DRAFT.md supersede older behavioral assumptions. No player revival, no chat/private messaging system, adult PIN and pairing required. Independent local balance lab will reuse the authoritative rules core; its design is in BALANCE_TESTER_PLAN.md after specialist review. No code built yet.
+The implementation stack below remains a proposal with historical platform-source findings, not a freshly verified compatibility guarantee. REQUIREMENTS.md and RULES_DRAFT.md supersede older behavioral assumptions. No player revival, no chat/private messaging system, adult PIN and pairing required. Independent local balance lab will reuse the authoritative rules core; its design is in BALANCE_TESTER_PLAN.md after specialist review. The local Python combat lab and practice harness are implemented. The networked server/device topology below remains a proposal; see AI_HANDOFF.md for the current source map.
 
 # Platform Feasibility and Proposed Architecture
 Reviewed 2026-11-17. Expert planning recommendation, not approved stack. Requirements: REQUIREMENTS.md.
@@ -17,15 +17,15 @@ A shared wire protocol is realistic; one identical binary/runtime across Roku an
 
 Use versioned JSON commands and state projections, sequence numbers, command IDs and reconnect snapshots. HTTP asset retrieval, WebSocket personal-client updates and HTTP polling Roku adapter are candidates. Snapshot polling avoids assuming particular Roku streaming support. Command deduplication and authoritative validation are necessary even on local Wi-Fi. Do not expose local services publicly for first version.
 
-## Platform gates and official findings
+## Platform gates and historical findings — reviewed 2026-11-17
 ### iPad native distribution — consequential product decision
 - Free Xcode Personal Team provisioning expires seven days after issuance; rebuild/reinstall needed. Up to three devices and three installed apps/device are documented limits.
-- Apple Developer Program is US$99/year. No fee authorized. User's no-cost answer explicitly concerned art generation; do not assume they have rejected signing fees.
+- Apple Developer Program is US$99/year. No annual fee is authorized; current owner preferences are in REQUIREMENTS.md.
 - Paid membership provides distribution routes, not a guarantee of maintenance-free private installation. Select and test route; document signing/build renewal and device registration.
 - TestFlight currently requires iOS/iPadOS16+, and beta builds expire after 90 days. Not permanent installation; old iPads may not support current TestFlight.
 - Need actual iPad model/OS (user deferred until available), compatible macOS/Xcode build access, and chosen signing route. Linux server/Windows alone not assumed sufficient.
 - Current Flutter support matrix reviewed by lead lists iOS15+ for current release, while older deployment guides can mention different minimums. Use actual selected release's matrix, not a stale iOS13 assumption.
-- Do not silently replace native preference with PWA; ask user about fee versus periodic maintenance versus iPad-only web exception if needed.
+- This was the initial native-first investigation. The later approved secure iPad-web direction below supersedes it; do not reopen that settled preference.
 
 Sources:
 - https://developer.apple.com/help/account/basics/about-your-developer-account/
@@ -59,7 +59,7 @@ Installed Android TV app is plausible but needs TV manifest/launcher/remote beha
 Versioned card/effect schemas; registered server effect handlers; ruleset profiles; content packs; capability negotiation; art-provider adapter. Clients present supported effects/events. New mechanics need explanatory text, tests and compatible clients. Do not promise unsigned downloadable executable plugins on iPad/Roku or arbitrary natural-language rules. Freeze definitions/rules within active match; migrate or refuse incompatible saves.
 
 ## Status
-No installation spike, benchmark, executable prototype or deployment performed. Updated user preference: secure iPad web app acceptable under existing no-browser restrictions; weekly native reinstalls acceptable fallback; annual fee not authorized. Main unknown hardware: actual older-iPad OS and current Mac build availability. Both TV platforms remain required for first completed version.
+No household platform installation spike or actual-device deployment is recorded. The separate local Windows lab executable and source practice harness do exist. Updated user preference: secure iPad web app acceptable under existing no-browser restrictions; weekly native reinstalls acceptable fallback; annual fee not authorized. Main unknown hardware: actual older-iPad OS and current Mac build availability. Both TV platforms remain required for first completed version.
 
 ## Updated iPad direction after review
 User explicitly relaxes native-only for iPads IF web app is secure and does not undermine no-browser restrictions. Weekly native provisioning maintenance also acceptable. Investigate full-screen Web Clip and test exact restrictions before choosing stack. Apple documents managed full-screen Web Clips when Safari hidden/restricted; this does not establish compatibility of ordinary home-screen installs on unmanaged Screen Time devices. Restriction source is confirmed Screen Time; actual model/OS testing remains deferred. Do not enable Safari generally or enroll in paid management without a concrete user choice.

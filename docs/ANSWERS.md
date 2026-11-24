@@ -1,5 +1,9 @@
 # Discovery Answers
 
+Archive: historical interview, including superseded revival and planning decisions.
+REQUIREMENTS.md and RULES_DRAFT.md own accepted current decisions; this is not an
+active question queue. Preserve the original answers below.
+
 ## Q01 — Ideal match moment
 Confirmed 2026-11-17.
 

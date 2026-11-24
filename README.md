@@ -1,11 +1,33 @@
 # The Crucible
-Original household card battler: imaginative themed decks, private phone/tablet hands and a shared TV battlefield. The combat-only balance lab includes a desktop window, resumable batches and comparison reports. The full game is not built yet.
+Original household card battler. A local playable rules harness and a combat-only
+balance lab are implemented; the networked household/device product remains future
+work. Start with the current checkpoint rather than the original planning records.
+
+## Continue development / AI handoff
+
+- [Current checkpoint and next task](docs/PROJECT_STATE.md)
+- [AI continuation guide and source map](docs/AI_HANDOFF.md)
+- [Complete documentation index and status](docs/DOCUMENTATION_INDEX.md)
+
+The active implementation is on `feature/combat-coverage-and-timing` (draft PR #2).
+Check the branch and working tree before editing. Local uncommitted card-art/editor
+work is not all in Git; the handoff guide explains that boundary.
+
+```powershell
+python scripts/audit_docs.py --write-index --bundle
+```
+
+This checks authored-document links/entry points and creates an ignored documentation
+ZIP with a hash manifest. It does not publish private saves or local artwork.
 
 ## Try the local playable harness
 
 ```powershell
 py -3 run_play.py
 ```
+
+Use `python run_play.py --discard-package` for the provisional opt-in draw/discard
+deck. The live opponent remains the baseline; research policies are separate.
 
 Play against a computer by default, or choose two to four hotseat seats in a new
 lobby. Choose a practice deck/leader, ready and lock opening redraws. Save/load
@@ -42,8 +64,8 @@ matrix contains 1,156 exact encounters, not full matches or proven card balance.
 - [Project checkpoint](docs/PROJECT_STATE.md)
 - [Confirmed requirements](docs/REQUIREMENTS.md)
 - [Rules baseline and implementation gaps](docs/RULES_DRAFT.md)
-- [Proposed full-match timing specification](docs/FULL_MATCH_TIMING_SPEC.md)
-- [Life-for-deck refill proposal](docs/DECK_REFILL_DESIGN.md)
+- [Timing specification and historical review](docs/FULL_MATCH_TIMING_SPEC.md)
+- [Approved refill timing and provisional price rationale](docs/DECK_REFILL_DESIGN.md)
 - [Delivery plan](docs/BUILD_PLAN.md)
 - [UX and artwork contracts](docs/UX_CONTENT_PLAN.md)
 - [Card design and LLM handoff](docs/CARD_DESIGN.md)
@@ -54,6 +76,8 @@ matrix contains 1,156 exact encounters, not full matches or proven card balance.
 
 [Balance Tester Design and Implementation Plan](docs/BALANCE_TESTER_PLAN.md) — completed four-specialist planning synthesis for a local reproducible Windows desktop lab using the eventual game's shared rules engine. No per-simulation AI/API calls. Current implementation evidence: [first combat slice](docs/experiments/FIRST_COMBAT_SLICE.md).
 
-Current rules use attack/health only, persistent wounds,30 player health and permanent elimination; old defense/full-bypass/player-revival plans are superseded. All ten colors support approachable decks. No real-money progression.
+Rules, future ten-color product requirements and implementation coverage have
+separate owners in the continuation guide; illustrative content is not automatically
+an enabled mechanic or a published starter pack.
 
 [Historical interview](docs/ANSWERS.md) and [original discovery queue](docs/DISCOVERY.md) are archival, not current instructions. Canonical docs above preserve accepted decisions, provisional numeric test candidates and unresolved engineering details.

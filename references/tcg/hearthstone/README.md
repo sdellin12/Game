@@ -9,4 +9,4 @@ Simple low/mid/high-cost minions; neutral bodies; Taunt, Rush, Divine Shield, he
 - https://hearthstone.blizzard.com/en-us/cards
 
 ## Upload here
-Save rules_YYYY-MM-DD.pdf/txt, cards.csv/json, decks.md, rulings.md and/or source-links.md in this folder. Include source, revision/date and card IDs. See ../README.md. No full dataset is required and none has been imported yet.
+Save rules_YYYY-MM-DD.pdf/txt, cards.csv/json, decks.md, rulings.md and/or source-links.md in this folder. Include source, revision/date and card IDs. See ../README.md. No full dataset is required. No imported corpus is required; this source is optional by owner preference. These files remain reference-only, not automatically imported game definitions.

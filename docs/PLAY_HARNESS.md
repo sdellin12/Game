@@ -40,7 +40,7 @@ canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation
 The 40-card versioned practice pack has distinct keys/names, 24 creatures,
-10 Actions/Reactions and 6 capacity permanents, all engine-validated. Practice pack v8 includes three functional leaders with
+10 Actions/Reactions and 6 capacity permanents, all engine-validated. The current default practice pack includes three functional leaders with
 separate reserve/battle
 abilities. Inspect/summon your leader from the hand/choices tab; current summon
 cost, location and recovery are public. Ward cards now exercise timed prevention;
@@ -53,6 +53,7 @@ The opponent now compares revealed final-combat reaction outcomes and exact
 payments, alongside combat threats and pending removal; its bounded tactical
 harness is documented in experiments/OPPONENT_TACTICS.md.
 Scholar's Lantern and Salvage Battery are four-resource capacity permanents.
+Archive Well adds an optional permanent-capacity reward for hand discards.
 The Lantern's own-draw reward is optional; the Battery's hand-discard reward is mandatory. Inspect their trigger text
 before playing; it is also visible on the public battlefield.
 For optional triggers, follow the waiting-seat message, acknowledge that seat, then
@@ -66,8 +67,7 @@ Deck validation enforces forty singleton entries, known cards and matching color
 Rules-source/content hashes freeze before opening hands; deck choices cannot change
 once setup begins. Catalog and combat-lab checkpoint formats are untouched; local saves use schema v6.
 
-Windows Python 3.14.3: all 388 tests pass. An earlier concurrent SVG-generation
-mismatch cleared on recheck without changes to the art files from this task. Duration evidence is in
+Current validation is recorded once in PROJECT_STATE.md. Duration evidence is in
 experiments/DURATIONS.md; original setup/widget coverage is retained.
 Tests cover readiness, stale/foreign redraws, replace-before-reshuffle conservation,
 privacy barriers, real Ready/Deal/Keep/Play button handlers, rejected actions and
@@ -81,7 +81,7 @@ python -m crucible_play.smoke --players 3
 python -m crucible_play.smoke --players 4
 ```
 
-The passive view-only smoke scripts remain available. Current pack-v8 practice
+The passive view-only smoke scripts remain available. Historical pack-v8 practice
 policy runs completed at 327/829/1867 commands and 17/36/74 turns for 2/3/4 seats.
 The default driver is a bounded diagnostic; a command limit reports incomplete rather than inventing a result.
 Add

@@ -1,21 +1,11 @@
 # The Crucible Balance Lab — Expert Design and Implementation Plan
 
-Current implementation: Windows-tested combat core, CLI, equal-budget groups,
-SQLite checkpoints/attempt history, cooperative controls, comparison summaries
-and a thin Tkinter desktop shell. See COMBAT_LAB_QUICKSTART.md and PROJECT_STATE.md.
-Historical planning statements below are superseded by this implementation status.
-Full matches, bots, packaged executable and process workers remain pending.
-
-
-## Implementation update — 2026-11-22
-User authorized moving ahead. First combat-only core and CLI slice now exists,
-with 27 passing tests, 1,156 exported/replayed deterministic encounters and a
-worked Breakthrough example. See [quickstart](COMBAT_LAB_QUICKSTART.md) and
-[validation record](experiments/FIRST_COMBAT_SLICE.md). No full-match bots, GUI,
-checkpoint runner or actual Windows package yet. Historical planning-only
-statements below describe the original plan, not current implementation status.
-
-2026-11-22. Requested specialist planning synthesis; NOT an implemented application or completed balance study. Product requirements and accepted rules remain REQUIREMENTS.md and RULES_DRAFT.md. Technical choices, numeric experiment budgets and sequencing below are recommendations, not new game rules.
+Status: historical design synthesis, reviewed 2026-11-22. Its package layout,
+proposed budgets and original first-slice sequence are planning provenance, not
+current instructions. The combat lab, desktop/package and restricted local match
+harness are now implemented. Use PROJECT_STATE.md for current work, AI_HANDOFF.md
+for source boundaries and COMBAT_LAB_QUICKSTART.md for the lab. Original test counts
+below belong to their checkpoints; no fresh balance claim is implied.
 
 ## Decision and purpose
 Build a Windows-first desktop balance lab around the SAME deterministic Python rules core used later by the authoritative household server, practice opponents and previews/hints. Core -> command-line scenario/batch runner -> desktop shell. No per-simulation LLM/API use, no paid services or GPU requirement. PC Ryzen5/GTX1650; exact CPU/RAM and throughput unmeasured. Mobile report viewing is later optional scope, not a phone compute requirement.
@@ -228,4 +218,4 @@ Reverify chosen release/toolchain during implementation:
 - PyInstaller distribution guidance: https://pyinstaller.org/en/stable/operating-mode.html
 
 ## Limits and status
-No code, generated executable, benchmark, statistical result or automated game run exists from this planning task. No perfect-balance or throughput claim. This plan does not approve changing user rules to simplify engine work. Reports are evidence under named rules, coverage and policies; human family testing remains essential.
+The original planning task did not itself deliver code; subsequent implementation and experiment evidence is indexed in DOCUMENTATION_INDEX.md. No perfect-balance or throughput claim. This plan does not approve changing user rules to simplify engine work. Reports are evidence under named rules, coverage and policies; human family testing remains essential.

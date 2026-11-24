@@ -229,7 +229,7 @@ regenerate deterministically; 50-file design ZIP SHA256 manifest verified. No co
 combat changes or saved-format migrations. Full-match mode remains disabled.
 
 
-## Latest continuation — atomic coordinator foundation
+## Latest continuation â€” atomic coordinator foundation
 Added crucible_core.match: immutable typed effects, suspended refill choices,
 whole-effect health checks, simultaneous cleanup/permanent elimination, original
 seat rotation, controlled pending-item cancellation, lifecycle trigger ordering,
@@ -264,3 +264,6 @@ Private discard continuation, opt-in three-card deck, v6 save conversion and rec
 
 ## 2026-11-23 checkpoint before policy-regression audit
 Matched package/control and baseline/aware study completed all 72 games; 437 tests passed. Aware added outlet discards but package case wins fell from 9/18 to 8/18, so live bots stayed unchanged. Next was component ablation, a focused revision and fresh-seed validation; coverage v14, packs v9/v1, schema v6/compatibility 1.
+
+## 2026-11-23 checkpoint before continuity audit
+Sequencing audit restored the known P3 win; 72 fresh games completed, revised package case wins 11/18 versus baseline 9/18 with one remaining regression. 441 tests passed. The next authorized work was that remaining-loss investigation and a family playtest checklist, preceded by a full documentation/repository handoff review.

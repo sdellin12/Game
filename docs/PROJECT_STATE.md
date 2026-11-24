@@ -3,21 +3,22 @@ Updated: 2026-11-23
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: sequencing-regression fix, six ablation runs and 72 fresh-seed comparisons.
+- Latest checkpoint: repository/documentation continuity audit and scoped AI handoff.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 441 Windows tests; all 78 audit/fresh runs complete; live opponent unchanged.
+- Validation: 443 Windows tests; docs/links/versions pass; 88 Python sources parse.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
-Revised preserves creature deployment and fixes the known P3 loss; see experiments/PACKAGE_REGRESSION.md.
-Fresh package case wins: revised 11/18 versus baseline 9/18; one fresh four-player regression remains.
-Recommended next: isolate that regression before promotion; subsequent tuning needs untouched seeds.
+Documentation audit is complete: REPOSITORY_REVIEW.md and AI_HANDOFF.md.
+Resume requested work: investigate package-3/four-player/P3 loss; prepare FAMILY_PLAYTEST.md.
+Revised remains experimental (fresh case wins 11/18 vs 9/18); live opponent unchanged.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry
 Start here, then read one spec/source directly relevant to the current task.
+- AI continuation/source map: AI_HANDOFF.md; full document roles: DOCUMENTATION_INDEX.md.
 - Product decisions: REQUIREMENTS.md.
 - Gameplay rules: RULES_DRAFT.md (canonical; avoid duplicate baseline summaries).
 - Timing implementation: FULL_MATCH_TIMING_SPEC.md.

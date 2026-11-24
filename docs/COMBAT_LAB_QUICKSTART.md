@@ -59,9 +59,10 @@ abilities to its candidates. Exact fixture tests cover special interactions.
 
 ## Explicit limitations and experimental defaults
 
-- Not yet implemented: full matches, bots, reactions/triggers, leaders, resources,
-  forms/combination, player shields, elimination cleanup, multiprocessing,
-  resumable jobs, desktop GUI or a packaged Windows executable.
+- This combat-only input/export path does not run turn/deck/leader/trigger logic.
+  A restricted local match harness implements those separately in PLAY_HARNESS.md.
+  Resumable lab jobs, desktop inspection and the Windows lab bundle are implemented
+  below; multiprocessing and full household-client delivery remain future work.
 - Lethal-player IDs are diagnostic only; the combat kernel never declares a winner.
 - All damage resolves from the same pre-damage snapshot. Each creature belongs
   to one group; several challengers can share one target.
@@ -75,9 +76,9 @@ abilities to its candidates. Exact fixture tests cover special interactions.
   uses its old target ID. Both rules have exact regression tests.
 - Replay requires the same engine file hash. It detects edited results and
   record-count mismatches; hashes are reproducibility checks, not signatures.
-- First exporter is synchronous/in-memory. Large-scale job scheduling and atomic
-  checkpoints come in the next runner stage; interrupted exports aren't completed
-  runs and must be rerun into a new directory.
+- The direct exporter is synchronous/in-memory. The bounded checkpoint runner
+  below preserves completed jobs and resumes them; an interrupted direct export
+  is not a completed run and must be rerun into a new directory.
 
 ## Tests
 
