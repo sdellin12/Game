@@ -17,7 +17,7 @@ family-testing milestone. No deck or opening choice is committed by the launcher
 
 Matches now use a scrollable card table with player zones, private hand tiles,
 combat/pending effects and fixed turn controls. See [MATCH_UI_FLOW.md](MATCH_UI_FLOW.md).
-`python run_play.py --debug-ui` retains the previous text/tab developer screen.
+`python run_play.py --debug-ui` retains the previous developer setup and text/tab match screen.
 
 No new runtime package is required. The existing portable Combat Lab executable
 has not been rebuilt with this harness. Closing a started local game asks for
@@ -27,33 +27,37 @@ confirmation before discarding changes since your last save.
 1. Leave two seats selected, or choose 3-4 and click New lobby.
 2. Computer opponents in P2-P4 are enabled for a new practice lobby by default.
    Uncheck the new-lobby computer option before New lobby for human hotseat play.
-   Click View Player 1, then acknowledge the handoff. Select Practice Forty and
-   a reserve identity, then Ready. Computers select/ready themselves. In hotseat mode, repeat for
+   Click View Player 1, then acknowledge the handoff. Choose a reserve identity,
+   click Apply deck and reserve identity, then Ready. Computers select/ready themselves. In hotseat mode, repeat for
    the other seats.
 3. Return to Player 1 (the setup host) and click Deal opening hands.
-4. Each seat privately selects opening cards to replace, or confirms Keep all.
+4. Each seat privately marks opening card tiles to replace, then clicks Lock
+   opening choice. Leave all tiles unmarked to keep all cards.
    Hide the hand before handing over. Choices lock once; counts and the starting
    player reveal together only after everyone confirms.
 5. Follow the priority/next-step message. Take that seat and Pass or respond.
    Ordinary plays happen in your Main phase. Inspect a hand card, choose its
    target/payment and Confirm; Cancel keeps the tentative choice private.
-6. At Combat, the active seat confirms all attacks (including an explicit none).
-   After responses, defenders lock assignments privately. Damage orders, when
+6. At Combat, select targets on eligible creature cards and confirm all attacks
+   (leave every card on Stay back to confirm none). After responses, defenders
+   assign cards to named incoming attackers and lock the whole batch privately.
+   Damage orders, when
    needed, are confirmed before the final response round. Pass to finish damage.
 7. End turn from Main, choose required discards/refill when prompted, and continue
    until the engine reports a winner/draw. Human seats require manual decisions;
    computer hands cannot be opened through the seat buttons.
 
-Public table/history remain separate tabs. Hide private hand clears private
-widgets immediately; changing seats always requires another acknowledgement.
-Long attack/block/order forms scroll. Test refill cost is visibly set to 20 life;
-canonical rules and open price decisions remain in RULES_DRAFT.md.
+The default screen keeps the board, hand and public history in one scrollable
+table; separate tabs remain in --debug-ui. Hide private hand clears private
+widgets and tentative opening/combat selections immediately; changing seats
+requires another acknowledgement. Inspection dialogs also close on hide/seat change.
+Canonical rules and open price decisions remain in RULES_DRAFT.md.
 
 ## Scope and validation
 The 40-card versioned practice pack has distinct keys/names, 24 creatures,
 10 Actions/Reactions and 6 capacity permanents, all engine-validated. The current default practice pack includes three functional leaders with
 separate reserve/battle
-abilities. Inspect/summon your leader from the hand/choices tab; current summon
+abilities. Inspect/summon your leader from Your hand and actions; current summon
 cost, location and recovery are public. Ward cards now exercise timed prevention;
 current prevention, anchors and expiry events appear on the public table/history.
 Unravel is an enemy-creature return reaction. Banish is an exile Action; exiled

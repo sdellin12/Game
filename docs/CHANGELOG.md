@@ -277,3 +277,7 @@ Repository audit and remaining-loss investigation were published through 564d131
 ## 2026-11-24 — First default match table
 
 Added a scrollable card table, fixed turn controls, player zones, private hand tiles, public combat/pending effects and history. Reused engine confirmations and choices; --debug-ui retains the developer layout. Hide/seat changes close private inspection dialogs. Five hidden Tk checks cover privacy, payment, priority/pause, scrolling and public creature/token/combat rendering. UI flow and card-design handoff updated; family testing remains deferred. No save, pack, bot-policy or art changes.
+
+## 2026-11-24 — Guided setup and combat card selection
+
+Added a three-step lobby with readiness/deal gating, private opening replacement tiles and counts, plus card-based attacker/blocker targets and batch selection counts. Selections remain local until explicit confirmation; hiding clears tentative selections. Seven hidden Tk checks cover real setup/redraw/no-attack commands, assignment packets, paused controls, privacy and large-board geometry. Updated UI flow, launcher and card-design handoff. Existing debug controls remain available; no engine/save/art changes.

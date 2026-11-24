@@ -176,6 +176,9 @@ class PlayWindow:
         else:self.render_match(view)
 
     def render_lobby(self, view):
+        if not self.debug_ui:
+            from .setup_screen import render_lobby
+            return render_lobby(self,view)
         ttk.Label(self.body,text='Lobby',style='Heading.TLabel').pack(anchor='w')
         for p in view['players']:
             leader=p['leader']['name'] if p['leader'] else 'not selected'
@@ -198,6 +201,9 @@ class PlayWindow:
         else:ttk.Label(self.body,text='Choose a seat above to make its selection.').pack(anchor='w',pady=15)
 
     def render_opening(self, view):
+        if not self.debug_ui:
+            from .setup_screen import render_opening
+            return render_opening(self,view)
         ttk.Label(self.body,text='Opening hand - one partial redraw',style='Heading.TLabel').pack(anchor='w')
         ttk.Label(self.body,text='Choose cards to replace, or confirm Keep all. Counts and starting player reveal only after all seats lock.').pack(anchor='w',pady=8)
         own=view.get('you')
@@ -412,6 +418,9 @@ class PlayWindow:
         ttk.Button(frame,text='Cancel',command=popup.destroy).pack(anchor='w')
 
     def attack_panel(self, frame, view):
+        if not self.debug_ui:
+            from .combat_selection import attack_panel
+            return attack_panel(self,frame,view)
         ttk.Label(frame,text='Declare all attacks together (or confirm no attacks)').pack(anchor='w',pady=(12,4))
         rows=[]
         for obj in view['battlefield']:
@@ -429,6 +438,9 @@ class PlayWindow:
 
     def render_choice(self, frame, view, choice):
         kind=choice['kind']
+        if kind=='blockers' and not self.debug_ui:
+            from .combat_selection import blocker_panel
+            return blocker_panel(self,frame,view,choice)
         if kind=='optional_trigger':
             ttk.Label(frame,text='Optional trigger from '+self.public_name(view,choice['source_id']),wraplength=850).pack(anchor='w')
             for step in choice['steps']:ttk.Label(frame,text=self.effect_text(step,view),wraplength=850).pack(anchor='w')

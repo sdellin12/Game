@@ -243,3 +243,8 @@ current when editing design files independently.
 readable hand/battlefield tiles. [MATCH_UI_FLOW.md](MATCH_UI_FLOW.md) documents the
 fields and boundaries. These tiles use no illustrations or unpublished editor
 assets; standard/full-art templates and their handoff remain independently editable.
+
+The same runtime tile presentation now supports private opening-hand replacement
+marks and attacker/blocker target selection. Selection controls sit beneath card
+information and submit only on confirmation; they add no fields to the card-face
+contract or print templates. See MATCH_UI_FLOW.md for implementation boundaries.

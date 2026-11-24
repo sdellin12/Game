@@ -23,7 +23,7 @@ def section(parent, title):
     return frame
 
 
-def tiles(app, parent, view, cards, private=False):
+def tiles(app, parent, view, cards, private=False, controls=None):
     """Three bounded columns keep long names/rules inside the scrollable table."""
     for column in range(3):parent.columnconfigure(column,weight=1,uniform='cards')
     for index,card in enumerate(cards):
@@ -39,7 +39,7 @@ def tiles(app, parent, view, cards, private=False):
             text+=' | '+('Can attack' if creature['attack_eligible'] and not creature['attack_used'] and not creature['exhausted'] else 'Attack waiting / used')
             text+=f"\nPrevention: {sum(s['amount'] for s in creature['shields'])}"
             ttk.Label(tile,text=text,wraplength=235).pack(anchor='w',pady=3)
-        elif card['kind']=='creature':
+        elif card['kind']=='creature' and 'attack' in card:
             ttk.Label(tile,text=f"{card['attack']} ATK  |  {card['health']} HP").pack(anchor='w',pady=3)
         if card.get('keywords'):ttk.Label(tile,text=', '.join(card['keywords']),wraplength=235).pack(anchor='w')
         if card.get('capacity_bonus'):ttk.Label(tile,text=f"+{card['capacity_bonus']} capacity").pack(anchor='w')
@@ -51,6 +51,7 @@ def tiles(app, parent, view, cards, private=False):
         ttk.Label(tile,text=f"Card …{card['instance_id'][-6:]}",wraplength=235).pack(anchor='w')
         if private:
             ttk.Button(tile,text='Inspect / play',command=lambda c=card:app.card_dialog(view,c)).pack(anchor='w',pady=(6,0))
+        if controls:controls(tile,card)
 
 
 def render_match(app, view):
