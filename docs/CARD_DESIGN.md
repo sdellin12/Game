@@ -253,3 +253,9 @@ Runtime review separates card information from payment/target controls: cost,
 available resources, consumed tokens, exact payment total and an explicit target
 are reviewed before confirmation. Fixed table shortcuts improve hand/board
 navigation without changing the standard/full-art templates or their data contract.
+
+Required discard choices now reuse runtime card tiles, with an exact selection
+count before confirmation. Named damage/trigger order rows retain instance/effect
+identifiers and mark the next item. Card titles, required-choice sections and
+primary/danger actions have distinct app styles. These remain presentation changes;
+the print information contract, template sources and artwork are unchanged.

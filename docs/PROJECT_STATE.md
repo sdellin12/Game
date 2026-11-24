@@ -3,17 +3,17 @@ Updated: 2026-11-24
 
 ## Current checkpoint
 - Branch: feature/combat-coverage-and-timing; draft PR #2.
-- Latest checkpoint: fixed hand/board shortcuts and private exact-payment/target review; developer fallback retained.
+- Latest checkpoint: card-based required choices, named order previews, visual hierarchy and keyboard guidance.
 - Combat lab: desktop, portable build, checkpoint runner and replay inspector.
 - Card templates: standard/full-art v1 complete; design/cards contains sources.
 - Launch the local harness: python run_play.py from the Game repository directory.
-- Validation: 468 Windows tests pass; 66 docs/links/versions pass; 96 Python sources parse; 44 state lines.
+- Validation: 475 Windows tests pass; 66 docs/links/versions pass; 98 Python sources parse; 44 state lines.
 - Local practice is playable; production full-match coverage remains gated.
 
 ## Next implementation
 Budgeted policy fixes both known losses; fresh case wins 6/18 vs baseline 4/18, with one regression; live bots stay baseline.
 Owner deferred human testing: REQUIREMENTS.md; FAMILY_PLAYTEST.md is a future checklist.
-Recommended next: required choices/order flow and visual hierarchy; MATCH_UI_FLOW.md owns UI scope/limits.
+Recommended next: guided walkthrough and whole-flow focus/small-window checks; MATCH_UI_FLOW.md owns UI scope/limits.
 Versioned implementation coverage: coverage.py v14; default pack v9 / opt-in package v1; save schema v6 / compatibility 1.
 
 ## Read only the relevant entry

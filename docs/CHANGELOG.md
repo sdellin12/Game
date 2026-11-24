@@ -285,3 +285,7 @@ Added a three-step lobby with readiness/deal gating, private opening replacement
 ## 2026-11-24 — Match navigation and payment review
 
 Added fixed table shortcuts with per-viewer location restoration, required-choice precedence and scoped wheel scrolling. Added private scrollable card review with available resources, explicit token consumption, exact payment/remaining-resource feedback and explicit target selection. Invalid, paused or stale reviews cannot submit; refresh closes stale dialogs. Six hidden Tk checks cover privacy/navigation, cancellation, controlled tokens, exact payment, explicit targeting and stale revision rejection. Updated card-design and AI flow docs; no engine/save/art changes.
+
+## 2026-11-24 - Required choices, hierarchy and repository refresh
+
+Added card-based exact-count discards, refill life/penalty guidance and named damage/trigger order previews with NEXT markers. Paused choices cannot submit. Added semantic section/card/confirmation styles, keyboard section navigation, order movement and review cancellation. Seven new hidden Tk checks cover choice packets, IDs, pause/affordability and shortcut privacy. Updated README and all affected current guides, repository review and generated handoff index; historical evidence and separate local artwork are preserved. Full-suite setup fixes pass PYTHONPATH to subprocesses and explicitly select the developer UI in its constructor-bypassing legacy fixture. No engine/save/schema/bot changes.

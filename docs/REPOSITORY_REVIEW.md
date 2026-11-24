@@ -1,4 +1,4 @@
-# Repository continuity review — 2026-11-23
+# Repository continuity review — refreshed 2026-11-24
 
 ## Scope and result
 Reviewed authored project documentation, historical interview status, source layout,
@@ -67,3 +67,15 @@ conversion --help commands also succeeded without starting a GUI or service.
 The subsequent five-run loss investigation and family checklist are now included
 in the generated index/handoff. Current whole-repository validation is owned by
 PROJECT_STATE.md; the audit checkpoint counts above remain its historical record.
+
+## Current UI and repository refresh — 2026-11-24
+The local default UI now includes guided setup, private redraw tiles, a card table,
+attack/block selection, private exact-payment review, required discard/refill
+guidance and named order previews. Visual/keyboard aids and per-viewer section
+navigation are documented in MATCH_UI_FLOW.md. The --debug-ui fallback remains.
+Current README, build plan, usage, card-design and continuation guides are aligned;
+the generated document index, syntax/link/version audit and handoff ZIP are refreshed
+at the final Git checkpoint. Historical study reports retain their original data.
+Human testing remains deferred in REQUIREMENTS.md. This refresh changes no game
+rules, saved-state schema, live bot policy or private data. Existing uncommitted
+card-editor/art/template work is preserved separately and is not silently staged.

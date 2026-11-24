@@ -52,6 +52,16 @@ confirmation before discarding changes since your last save.
    until the engine reports a winner/draw. Human seats require manual decisions;
    computer hands cannot be opened through the seat buttons.
 
+Required discards now use card tiles and an exact selection count. Refill shows
+life before/after payment and the turn/Recharge penalty; paused decisions cannot
+submit. Damage/trigger order lists name sources and mark the next item. Use Move
+up/down or Alt+Up/Down in the list, then explicitly Confirm. Empty trigger orders
+still require confirmation.
+
+Keyboard: Alt+1–5 jumps to battlefield, hand, choice, effects and history. Alt+H
+hides the hand; Escape cancels a card review. Tab/Shift+Tab moves focus and Space
+selects native controls. Shortcuts never auto-confirm or pass priority.
+
 The default screen keeps the board, hand and public history in one scrollable
 table; separate tabs remain in --debug-ui. Hide private hand clears private
 widgets and tentative opening/combat selections immediately; changing seats

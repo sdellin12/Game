@@ -142,7 +142,7 @@ class EffectDiscardWidgetTests(unittest.TestCase):
         from crucible_play.desktop import PlayWindow
         root=tk.Tk();root.withdraw()
         try:
-            app=PlayWindow.__new__(PlayWindow);calls=[]
+            app=PlayWindow.__new__(PlayWindow);app.debug_ui=True;calls=[]
             app.label=lambda c:c['instance_id'];app.send=lambda kind,**args:calls.append((kind,args))
             s=waiting();view=project_match(s,'A');choice=view['you']['choice']
             for paused in (True,False):

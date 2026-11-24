@@ -47,8 +47,40 @@ from ordinary blocking. A live count tracks selected attackers/blockers. Selecti
 targets changes only local widgets; explicit confirmation submits the complete
 batch through existing engine validation, including empty/no-block batches.
 Blocker assignments remain private until the engine reveals them. Paused combat
-controls cannot submit; locked defenders see a waiting message. Damage-order and
-trigger-order forms retain their previous controls.
+controls cannot submit; locked defenders see a waiting message.
+
+## Required choices and ordering
+Required choices have a prominent bordered section and explicit confirmations.
+Effect/End discards use card tiles, selection counts and confirmation enabled only
+at the required count. Hide/seat changes destroy tentative marks. Refill shows
+current/projected life, minimum life retained, remaining draw and the relevant
+turn/Recharge penalty. Unaffordable payment and all paused refill decisions are
+disabled; declining is clearly marked as elimination.
+
+Damage and trigger orders show named sources plus short identifiers. A NEXT marker
+tracks the first damage recipient or bottom-most triggered effect. Moving rows
+changes only local order; confirmation submits original item/subject identifiers.
+Only the first outstanding combat order is submitted, then the engine supplies the
+next choice. Empty trigger groups still require confirmation. Paused order controls
+cannot move rows or submit.
+
+## Visual and keyboard guidance
+Card names and section titles use distinct typography; required choices have a
+stronger border, primary confirmations use an accent style, and elimination
+controls have a danger style plus explicit text. Meaning does not rely on color alone.
+Native Tab/Shift+Tab navigation and Space selection remain available.
+
+| Shortcut | Action |
+| --- | --- |
+| Alt+1 / Alt+2 | Battlefield / acknowledged private hand |
+| Alt+3 / Alt+4 / Alt+5 | Required choice / pending effects / history |
+| Alt+H | Hide private hand |
+| Alt+Up / Alt+Down in an order list | Move the selected row |
+| Escape in card review | Cancel review without playing |
+
+No shortcut automatically confirms, passes priority or chooses a card. Section
+bindings have no destination during a handoff/lobby. These are keyboard aids,
+not a completed accessibility or screen-reader audit.
 
 ## Runtime card content
 Tiles use permitted engine metadata: name, kind, cost, creature attack/health,
@@ -60,8 +92,8 @@ metadata and unpublished local card-editor assets are not integrated here.
 
 ## Implementation and verification
 - `src/crucible_play/match_screen.py`, `setup_screen.py`, `combat_selection.py`
-  and `confirmation.py` own presentation only; desktop.py retains seat privacy,
-  other required choices, developer controls and command dispatch.
+  `confirmation.py` and `required_choices.py` own presentation only; desktop.py
+  retains seat privacy, developer controls and command dispatch.
 - Default launch: `python run_play.py`; developer fallback: `python run_play.py --debug-ui`.
 - `tests/test_match_screen.py` checks privacy, non-mutating inspection, actual
   payment submission, priority/paused controls and large-hand geometry using hidden
@@ -72,12 +104,14 @@ metadata and unpublished local card-editor assets are not integrated here.
 - `test_navigation_confirmation.py` checks navigation restoration/privacy, cancel,
   exact mixed payments, controlled-token filtering, explicit enemy targeting,
   absent targets, paused controls and stale confirmation rejection.
+- `test_required_choice_ui.py` checks exact-count discards, request/order identities,
+  NEXT direction, empty groups, pause/refill gating, hide behavior and registered
+  shortcut destinations. Tests use hidden windows; no owner testing is requested.
 - No rule, save-schema, pack, bot-policy or card-template changes are involved.
   Rollback is selecting --debug-ui or reverting the presentation change.
 
 ## Next slice
-Improve damage/trigger ordering and required discard/refill choices, then visual
-hierarchy and keyboard guidance. The UI still uses native widgets; some required
-choice forms remain engineering controls. Visual review, accessibility,
+Next integrate a coherent match walkthrough and review small-window/focus behavior
+across the whole default flow. The UI still uses native widgets. Visual review, accessibility,
 mouse/touch interactions and real device checks remain outstanding before deciding
 whether a family session is appropriate. Automated widget checks are not that review.

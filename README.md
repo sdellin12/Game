@@ -23,7 +23,7 @@ ZIP with a hash manifest. It does not publish private saves or local artwork.
 ## Run the local engineering harness
 
 This is for developer checks. Family-testing timing is deferred in the requirements;
-the next product milestone is a usable match experience.
+the local match UI is progressing toward that milestone.
 
 ```powershell
 py -3 run_play.py
@@ -36,6 +36,11 @@ Play against a computer by default, or choose two to four hotseat seats in a new
 lobby. Choose a practice deck/leader, ready and lock opening redraws. Save/load
 controls preserve local sessions, including pending choices. See the
 [short harness walkthrough and current scope](docs/PLAY_HARNESS.md).
+
+The default UI includes guided setup, private opening choices, a card table,
+attack/block selection, exact-payment review and required-choice/order guidance.
+Alt+1–5 navigate sections; Alt+H hides the hand. See [match flow and keyboard
+guide](docs/MATCH_UI_FLOW.md). `--debug-ui` retains the earlier developer controls.
 
 ## Open the desktop lab
 

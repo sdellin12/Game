@@ -18,13 +18,12 @@ AI_HANDOFF.md maps the implemented source; REQUIREMENTS.md owns product intent.
 | Family playtest | Deferred until a usable app takes shape | Follow owner timing in REQUIREMENTS.md; future checklist retained |
 | Catalog, creator, progression and complete delivery | Future | Household persistence, artwork queue and all product acceptance checks |
 
-The local Python harness is currently an engineering tool. The next recommended
-product slice has begun with a scrollable card table, player zones and fixed turn
-controls, guided setup/opening and card-based attack/block selection
-(MATCH_UI_FLOW.md), fixed table navigation and exact-payment/target review. Next
-improve required choices and damage/trigger ordering, then visual hierarchy,
-followed by a revisit of family-test readiness. The existing portable
-CrucibleLab executable is combat-only. Source-only package files and old builds
+The local Python harness remains an engineering tool. Its default flow now includes
+guided setup/opening, a scrollable card table, fixed navigation, attack/block
+selection, exact-payment review, required-choice/order guidance and keyboard aids
+(MATCH_UI_FLOW.md). Next add a coherent guided walkthrough and inspect whole-flow
+focus/small-window behavior before revisiting family-test readiness. The existing
+portable CrucibleLab executable is combat-only. Source-only package files and old builds
 are not an installer for the whole household product.
 
 Device/art/platform feasibility proposals remain in ARCHITECTURE_PROPOSAL.md and

@@ -30,7 +30,7 @@ def tiles(app, parent, view, cards, private=False, controls=None):
         tile=ttk.Frame(parent,padding=10,relief='ridge',borderwidth=2)
         tile.grid(row=index//3,column=index%3,sticky='nsew',padx=4,pady=4)
         name=card.get('name') or app.session.card_name(card.get('definition_key',card['instance_id']))
-        ttk.Label(tile,text=name,font=('Segoe UI',11,'bold'),wraplength=235).pack(anchor='w')
+        ttk.Label(tile,text=name,style='CardTitle.TLabel',wraplength=235).pack(anchor='w')
         ttk.Label(tile,text=f"{card['kind'].title()}  |  Cost {card.get('cost','—')}",wraplength=235).pack(anchor='w')
         creature=card.get('creature')
         if creature:
@@ -79,9 +79,12 @@ def render_match(app, view):
         table.scroll_canvas.yview_moveto(anchors[key].winfo_y()/max(1,table.winfo_height()) if anchors[key]!=table else 0)
         app._match_focus=(actor,key)
     for label,key,enabled in (('Go to battlefield','battlefield',True),('Go to hand','hand',bool(own)),('Go to choice','choice',bool(own and own['choice'])),('Go to effects','effects',True),('Go to history','history',True)):
-        ttk.Button(navigation,text=label,state='normal' if enabled else 'disabled',command=lambda k=key:jump(k)).pack(side='left',padx=(0,6))
+        button=ttk.Button(navigation,text=label,state='normal' if enabled else 'disabled',command=lambda k=key:jump(k))
+        button.pack(side='left',padx=(0,6));app._match_navigation[key]=button
+    ttk.Label(app.body,text='Keyboard: Alt+1–5 sections • Alt+H hide hand • Tab moves focus • Space selects',wraplength=880).pack(anchor='w')
     if own and own['choice']:
         anchors['choice']=section(table,'Your required choice')
+        anchors['choice'].configure(style='Choice.TLabelframe')
         app.render_choice(anchors['choice'],view,own['choice'])
     combat=view.get('combat')
     if combat:

@@ -9,6 +9,7 @@ class PlayWindow:
     def __init__(self, root, session=None, debug_ui=False):
         self.root=root
         self.debug_ui=debug_ui
+        self._match_navigation={}
         self.session=session or HarnessSession(bots=('P2',))
         self.new_pack=self.session._lobby.pack
         self._bot_timer=None;self._bot_steps=0;self._bot_error=False
@@ -22,6 +23,17 @@ class PlayWindow:
         style.configure('TLabel',background='#edf3f5',foreground='#173747',font=('Segoe UI',10))
         style.configure('Heading.TLabel',font=('Segoe UI',16,'bold'))
         style.configure('TButton',padding=6)
+        style.configure('Accent.TButton',background='#176b79',foreground='white',font=('Segoe UI',10,'bold'))
+        style.map('Accent.TButton',background=[('disabled','#ccd6da'),('active','#205768')],foreground=[('disabled','#536670')])
+        style.configure('Danger.TButton',foreground='#8b2533')
+        style.configure('TLabelframe.Label',font=('Segoe UI',11,'bold'),foreground='#173747')
+        style.configure('Choice.TLabelframe',borderwidth=3,relief='ridge')
+        style.configure('Choice.TLabelframe.Label',foreground='#176b79',font=('Segoe UI',12,'bold'))
+        style.configure('CardTitle.TLabel',font=('Segoe UI',11,'bold'),foreground='#125264')
+        if not debug_ui:
+            for number,key in enumerate(('battlefield','hand','choice','effects','history'),1):
+                root.bind(f'<Alt-Key-{number}>',lambda event,k=key:self.navigate_match(k))
+            root.bind('<Alt-h>',lambda event:self.hide())
         outer=ttk.Frame(root,padding=14);outer.pack(fill='both',expand=True)
         ttk.Label(outer,text='THE CRUCIBLE  /  LOCAL RULES HARNESS',style='Heading.TLabel').pack(anchor='w')
         ttk.Label(outer,text='Practice against computer seats, or use local hotseat play. Leader summons and recovery are enabled.').pack(anchor='w',pady=(2,8))
@@ -129,6 +141,11 @@ class PlayWindow:
         self.close_inspections()
         self.gate.hide();self.notice.set('Public view. Private cards are hidden.');self.render()
 
+    def navigate_match(self,key):
+        button=self._match_navigation.get(key)
+        if button is not None and button.winfo_exists() and str(button.cget('state'))!='disabled':button.invoke()
+        return 'break'
+
     def close_inspections(self):
         for child in self.root.winfo_children():
             if isinstance(child,tk.Toplevel):child.destroy()
@@ -157,6 +174,7 @@ class PlayWindow:
 
     def render(self):
         # Destroy private widgets and tentative choices on every handoff/refresh.
+        self._match_navigation={}
         if not self.debug_ui:self.close_inspections()
         for frame in (self.body,self.seatbar):
             for child in frame.winfo_children():child.destroy()
@@ -443,6 +461,9 @@ class PlayWindow:
 
     def render_choice(self, frame, view, choice):
         kind=choice['kind']
+        if not self.debug_ui and kind!='blockers':
+            from .required_choices import render_choice
+            return render_choice(self,frame,view,choice)
         if kind=='blockers' and not self.debug_ui:
             from .combat_selection import blocker_panel
             return blocker_panel(self,frame,view,choice)

@@ -9,6 +9,7 @@ def card_dialog(app,view,card,command='play_card'):
     actor=app.gate.actor;revision=view['revision']
     popup=tk.Toplevel(app.root);popup.title('Review card and payment');popup.transient(app.root)
     popup.geometry('660x700');popup.minsize(570,440);popup.grab_set()
+    popup.bind('<Escape>',lambda event:popup.destroy())
     footer=ttk.Frame(popup,padding=10);footer.pack(side='bottom',fill='x')
     frame=app.scrollable(popup)
     ttk.Label(frame,text=app.label(card),style='Heading.TLabel',wraplength=560).pack(anchor='w',padx=10,pady=10)
@@ -78,7 +79,7 @@ def card_dialog(app,view,card,command='play_card'):
         if app.send(command,**args):
             if popup.winfo_exists():popup.destroy()
         else:feedback.set(app.notice.get())
-    confirm=ttk.Button(footer,text='Confirm play and payment',command=submit);confirm.pack(side='left',pady=5)
+    confirm=ttk.Button(footer,text='Confirm play and payment',command=submit,style='Accent.TButton');confirm.pack(side='left',pady=5)
     ttk.Button(footer,text='Cancel',command=popup.destroy).pack(side='right',pady=5)
     for variable in [amount,target]+[v for _,_,v in tokens]:variable.trace_add('write',update)
     update()
